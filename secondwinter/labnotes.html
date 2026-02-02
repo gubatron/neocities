@@ -1,0 +1,466 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Second Winter - Lab Notes</title>
+	<link rel="icon" type="image/gif" href="https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/secondwinterfavicon.gif">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+	<style>
+	html,body{margin:0;padding:0;width:100%;height:100%;font-family:'DotGothic16',monospace;color:var(--light);}
+		html {
+			/* feel free to delete this if you just want the normal cursor! */
+			cursor: cell;
+			scrollbar-color: 64819f;
+			/*			scrollbar for firefox users*/
+		}
+
+		mark {
+			background: lightgoldenrodyellow;
+		}
+
+body {
+    background-image: url('https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/notebookbackgroundsecondwinter.png');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+
+    /* Centering logic */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden; /* Stops horizontal scrollbars when scaling */
+
+    font-family: 'DotGothic16', monospace;
+    color: black;
+}
+
+#wrapper-index {
+    background: grey;
+    position: relative;
+    width: 1108px; /* Your original fixed width */
+    padding: 20px 10px 15px 10px;
+    border-radius: 20px;
+    border: 1px solid black;
+    
+    /* This keeps the notebook from breaking apart */
+    flex-shrink: 0; 
+    
+    /* Animation for a smooth transition when resizing the window */
+    transition: transform 0.3s ease;
+}
+
+/* --- RESPONSIVE SCALING --- */
+
+/* For laptops/small monitors */
+@media (max-width: 1200px) {
+    #wrapper-index {
+        transform: scale(0.85);
+    }
+}
+
+/* For tablets */
+@media (max-width: 1000px) {
+    #wrapper-index {
+        transform: scale(0.7);
+    }
+}
+
+/* For large phones */
+@media (max-width: 800px) {
+    #wrapper-index {
+        transform: scale(0.5);
+    }
+}
+
+/* For small phones */
+@media (max-width: 600px) {
+    #wrapper-index {
+        transform: scale(0.35);
+    }
+}
+
+/* For very tiny screens */
+@media (max-width: 400px) {
+    #wrapper-index {
+        transform: scale(0.28);
+    }
+}
+
+		/*this is my ugly binder spiral! feel free to remove it or change it. it wont mess the rest of the code! */
+		#tab1-wrapper:after,
+		#tab2-wrapper:after,
+		#tab3-wrapper:after,
+		#tab4-wrapper:after,
+		#tab5-wrapper:after,
+		#tab6-wrapper:after,
+		#tab7-wrapper:after,
+		#tab8-wrapper:after {
+			content: url(https://files.catbox.moe/4v6k8c.png);
+			position: absolute;
+			z-index: 10;
+			transform: translate(-50%, -50%);
+			-ms-transform: translate(-50%, -50%);
+			top: 50%;
+			left: 50%;
+			pointer-events: none;
+		}
+
+		/* PAGES CSS */
+
+		.paper {
+			/*the CSS of both "pages" boxes. you can choose the look of ALL pages here */
+			background: url(https://files.catbox.moe/evxip4.png);
+			z-index: 5;
+			position: relative;
+			display: inline-block;
+			box-sizing: border-box;
+			border: 1px solid lightblue;
+			height: 600px;
+		}
+
+		.left {
+			width: 490px;
+			margin-left: 50px;
+			margin-right: 10px;
+			border-radius: 10px 0px 0px 10px;
+			overflow: hidden;
+		}
+
+		.left-in {
+			/*			the main purpose of this class if so the scrollbar of left pages arent obscured by the bind spiral */
+			padding: 15px 10px 15px 25px;
+			height: 100%;
+			margin-right: 15px;
+			overflow: auto;
+		}
+
+		.right {
+			padding: 15px 25px;
+			width: 490px;
+			margin-left: 10px;
+			border-radius: 0px 10px 10px 0px;
+			overflow: auto;
+		}
+
+		/* you can also customize the look of SPECIFIC pages. take TAB 2 for example: */
+		/* you can use .tab2-p class on both pages */
+		/*.tab2-p {
+			font-family: consolas;
+			font-size: 14px;
+			background: url(https://files.catbox.moe/bdbuwr.png);
+			border-color: lightcoral;}*/
+
+		/* tab buttons CSS stuff */
+
+		.tab {
+			/* for the ones on the left */
+			width: 590px;
+			height: 50px;
+			position: absolute;
+			transform: translate(-50%, -50%);
+			-ms-transform: translate(-50%, -50%);
+			rotate: -90deg;
+			top: -10px;
+			left: -232px;
+		}
+
+		.tab2 {
+			/* for the ones on the right */
+			width: 590px;
+			height: 50px;
+			position: absolute;
+			transform: translate(-50%, -50%);
+			-ms-transform: translate(-50%, -50%);
+			rotate: 90deg;
+			top: 590px;
+			right: -232px;
+		}
+
+		.tab button,
+		.tab2 button {
+			/*this is the look of the TABS! */
+			background: #21836a;
+			z-index: 1;
+			position: relative;
+			vertical-align: top;
+			/* when changing fonts it might mess with the tabs and make them dissappear... change the width when that happens */
+			width: 120px;
+			margin: 0px 8px;
+			padding: 10px 0px 30px 0px;
+			/* inherits the font-family from the ones in the body */
+			font-family: inherit;
+		  color: white;
+			cursor: help;
+			font-size: 19px;
+			transition-duration: 0.5s;
+			top: 10px;
+			border-radius: 10px 10px 0 0;
+			border: 1px solid black;
+		}
+
+		/* here you can change the color of each individual TAB button*/
+		.tab1-b {
+			background: #84b9ec;
+		}
+
+		.tab2-b {
+			background: #84b9ec;
+		}
+
+		.tab3-b {
+			background: #84b9ec;
+		}
+
+		.tab4-b {
+			background: #84b9ec;
+		}
+
+		.tab5-b {
+			background: #84b9ec;
+		}
+
+		/* hover effect of TAB*/
+		.tab button:hover,
+		.tab2 button:hover {
+			top: 0px;
+			cursor: -webkit-grab;
+			cursor: grab;
+		}
+
+		/* selected TAB effect aka when its focused */
+		.tab button.active,
+		.tab2 button.active {
+			top: 0px;
+			cursor: -webkit-grabbing;
+			cursor: grabbing;
+			box-shadow: 1px 1px 20px 1px #414141;
+			outline: none;
+		}
+
+		/* custom scrollbar for chrome users, firefox users cant see this */
+		::-webkit-scrollbar {
+			width: 8px;
+			height: 8px;
+		}
+
+		::-webkit-scrollbar-thumb:vertical {
+			background: white;
+			border: 1px solid black;
+			border-radius: 10px;
+		}
+
+		::-webkit-scrollbar-thumb:horizontal {
+			background: white;
+			border: 1px solid black;
+			border-radius: 10px;
+		}
+
+		::-webkit-scrollbar-track {
+			border-radius: 10px;
+			background: transparent;
+		}
+		
+		@media (max-width: 1150px) {
+    #wrapper-index {
+        transform: scale(0.8); /* Shrinks the notebook to fit smaller screens */
+    }
+}
+.back-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000; /* Keeps it above everything else */
+    
+    background: #21836a;
+    color: white;
+    padding: 10px 20px;
+    border: 1px solid black;
+    border-radius: 10px;
+    
+    font-family: 'DotGothic16', monospace;
+    text-decoration: none;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.back-button:hover {
+    background: #21836a; /* Changes to the green color on hover */
+    bottom: 25px; /* Slight lift effect */
+}
+	</style>
+</head>
+
+<body>
+
+	<!-- 	NOTEBOOK wrapper -->
+	<div id="wrapper-index">
+
+		<div class="tab">
+			<button class="tablinks tab4-b" onclick="openTab('tab4-wrapper')">Entry 4</button>
+			<button class="tablinks tab3-b" onclick="openTab('tab3-wrapper')">Entry 3</button>
+			<button class="tablinks tab2-b" onclick="openTab('tab2-wrapper')">Entry 2</button>
+			<button class="tablinks tab1-b" onclick="openTab('tab1-wrapper')" id="defaultOpen">Entry 1</button> <!-- 	id="defaultOpen" chooses which tab the notebook will have open when page is loaded -->
+		</div>
+
+		<div class="tab2">
+			<button class="tablinks tab5-b" onclick="openTab('tab5-wrapper')">Entry 5</button>
+			<button class="tablinks tab6-b" onclick="openTab('tab6-wrapper')">Entry 6</button>
+			<button class="tablinks tab7-b" onclick="openTab('tab7-wrapper')">Entry 7</button>
+			<button class="tablinks tab8-b" onclick="openTab('tab8-wrapper')">Entry 8</button>
+		</div>
+
+		<!-- 	TAB 1 wrapper -->
+		<div id="tab1-wrapper" class="tabcontent">
+			<div class="paper left">
+				<div class="left-in">
+					<p>12 марта 1983</p> <p>Сегодня снова проверяла культуры гидры. Температура воды держалась стабильно, но заметила, что при более частой смене среды регенерация щупалец идет быстрее. Не уверена, связано ли это с уровнем кислорода или просто с удалением отходов.</p> <p>Использовала старый микроскоп из кладовой. Линзы мутные, пришлось долго настраивать. Все равно видно, как клетки на краю среза начинают упорядочиваться уже через несколько часов.</p> <p>Записала длину регенерированных участков каждые два часа. Разброс большой. Надо увеличить количество образцов. Планарии на сегодня не трогала, не хватило времени.</p> <p>Нужно попросить новые пипетки. Эти протекают.</p>
+					<!-- TAB 1 left paper end divs -->
+				</div>
+			</div>
+			<div class="paper right">
+<p>March 12, 1983</p> <p>Checked the hydra cultures again today. Water temperature stayed stable, but I noticed that with more frequent medium changes, tentacle regeneration seems faster. Not sure if this is due to oxygen levels or simply waste removal.</p> <p>Used the old microscope from storage. The lenses are cloudy and took a long time to adjust. Still, it’s possible to see how the cells at the cut edge begin organizing within a few hours.</p> <p>Measured regenerated sections every two hours. The variance is high. Need to increase sample size. Did not work with the planaria today. Ran out of time.</p> <p>Need to ask for new pipettes. These ones leak.</p>
+				<!-- TAB 1 right paper end divs -->
+			</div>
+			<!-- 	TAB 1 wrapper end div -->
+		</div>
+
+		<!-- TAB 2 wrapper -->
+		<div id="tab2-wrapper" class="tabcontent">
+			<div class="tab2-p paper left">
+				<div class="left-in">
+<p>18 марта 1983</p> <p>Работала с планариями. Разрез поперечный, стандартный. Через 24 часа видно формирование двух осей. Ничего необычного, но все равно каждый раз странно наблюдать, как «решается», где будет голова.</p> <p>Попробовала изменить концентрацию соли в воде. Результат пока неясен. Одна особь погибла, возможно из-за резкого перехода.</p> <p>Соседний стол снова заняли без предупреждения. Пришлось переносить чашки. Нужно поговорить с лаборантом.</p> <p>После обеда болела голова. Возможно, из-за запаха формальдегида.</p>
+				</div>
+			</div>
+			<div class="tab2-p paper right">
+<p>March 18, 1983</p> <p>Worked with planaria. Standard transverse cut. After 24 hours, formation of two axes is visible. Nothing unusual, but it is still strange each time to watch how it “decides” where the head will be.</p> <p>Tried altering salt concentration in the water. Results unclear so far. One specimen died, possibly due to abrupt transition.</p> <p>The neighboring bench was taken again without notice. Had to move the dishes. Need to speak to the lab assistant.</p> <p>Had a headache after lunch. Possibly from the formaldehyde smell.</p>
+				<!-- TAB 2 right paper end div -->
+			</div>
+			<!-- TAB 2 wrapper end div -->
+		</div>
+
+		<div id="tab3-wrapper" class="tabcontent">
+			<div class="paper left">
+				<div class="left-in">
+<p>2 апреля 1983</p> <p>Гидры плохо реагируют на сегодняшнюю партию воды. Возможно, проблема с фильтром. Несколько особей сократились и не расправлялись.</p> <p>Пересмотрела записи за прошлый месяц. Есть ощущение, что я слишком редко фиксирую промежуточные стадии. Надо писать чаще, даже если кажется, что «ничего не происходит».</p> <p>Почистила стекла. Нашла трещину в одном из старых предметных стекол. Выбросила.</p> <p>Завтра лекции весь день, в лабораторию попаду поздно.</p>
+				</div>
+			</div>
+			<div class="paper right">
+<p>April 2, 1983</p> <p>The hydra reacted poorly to today’s water batch. Possibly a filter issue. Several specimens contracted and did not extend.</p> <p>Reviewed notes from the past month. I have the sense that I record intermediate stages too infrequently. Should write more often, even when it seems like “nothing is happening.”</p> <p>Cleaned slides. Found a crack in one of the old glass slides. Discarded it.</p> <p>Lectures all day tomorrow. Will get to the lab late.</p>
+
+			</div>
+		</div>
+
+		<div id="tab4-wrapper" class="tabcontent">
+			<div class="paper left">
+				<div class="left-in">
+<p>15 апреля 1983</p> <p>Наблюдала регенерацию у планарии с асимметричным разрезом. Интересно, что восстановление все равно стремится к симметрии, хотя исходная форма была нарушена.</p> <p>Сделала несколько зарисовок в тетради, фотографии не получились. Освещение плохое.</p> <p>В лаборатории холодно. Работала в пальто. Это мешает точным движениям.</p> <p>Нужно проверить инкубатор. Температура скачет.</p>
+
+				</div>
+			</div>
+			<div class="paper right">
+<p>April 15, 1983</p> <p>Observed regeneration in a planarian with an asymmetric cut. Interesting that restoration still trends toward symmetry, even though the initial shape was disrupted.</p> <p>Made several sketches in the notebook. Photos did not come out well. Poor lighting.</p> <p>The lab is cold. Worked in my coat. It interferes with precise movements.</p> <p>Need to check the incubator. Temperature fluctuates.</p>
+
+			</div>
+		</div>
+
+
+		<div id="tab5-wrapper" class="tabcontent">
+			<div class="paper left">
+				<div class="left-in">
+<p>3 мая 1983</p> <p>Сегодня много рутинной работы. Смена воды, пересчет образцов, чистка посуды. Почти ничего не записывала, кроме чисел.</p> <p>Одна гидра полностью восстановилась быстрее остальных. Не нашла отличий в условиях. Возможно, индивидуальная вариация.</p> <p>Разговаривала с преподавателем о теме диссертации. Сказал сузить фокус и не «распыляться».</p> <p>Устала.</p>
+
+				</div>
+			</div>
+			<div class="paper right">
+<p>May 3, 1983</p> <p>Mostly routine work today. Water changes, counting specimens, cleaning glassware. Almost nothing written down except numbers.</p> <p>One hydra fully regenerated faster than the others. Could not find differences in conditions. Possibly individual variation.</p> <p>Spoke with my advisor about the dissertation topic. He said to narrow the focus and not “spread myself too thin.”</p> <p>Tired.</p>
+
+			</div>
+		</div>
+
+		<div id="tab6-wrapper" class="tabcontent">
+			<div class="paper left">
+				<div class="left-in">
+<p>20 мая 1983</p> <p>Пробовала повторить эксперимент с прошлой недели. Результаты менее четкие. Возможно, я что-то упускаю в процедуре.</p> <p>Заметила, что при меньшем вмешательстве регенерация идет стабильнее. Чем меньше трогаешь, тем лучше.</p> <p>Сломалась центрифуга. Ждали техника почти два часа.</p> <p>Запах водорослей усилился. Нужно сменить контейнеры.</p>
+
+				</div>
+			</div>
+			<div class="paper right">
+<p>May 20, 1983</p> <p>Tried repeating last week’s experiment. Results are less clear. Possibly missing something in the procedure.</p> <p>Noticed that with less intervention, regeneration proceeds more steadily. The less you interfere, the better.</p> <p>The centrifuge broke. Waited nearly two hours for the technician.</p> <p>The algae smell has intensified. Need to change containers.</p>
+
+			</div>
+		</div>
+
+		<div id="tab7-wrapper" class="tabcontent">
+			<div class="paper left">
+				<div class="left-in">
+<p>7 июня 1983</p> <p>Работала допоздна. Тихо, никто не мешал. В такие часы проще сосредоточиться.</p> <p>Долго смотрела на планарию под микроскопом без записи. Просто наблюдала. Потом все же измерила длину нового сегмента.</p> <p>Иногда кажется, что мы слишком спешим с выводами. Процессы идут своим темпом.</p> <p>Закрыла лабораторию последней.</p> <p>Нужно купить еще банок для варенья...</p>
+
+				</div>
+			</div>
+			<div class="paper right">
+<p>June 7, 1983</p> <p>Worked late. Quiet, no interruptions. Easier to concentrate at these hours.</p> <p>Spent a long time watching a planarian under the microscope without writing anything. Just observing. Eventually measured the length of the new segment.</p> <p>Sometimes it feels like we rush conclusions. Processes move at their own pace.</p> <p>Locked up the lab last.</p> <p>Need to buy more jam jars...</p>
+
+			</div>
+		</div>
+
+		<div id="tab8-wrapper" class="tabcontent">
+			<div class="paper left">
+				<div class="left-in">
+<p>25 июня 1983</p> <p>Последняя неделя перед перерывом. Нужно привести записи в порядок.</p> <p>Сравнила данные по гидре и планариям. Общие принципы есть, но механизмы разные. Это ожидаемо.</p> <p>Упаковала образцы на хранение. Проверила маркировку дважды.</p> <p>Завтра не приду. Надо отдохнуть.</p>
+
+				</div>
+			</div>
+			<div class="paper right">
+<p>June 25, 1983</p> <p>Last week before the break. Need to organize the notes.</p> <p>Compared data on hydra and planaria. There are shared principles, but different mechanisms. As expected.</p> <p>Packed samples for storage. Checked labels twice.</p> <p>Not coming in tomorrow. Need rest.</p>
+
+			</div>
+		</div>
+
+
+		<!-- TEMPLATE for new set of TAB pages that you can copypaste
+
+	<div id="tab[num]-wrapper" class="tabcontent">
+	<div class="tab[num]-p paper left">
+ <div class="left-in">
+		text goes here
+
+		</div></div>
+	<div class="tab[num]-p paper right">
+		text goes here
+
+	</div></div>
+
+-->
+
+		<!-- NOTEBOOK wrapper end div -->
+	</div>
+
+
+	<script>
+		// awesome javascript to make everything work
+		function openTab(tabName) {
+			var i;
+			var tab = document.getElementById(tabName);
+			var otherContent = document.getElementsByClassName("tabcontent");
+			var defaultOpen = document.getElementById("defaultOpen");
+			var buttons = document.getElementsByClassName("tablinks");
+			for (i = 0; i < otherContent.length; i++) {
+				otherContent[i].style.display = "none";
+			}
+			for (i = 0; i < buttons.length; i++) {
+				buttons[i].classList.remove("active");
+			}
+			tab.style.display = "block";
+			event.currentTarget.className += " active";
+		}
+		document.getElementById("defaultOpen").click();
+
+	</script>
+	
+	<a href="secondwinter.html" class="back-button">← Back</a>
+</body>
+
+</html>

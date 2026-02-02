@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Page Not Found :(</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <style>
+  
+  html { scroll-behavior: smooth; }
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+    
+    html, body { 
+      margin:0; padding:0; 
+      font-family:'VT323',monospace; 
+      color:var(--text); font-size:19px; line-height:1.25; 
+    }
+    body { 
+      background:url("indexbackground.png") no-repeat center center fixed; 
+      background-size:cover; padding:10px; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      margin: 0;
+      height: 100vh;
+    }
+
+    .container {
+      position: relative;
+      max-width: 600px;
+      padding: 20px;
+    }
+
+    .lil-guy {
+      width: 180px;
+      height: auto;
+      margin-bottom: 25px;
+      animation: shake 2.2s infinite ease-in-out;
+      transform-origin: 50% 100%;
+    }
+
+    .speech-bubble {
+      position: relative;
+      background: #ffffff;
+      color: #222;
+      padding: 20px 28px;
+      border-radius: 20px;
+      font-size: 1.2rem;
+      line-height: 1.4;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      max-width: 420px;
+    }
+
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -18px;
+  left: 50%;                  
+  transform: translateX(-50%); 
+  border: 10px solid transparent;
+  border-top-color: #ffffff;
+}
+
+    .buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .home-btn, .sitemap-btn {
+      display: inline-block;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #43B3D2, #9be7ff);
+      color: #000;
+      text-decoration: none;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.25);
+      font-weight: bold;
+      font-size: 1.1rem;
+      transition: all 0.15s ease;
+    }
+
+    .home-btn:hover, .sitemap-btn:hover {
+  transform: scale(1.09) translateY(-2px);
+}
+
+    @media (max-width: 500px) {
+      .lil-guy { width: 140px; }
+      h1 { font-size: 3.5rem; }
+      .speech-bubble { font-size: 1.1rem; padding: 16px 22px; }
+      .buttons { flex-direction: column; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="speech-bubble">
+      Oh no! Looks like this page doesn’t exist yet.<br>
+      Where do you want to go?
+    </div>
+    
+    <img 
+      src="/images/art/digital/me-tiny.png" 
+      alt="sad little creature" 
+      class="lil-guy"
+    >
+
+    <div class="buttons">
+      <a href="/index.html" class="home-btn">Home!</a>
+      <a href="/sitemap.html" class="sitemap-btn">To The Sitemap!</a>
+    </div>
+  </div>
+
+</body>
+</html>

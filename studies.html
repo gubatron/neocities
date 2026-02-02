@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf SKILL LAB</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent:#43B3D2;
+  --bg:#000;
+  --text:#fff;
+  --border-light:rgba(255,255,255,0.35);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; height: 8px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; font-family:'VT323',monospace; color:var(--text); font-size:19px; line-height:1.25; }
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+/* --- WHARF STANDARD LAYOUT --- */
+.site { 
+  max-width:1100px; margin:0 auto; display:grid; 
+  grid-template-columns:220px 1fr; align-items: start;
+}
+
+.sidebar { 
+  margin: 14px 0 14px 14px; padding:12px; background:rgba(0,0,0,0.88);
+  border:1px solid var(--border-light); border-right: none;
+  border-radius: 10px 0 0 10px; position: sticky; top: 14px;
+}
+
+.sidebar h2 { margin:0 0 8px; color:var(--accent); }
+.nav a { display:block; color:var(--text); text-decoration:none; padding:4px 8px; border-radius:4px; transition: 0.2s; }
+.nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+.nav a.current { 
+  background: rgba(67, 179, 210, 0.35) !important; 
+  color: #43B3D2 !important; 
+  border-left: 4px solid #43B3D2 !important;
+}
+
+/* Sidebar Dropdown logic */
+.dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+.show-art .dropdown-content { display: block; }
+.arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+.show-art .arrow { transform: rotate(90deg); }
+
+/* --- CONTENT AREA --- */
+.content { 
+  margin: 14px 14px 14px 0; padding:14px; background:rgba(0,0,0,0.88); 
+  border:1px solid var(--border-light); border-radius: 0 10px 10px 10px;
+  display: flex; flex-direction: column; gap: 14px; 
+}
+
+header { 
+  padding:10px 12px; border-radius:8px; border:1px solid var(--border-light);
+  background:linear-gradient(to bottom,rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%,#000 80%); 
+}
+header h1 { 
+  margin:0; font-size:2.7rem; 
+  background:linear-gradient(to bottom, #9be5f4, var(--accent)); 
+  -webkit-background-clip:text; color:transparent; 
+}
+
+/* Project Boxes (The only new addition) */
+.project-box {
+  background: #000; border: 1px solid var(--border-light);
+  border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 12px;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1);
+}
+.project-header {
+  display: flex; justify-content: space-between; color: var(--accent);
+  font-size: 1.6rem; border-bottom: 1px dashed var(--border-light); padding-bottom: 5px;
+}
+.project-desc { 
+  font-size: 1.1rem; 
+  line-height: 1.4; 
+  color: #ffffff; /* This was grey, now fixed to white */
+}
+
+.project-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+.gallery-item { aspect-ratio: 1/1; border: 1px solid #333; border-radius: 4px; overflow: hidden; cursor: pointer; transition: 0.2s; }
+.gallery-item:hover { border-color: var(--accent); transform: translateY(-3px); }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+
+/* --- MODAL --- */
+.modal {
+  display: none; position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95);
+  justify-content: center; align-items: center;
+  z-index: 3000; padding: 20px;
+}
+.image-viewer {
+  background: #000; border: 1px solid var(--border-light);
+  border-radius: 12px; max-width: 90vw; max-height: 90vh;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.modal-header { 
+  background: #111; padding: 10px 15px; 
+  display: flex; justify-content: flex-end; 
+  border-bottom: 1px solid var(--border-light); 
+}
+.modal-image-container {
+  position: relative; flex-grow: 1;
+  display: flex; align-items: center; justify-content: center;
+  background: #050505; padding: 20px;
+}
+#expanded-img { max-width: 100%; max-height: 70vh; object-fit: contain; }
+#image-caption { padding: 15px; background: #000; color: var(--accent); font-size: 1.5rem; text-align: center; }
+.close-btn { color: var(--accent); cursor: pointer; font-size: 2rem; line-height: 0.8; }
+
+/* The smooth navigation arrows */
+.nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  font-size: 3.2rem; color: var(--accent); cursor: pointer;
+  user-select: none; z-index: 10; padding: 10px;
+  /* This creates the thick retro outline */
+  text-shadow: 
+    0 2px 0 #000, 0 -2px 0 #000, 2px 0 0 #000, -2px 0 0 #000,
+    1.5px 1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000;
+  transition: transform 0.1s;
+  pointer-events: auto; /* Ensures they are clickable */
+}
+.nav-btn:hover { transform: translateY(-50%) scale(1.1); color: #fff; }
+.prev-btn { left: 8px; }
+.next-btn { right: 8px; }
+
+/* Floating Buttons FIXED */
+.floating-btns { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+.back-button, .top-button { 
+  background: linear-gradient(135deg, var(--accent), #9be5f4);
+  color: #000; padding: 10px 16px; text-decoration: none; border-radius: 8px; font-family: 'VT323'; text-align: center;
+}
+
+@media(max-width:850px){ 
+  .site{ grid-template-columns:1fr; } 
+  .sidebar{ margin: 14px auto; width: 95%; border-right: 1px solid var(--border-light); border-radius: 10px; position: relative; top: 0; } 
+  .content { margin: 14px; border-radius: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="site">
+  <aside class="sidebar">
+    <h2>Navigation</h2>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      
+      <div class="nav-group" id="art-group">
+        <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+          Art <span class="arrow">▶</span>
+        </a>
+        <div class="dropdown-content">
+          <a href="art.html">Overview</a>
+          <a href="digital.html">Digital</a>
+          <a href="mspaint.html">MS Paint</a>
+          <a href="2dart.html">2D Art</a>
+          <a href="3dart.html">3D Art</a>
+          <a href="studies.html" class="current">Skill Lab</a>
+        </div>
+      </div>
+
+      <a href="commissions.html">Commissions</a>
+      <a href="journal.html">Journal</a>
+      <a href="stories.html">Stories</a>
+      <a href="characters.html">Characters</a>
+      <a href="sharks.html">Sharks</a>
+      <a href="cats.html">Cats</a>
+      <a href="resources.html">Resources</a>
+      <a href="sitemap.html">Sitemap</a>
+    </nav>
+  </aside>
+
+<main class="content">
+<header><h1>SKILL LAB</h1></header>
+
+<div class="project-box">
+  <p>Practice makes perfect! This is what I do to get better at art and keep up a variety in my works. Each entry below represents a study or a collection of pieces focused on a specific skill. Click any image to view it and cycle through the process photos.</p>
+</div>
+
+<div class="project-box">
+  <div class="project-header">
+    <span>Top Three Best Social Camouflage Techniques for Emotionally Dysregulated At-Fault Individuals (Results May Vary)</span>
+    <span style="font-size: 1rem; color: #888;">2025</span>
+  </div>
+  <div class="project-desc">
+    What are the most effective ways to externalize and materialize complex emotional phenomena (such as imposter syndrome, default guilt, and alexithymia) through physical art forms like soft sculpture/plushies, in a way that aligns with my personal artistic expression and emotional experience? I had to relearn a lot of sewing skills and make a test dummy first in order to try them out. Lots of mishaps but in the end I'm happy with it.
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/exercises/finalplushie1.jpg" data-caption="Final Plushes"></div>
+    <div class="gallery-item"><img src="images/art/exercises/finalplushie2.jpg" data-caption="Final Plushes"></div>
+    <div class="gallery-item"><img src="images/art/exercises/finalplushie3.jpg" data-caption="Final Plushes"></div>
+    <div class="gallery-item"><img src="images/art/exercises/alienconcept.png" data-caption="Alien Concept Art"></div>
+    <div class="gallery-item"><img src="images/art/exercises/noarmsconcept.png" data-caption="No-Arms Concept Art"></div>
+    <div class="gallery-item"><img src="images/art/exercises/orangesodaconcept.png" data-caption="Orange Soda Concept Art"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess1.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess2.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess3.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess4.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess5.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess6.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess7.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess8.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess9.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess10.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess11.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess12.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess13.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess14.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess15.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess16.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess17.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess18.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess19.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess20.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess21.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess22.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess23.png" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess24.png" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plushieprocess25.png" data-caption="Process Photo"></div>
+  </div>
+</div>
+
+<div class="project-box">
+  <div class="project-header">
+    <span>We Remember Because We Cannot Forget</span>
+    <span style="font-size: 1rem; color: #888;">2025</span>
+  </div>
+  <div class="project-desc">
+    How can memory, generational trauma, and national identity be expressed through re-imagined wartime portraits, where the absurdity and tragedy of war are heightened by replacing human figures with simplified cartoon cats? By contrasting innocence and brutality, cartoon simplicity and historical realism, my work seeks to explore how the past continues to shape the present, how empathy transcends lived experience, and how remembrance can become both an act of mourning and of pride.
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/exercises/soldier1.png" data-caption="Teenage AK Soldier | Mlody Zolnierz Armii Krajowej"></div>
+    <div class="gallery-item"><img src="images/art/exercises/soldier2.png" data-caption="AK Soldier in a Trench | Zolnierz AK w Okopie"></div>
+    <div class="gallery-item"><img src="images/art/exercises/mourningchild.png" data-caption="Mourning Girl | Dziewczyna w Zalobie"></div>
+    <div class="gallery-item"><img src="images/art/exercises/medic.jpg" data-caption="Paramedic and Poster | Sanitariuszka i Plakat"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process1.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process2.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process3.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process4.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process5.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process6.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process7.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process8.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process9.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process10.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process11.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process12.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process13.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process14.jpg" data-caption="Process Image"></div>
+    <div class="gallery-item"><img src="images/art/exercises/process15.jpg" data-caption="Process Image"></div>
+  </div>
+</div>
+
+<div class="project-box">
+  <div class="project-header">
+    <span>Cardboard Display Scene</span>
+    <span style="font-size: 1rem; color: #888;">2024-2025</span>
+  </div>
+  <div class="project-desc">
+    The prompt was to draw two people eating at an all-you-can-eat buffet, located underwater, celebrating your birthday. This was made with cardboard, purple glue stick glue, colored pencils of varying sizes, one pencil, and 3 stickers. The “all you can eat buffet” is the accumulated marine snow on the sea floor and the “birthday cake” is a pile of marine snow. You can have as much marine snow as you want! I had to put them in deep sea exploration suits because they'd immediately die from the pressure, but I think you can still celebrate and/or eat in them. No hot glue, so I had to carve holes into the cardboard to slot in pieces and use my purple glue stick. It was a time limited ordeal, so no process photos. Very fun to make!
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/exercises/cardboardbuffet.jpg" data-caption="Cardboard Display Scene"></div>
+    <div class="gallery-item"><img src="images/art/exercises/cardboardbuffetdetail.jpg" data-caption="Cardboard Display Scene Detail"></div>
+  </div>
+</div>
+
+<div class="project-box">
+  <div class="project-header">
+    <span>Observational Drawing of Denim</span>
+    <span style="font-size: 1rem; color: #888;">2024-2025</span>
+  </div>
+  <div class="project-desc">
+    A cat paw on denim pants. Her name is Vitani.
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/exercises/denimdrawing1.jpg" data-caption="Final Drawing"></div>
+    <div class="gallery-item"><img src="images/art/exercises/denimdrawing2.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/denimdrawing3.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/denimdrawing4.jpg" data-caption="Process Photo"></div>
+    <div class="gallery-item"><img src="images/art/exercises/denimdrawing5.jpg" data-caption="Process Photo"></div>
+  </div>
+</div>
+
+<div class="project-box">
+  <div class="project-header">
+    <span>Linocut Wolf Print</span>
+    <span style="font-size: 1rem; color: #888;">2024-2025</span>
+  </div>
+  <div class="project-desc">
+    This was inspired by previous prints made a few years before (pictured in the third and fourth photos). Practicing planning, carving, and printing.
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/exercises/wolflinocut1.png" data-caption="Wolf Linocut Final"></div>
+    <div class="gallery-item"><img src="images/art/exercises/wolflinocut2.png" data-caption="Wolf Linocut Concept Art"></div>
+    <div class="gallery-item"><img src="images/art/exercises/wolflinocut3.jpg" data-caption="Old Wolf Linocut"></div>
+    <div class="gallery-item"><img src="images/art/exercises/wolflinocut4.jpg" data-caption="Old Wolf Linocut"></div>
+    <div class="gallery-item"><img src="images/art/exercises/wolflinocut5.jpg" data-caption="Wolf Linocut Test 1"></div>
+    <div class="gallery-item"><img src="images/art/exercises/wolflinocut6.jpg" data-caption="Wolf Linocut Test 2"></div>
+    <div class="gallery-item"><img src="images/art/exercises/wolflinocut7.jpg" data-caption="Wolf Linocut Test 3"></div>
+    <div class="gallery-item"><img src="images/art/exercises/wolflinocut8.jpg" data-caption="Wolf Linocut Test 4"></div>
+    <div class="gallery-item"><img src="images/art/exercises/wolflinocut9.jpg" data-caption="Wolf Linocut Test 5"></div>
+    <div class="gallery-item"><img src="images/art/exercises/wolflinocut10.jpg" data-caption="Wolf Linocut Test 6"></div>
+  </div>
+</div>
+
+<div class="project-box">
+  <div class="project-header">
+    <span>Digital Illustrations</span>
+    <span style="font-size: 1rem; color: #888;">2024-2025</span>
+  </div>
+  <div class="project-desc">
+    Practicing different skills and subjects digitally with a focus on range.
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/exercises/illustration1.png" data-caption="Original Mode of Transportation"></div>
+    <div class="gallery-item"><img src="images/art/exercises/illustration2.png" data-caption="Shiny Fabric"></div>
+    <div class="gallery-item"><img src="images/art/exercises/illustration3.png" data-caption="Observational Drawing of Shoes"></div>
+    <div class="gallery-item"><img src="images/art/exercises/illustration4.png" data-caption="Mysterious Staircase"></div>
+    <div class="gallery-item"><img src="images/art/exercises/illustration5.jpg" data-caption="Past, Present, and Future"></div>
+  </div>
+</div>
+
+<div class="project-box">
+  <div class="project-header">
+    <span>Foxton Beach Painting</span>
+    <span style="font-size: 1rem; color: #888;">2024-2025</span>
+  </div>
+  <div class="project-desc">
+    The picture I painted this based off of was taken at Foxton Beach, Manawatū-Whanganui, New Zealand. The van on the right actually got stuck in the sand on the beach and had to get towed out!
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeach1.jpg" data-caption="Foxton Beach Final"></div>
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeach2.jpg" data-caption="Foxton Beach Final"></div>
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeach3.jpg" data-caption="Foxton Beach Process"></div>
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeach4.jpg" data-caption="Foxton Beach Process"></div>
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeach5.jpg" data-caption="Foxton Beach Process"></div>
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeach6.jpg" data-caption="Foxton Beach Process"></div>
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeach7.jpg" data-caption="Foxton Beach Process"></div>
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeach8.jpg" data-caption="Foxton Beach Process"></div>
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeach9.jpg" data-caption="Foxton Beach Process"></div>
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeach10.jpg" data-caption="Foxton Beach Process"></div>
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeach11.jpg" data-caption="Foxton Beach Process"></div>
+    <div class="gallery-item"><img src="images/art/exercises/foxtonbeachoriginal.jpg" data-caption="Foxton Beach Reference Image"></div>
+  </div>
+</div>
+
+<div class="project-box">
+  <div class="project-header">
+    <span>Pair of Dolls</span>
+    <span style="font-size: 1rem; color: #888;">2024-2025</span>
+  </div>
+  <div class="project-desc">
+    Two small poseable sculptures. Materials: three types of yarn, sculpey clay, acrylic paint, doll clothing.
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/exercises/pairofdolls1.jpg" data-caption="Pair of Dolls"></div>
+    <div class="gallery-item"><img src="images/art/exercises/pairofdolls2.jpg" data-caption="Pair of Dolls"></div>
+    <div class="gallery-item"><img src="images/art/exercises/pairofdolls3.jpg" data-caption="Pair of Dolls"></div>
+    <div class="gallery-item"><img src="images/art/exercises/pairofdolls4.jpg" data-caption="Pair of Dolls"></div>
+    <div class="gallery-item"><img src="images/art/exercises/pairofdolls5.jpg" data-caption="Pair of Dolls"></div>
+    <div class="gallery-item"><img src="images/art/exercises/pairofdolls6.jpg" data-caption="Pair of Dolls"></div>
+  </div>
+</div>
+
+<div class="project-box">
+  <div class="project-header">
+    <span>Surrealist Doll</span>
+    <span style="font-size: 1rem; color: #888;">2024-2025</span>
+  </div>
+  <div class="project-desc">
+    Large poseable sculpture. Materials: two types of yarn, sculpey clay, acrylic paint, recycled batting, decorative jewelry chains, flower picture charm
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/exercises/surrealistdoll1.jpg" data-caption="Surrealist Doll"></div>
+    <div class="gallery-item"><img src="images/art/exercises/surrealistdoll2.jpg" data-caption="Surrealist Doll Detail"></div>
+    <div class="gallery-item"><img src="images/art/exercises/surrealistdoll3.jpg" data-caption="Surrealist Doll Detail"></div>
+    <div class="gallery-item"><img src="images/art/exercises/surrealistdoll4.jpg" data-caption="Surrealist Doll Detail"></div>
+    <div class="gallery-item"><img src="images/art/exercises/surrealistdoll5.jpg" data-caption="Surrealist Doll Detail"></div>
+    <div class="gallery-item"><img src="images/art/exercises/surrealistdoll6.jpg" data-caption="Surrealist Doll Detail"></div>
+    <div class="gallery-item"><img src="images/art/exercises/surrealistdoll7.jpg" data-caption="Surrealist Doll Detail"></div>
+  </div>
+</div>
+
+<div class="project-box">
+  <div class="project-header">
+    <span>Art History Paint Can</span>
+    <span style="font-size: 1rem; color: #888;">2024-2025</span>
+  </div>
+  <div class="project-desc">
+    8.5" by 6"  art piece applied onto a spray-paint can, originally in digital format. Inspired by the Young Poland (Młoda Polska) modernest period. Materials: paper, ink, spray modge-podge, glue, spray paint can
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/exercises/arthistorycan1.jpg" data-caption="Surrealist Doll"></div>
+    <div class="gallery-item"><img src="images/art/exercises/arthistorycan2.jpg" data-caption="Surrealist Doll Detail"></div>
+    <div class="gallery-item"><img src="images/art/exercises/arthistorycan3.jpg" data-caption="Surrealist Doll Detail"></div>
+    <div class="gallery-item"><img src="images/art/exercises/arthistorycan5.jpg" data-caption="Surrealist Doll Detail"></div>
+    <div class="gallery-item"><img src="images/art/exercises/arthistorycan4.png" data-caption="Surrealist Doll Detail"></div>
+  </div>
+</div>
+
+<div class="project-box">
+  <div class="project-header">
+    <span>Sketchbook Studies</span>
+    <span style="font-size: 1rem; color: #888;">2024-2025</span>
+  </div>
+  <div class="project-desc">
+    Practicing different skills and subjects with basic pencil and paper.
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/exercises/roomwithaview.jpg" data-caption="Room With a View"></div>
+    <div class="gallery-item"><img src="images/art/exercises/popcorn.jpg" data-caption="Portrait Study"></div>
+    <div class="gallery-item"><img src="images/art/exercises/contourobject.jpg" data-caption="Countour Object Drawing"></div>
+    <div class="gallery-item"><img src="images/art/exercises/plantmatter.jpg" data-caption="Plant Matter"></div>
+    <div class="gallery-item"><img src="images/art/exercises/portraitstudy.jpg" data-caption="Portrait Study"></div>
+  </div>
+</div>
+
+  <div class="project-box">
+    <div class="project-header">
+      <span>Inktober 2024</span>
+      <span style="font-size: 1rem; color: #888;">2024</span>
+    </div>
+    <div class="project-desc">
+      October 2-31 with some missing days.
+    </div>
+    <div class="project-gallery">
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/candygore.jpg" alt="Final" data-caption="Candy Gore"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/canineteeth.jpg" alt="Final" data-caption="Canine Teeth"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/chicken.jpg" alt="Final" data-caption="Chicken"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/coffeeshop.jpg" alt="Final" data-caption="Coffee Shop"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/cracked.jpg" alt="Final" data-caption="Cracked"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/crisp.jpg" alt="Final" data-caption="Crisp"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/ghost.jpg" alt="Final" data-caption="Ghost"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/lostitems.jpg" alt="Final" data-caption="Lost Items"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/nooksandcorners1.jpg" alt="Final" data-caption="Nooks and Corners 1"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/nooksandcorners2.jpg" alt="Final" data-caption="Nooks and Corners 2"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/plaid.jpg" alt="Final" data-caption="Plaid"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/scarecrow.jpg" alt="Final" data-caption="Scarecrow"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/somethingyoufear1.jpg" alt="Final" data-caption="Something You Fear 1"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/somethingyoufear2.jpg" alt="Final" data-caption="Something You Fear 2"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/storm.jpg" alt="Final" data-caption="Storm"></div>
+      <div class="gallery-item"><img src="images/art/exercises/inktober 2024/vines.jpg" alt="Final" data-caption="Vines"></div>
+    </div>
+  </div>
+  
+  <div class="project-box">
+  <div class="project-header">
+    <span>Representation of Your Own Ideas - "Look Out The Window"</span>
+    <span style="font-size: 1rem; color: #888;">2024-2025</span>
+  </div>
+  <div class="project-desc">
+    Digital, 2353 × 3277. I love the rugs and the atmosphere is charming. 
+  </div>
+  <div class="project-gallery">
+    <div class="gallery-item"><img src="images/art/digital/lookoutthewindow.jpg" data-caption="Look Out The Window"></div>
+  </div>
+</div>
+  
+</main>
+
+<div id="image-modal" class="modal">
+  <div class="image-viewer">
+    <div class="modal-header">
+      <span class="close-btn">&times;</span>
+    </div>
+    <div class="modal-image-container">
+      <span class="nav-btn prev-btn" id="prevBtn">◄</span>
+      <img id="expanded-img" src="">
+      <span class="nav-btn next-btn" id="nextBtn">►</span>
+    </div>
+    <div id="image-caption"></div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('art-group').classList.add('show-art');
+
+  let currentImages = [];
+  let currentIndex = 0;
+
+  const imageModal = document.getElementById("image-modal");
+  const expandedImg = document.getElementById("expanded-img");
+  const captionText = document.getElementById("image-caption");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+
+  document.addEventListener('click', e => {
+    const item = e.target.closest('.gallery-item');
+    if (item) {
+      const gallery = item.closest('.project-gallery');
+      currentImages = Array.from(gallery.querySelectorAll('img'));
+      currentIndex = currentImages.indexOf(item.querySelector('img'));
+      updateModalContent();
+      imageModal.style.display = "flex";
+    }
+  });
+
+  function updateModalContent() {
+    if (currentImages.length === 0) return;
+    const img = currentImages[currentIndex];
+    expandedImg.src = img.src;
+    captionText.innerText = img.getAttribute('data-caption') || img.alt || "";
+    
+    // Auto-hide arrows if box only has 1 image
+    const visibility = currentImages.length <= 1 ? "hidden" : "visible";
+    prevBtn.style.visibility = visibility;
+    nextBtn.style.visibility = visibility;
+  }
+
+  function nextImg() {
+    currentIndex = (currentIndex + 1) % currentImages.length;
+    updateModalContent();
+  }
+
+  function prevImg() {
+    currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+    updateModalContent();
+  }
+
+  nextBtn.onclick = (e) => { e.stopPropagation(); nextImg(); };
+  prevBtn.onclick = (e) => { e.stopPropagation(); prevImg(); };
+
+  document.addEventListener('keydown', e => {
+    if (imageModal.style.display === "flex") {
+      if (e.key === "ArrowRight") nextImg();
+      if (e.key === "ArrowLeft") prevImg();
+      if (e.key === "Escape") imageModal.style.display = "none";
+    }
+  });
+
+  document.querySelector(".close-btn").onclick = () => imageModal.style.display = "none";
+  window.onclick = e => { if (e.target == imageModal) imageModal.style.display = "none"; };
+</script>
+
+<div class="floating-btns">
+    <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+    <a href="index.html" class="back-button">← HOME</a>
+</div>
+
+</body>
+</html>

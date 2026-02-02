@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Second Winter</title>
+<link rel="icon" type="image/gif" href="https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/secondwinterfavicon.gif">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark:#1b1e22;
+  --blue:#64819f;
+  --light:#f3f6f8;
+  --panel:linear-gradient(180deg, #262b31, #1a1e23);
+  --accent:#64819f;
+}
+/* GLOBAL RESET */
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;width:100%;height:100%;font-family:'DotGothic16',monospace;color:var(--light);}
+body{background:url("https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/backgroundsecondwinter.png") center/cover no-repeat;overflow:hidden;}
+/* CONTAINER */
+.container{
+  width: calc(100% - 40px); /* ~20px min margin each side; change 40px → 60px/80px for more space */
+  max-width:1100px;
+  margin: 0 auto;
+  height: 100vh;
+  background:rgba(24,27,31,0.96);
+  border:1px solid #3b4650;
+  display:flex;
+  flex-direction:column;
+  padding:1rem;
+  overflow: hidden;
+}
+main{
+  display:grid;
+  grid-template-columns:200px 1fr;
+  gap:1rem;
+  flex:1;
+  overflow:hidden;
+}
+.content {
+  height: 100%;
+  overflow-y: auto;                /* ← default = scroll when content overflows */
+  display: block;                  /* ← change back from flex — most sections don't need it */
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+/* HEADER */
+header{
+  position:relative;
+  height:14vh; min-height:110px;
+  border:1px solid #3b4650;
+  margin-bottom:0.5rem;
+  background:url("https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/headersecondwinter.png") center/cover no-repeat;
+  flex: 0 0 auto;
+}
+header h1{
+  margin:0;padding:1rem;
+  font-size:clamp(2rem,4vw,2.8rem);
+  color:var(--light);
+  text-shadow:0 8px 18px rgba(0,0,0,0.75);
+  position:absolute;
+  bottom:0.2rem;
+  left:1rem;
+}
+/* MARQUEE */
+.marquee-wrap {
+  overflow: hidden;
+  border: 1px solid var(--blue);
+  background: rgba(0,0,0,0.3);
+  margin-bottom:0.5rem;
+  flex: 0 0 auto;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 15s linear infinite;
+}
+.marquee-track span {
+  white-space: nowrap;
+  padding-right: 3rem;
+  font-size: 0.9rem;
+}
+.marquee-wrap:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+/* MAIN GRID */
+main{
+  display:grid;
+  grid-template-columns:200px 1fr;
+  gap:1rem;
+  flex:1;
+  overflow:hidden;
+}
+/* NAV */
+nav{display:flex;flex-direction:column;border-right:1px solid #3b4650;padding-right:0.5rem;}
+nav button{
+  margin-bottom:0.5rem;
+  padding:0.6rem;
+  background:transparent;
+  border:1px solid #3b4650;
+  font-family:'DotGothic16',monospace;
+  font-size:0.95rem;
+  color:var(--light);
+  cursor:pointer;
+  transition:0.2s;
+}
+nav button:hover{background:rgba(100,129,159,0.15);}
+nav button[aria-selected="true"]{background:rgba(100,129,159,0.25);border-color:var(--blue);}
+/* SECTIONS */
+section{display:none;}
+section.active{display:block !important;}
+.panel{background:var(--panel);border:1px solid #3b4650;padding:1rem;margin-bottom:1rem;}
+.scrollbox{max-height:65vh;overflow-y:auto;margin-bottom:1rem;}
+/* CHARACTERS */
+.character-intro {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+}
+.character-summary {
+  flex: 1;
+}
+.character-image {
+  width: 220px;
+  aspect-ratio: 1 / 1;
+  border: 1px solid #3b4650;
+}
+.character-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.character-details{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+  margin-top:1rem;
+}
+@media(max-width:900px){
+  .character-details{
+    grid-template-columns:1fr;
+  }
+}
+.char-block{
+  padding:0.75rem;
+  border:1px dashed #3b4650;
+  background:var(--panel);
+}
+/* HOME BUTTONS */
+.home-buttons{display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;margin-top:1rem;}
+.home-buttons button{padding:0.8rem 1.2rem;border:1px solid var(--blue);background:rgba(0,0,0,0.6);color:var(--light);cursor:pointer;transition:0.2s;font-family:'DotGothic16',monospace;}
+.home-buttons button:hover{background:var(--blue);color:#fff;}
+/* ART GRID */
+.art-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+.art-card{aspect-ratio:1/1;cursor:pointer;border:1px solid #3b4650;border-radius:4px;overflow:hidden;background:#111;transition:0.2s;}
+.art-card:hover{transform:translateY(-4px);border-color:var(--blue);}
+.art-card img{width:100%;height:100%;object-fit:cover;}
+#lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+#lightbox.active {
+  display: flex;
+}
+.lb-frame {
+  max-width: 80vw;
+  max-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#lightbox-img {
+  max-width: 100%;
+  max-height: 100%;
+}
+.lb-close,
+.lb-prev,
+.lb-next {
+  position: absolute;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid #3b4650;
+  color: #fff;
+  font-family: inherit;
+  font-size: 1.2rem;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+}
+.lb-prev {
+  left: 1rem;
+}
+.lb-next {
+  right: 1rem;
+}
+/* TIMELINE */
+.timeline-box {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.timeline-explainer {
+  flex: 0 0 auto;
+  margin-bottom:0.5rem;
+  border:1px solid #3b4650;
+  padding:0.5rem;
+}
+.timeline-container {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border: 1px solid #3b4650;
+  padding: 1rem;
+  position: relative;
+}
+.timeline-event{display:flex;align-items:flex-start;margin-bottom:1rem;}
+.timeline-date{width:80px;font-weight:bold;}
+.timeline-date {
+  width: 110px;
+  background: rgba(100, 129, 159, 0.15);  /* subtle blue panel bg */
+  padding: 0.5rem 0.5rem;
+  border-radius: 0px;
+  border: 1px solid var(--blue);          /* thin blue border around the date box */
+  text-align: center;
+  font-weight: bold;
+}
+.timeline-card{
+  background:var(--panel);
+  padding:0.8rem;
+  margin-left:1rem;
+  border:1px solid #3b4650;
+  flex:1;
+  border-radius: 0; /* straight edges, no rounding */
+}
+.timeline-nav {
+  flex: 0 0 auto;
+  display:flex;
+  gap:1rem;
+  justify-content: center;
+  margin-top:1rem;
+}
+.timeline-nav button{
+  padding:0.5rem 1rem;
+  border:1px solid var(--blue);
+  background:rgba(0,0,0,0.6);
+  color:var(--light);
+  cursor:pointer;
+  transition:0.2s;
+  font-family:'DotGothic16',monospace;
+}
+.timeline-nav button:hover{background:var(--blue);color:#fff;}
+/* FOOTER */
+footer{
+  text-align:center;
+  font-size:0.78rem;
+  padding:0.6rem;
+  border:1px solid #3b4650;
+  background:#14171b;
+  margin-top:0.5rem;
+  flex: 0 0 auto;
+}
+/* MEDIA QUERIES */
+@media (max-width:900px) {
+  main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  nav {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: none;
+    border-bottom: 1px solid #3b4650;
+    margin: 0;
+  }
+  nav::-webkit-scrollbar {
+    height: 6px;
+  }
+  nav button {
+    white-space: nowrap;
+    font-size: 0.95rem;
+    padding: 0.5rem 0.75rem;
+    flex: 0 0 auto;
+  }
+  .character-intro {
+    flex-direction: column;
+  }
+  .character-image {
+    width: 100%;
+    max-width: 240px;
+  }
+  .character-details {
+    grid-template-columns: 1fr;
+  }
+}
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+/* When timeline is active, prevent .content from scrolling */
+.content.timeline-active {
+  overflow-y: hidden;              /* disable outer scroll only for timeline */
+  display: flex;                   /* enable flex only when needed */
+  flex-direction: column;
+}
+
+/* Ensure timeline section fills height and delegates scroll to container */
+#timeline {
+  display: none;                   /* hide by default as safety net */
+}
+#timeline.active {                  /* when it's the active one */
+  display: flex !important;
+  height: 100%;
+  flex-direction: column;
+}
+.timeline-box {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.timeline-container {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+/* Fixed overlay clock – no flow impact, always on top */
+.home-clock-overlay {
+  display: none;                   /* hidden until JS shows it on home */
+  position: fixed;
+  bottom: 3.5rem;                    /* higher up = more "in content" feel; try 5-8rem */
+  left: 14rem;                   /* increase number to move right */
+  z-index: 30;                     /* high but below lightbox */
+  width: 170px;                    /* ← smaller base size to avoid "whole page" feel */
+  max-width: 25vw;                 /* ← prevents it from getting insanely big on wide screens */
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+@media (max-width: 900px) {
+  .home-clock-overlay {
+    width: 90px;
+    bottom: 5.5rem;
+    right: 1.5rem;
+    display: none !important;
+  }
+}
+
+.home-clock {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-width: 100%;                 /* safety against parent scaling */
+  transform-origin: 50% 50%;
+}
+
+.home-clock-overlay:hover .home-clock {
+  animation: gentle-sway 2s ease-in-out infinite;
+}
+
+@keyframes gentle-sway {
+  0%, 100% { transform: rotate(0deg); }
+  25%      { transform: rotate(-3.5deg); }
+  50%      { transform: rotate(4.5deg); }
+  75%      { transform: rotate(-3.5deg); }
+}
+
+.home-clock-overlay::after {
+  content: "go home?";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0.8rem;
+  background: rgba(20,23,27,0.95);
+  color: var(--light);
+  font-size: 0.9rem;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--blue);
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.home-clock-overlay:hover::after {
+  opacity: 1;
+  visibility: visible;
+  margin-bottom: 1.1rem;
+}
+/* STORY SECTION STYLES */
+
+/* Header area (optional – remove if you don't want any header) */
+.story-header {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  border-bottom: 1px solid #3b4650;
+  background: rgba(30,35,40,0.6);
+}
+
+/* Controls – single neat line, styled buttons + custom dropdown */
+.story-controls {
+  display: none;                    /* hidden by default – JS shows on story tab */
+  flex-wrap: nowrap;                /* keep single row – better for your design */
+  gap: 0.6rem;
+  justify-content: center;
+  align-items: center;
+  margin: 0.8rem auto 1.2rem;
+  padding: 0 0.6rem;
+  max-width: 100%;
+  overflow: visible !important;     /* prevent clipping of dropdown */
+  position: relative;
+}
+
+.story-controls button,
+.dropdown-btn {
+  padding: 0.55rem 1rem;            /* slightly less vertical padding → shorter buttons */
+  background: rgba(0,0,0,0.6);
+  border: 1px solid var(--blue);
+  color: var(--light);
+  font-family: 'DotGothic16', monospace;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: 0.2s;
+  white-space: nowrap;
+  border-radius: 0;
+  height: 2.4rem;                   /* ← fixed height – prevents stretching */
+  line-height: 1.4;                 /* better vertical centering */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-controls button:hover,
+.dropdown-btn:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+/* Navigation buttons (First/Back/Next) – fixed width */
+.story-controls button:not(.dropdown-btn) {
+  min-width: 100px;
+  max-width: 120px;
+  flex: 0 0 auto;
+}
+
+/* Custom dropdown button – slightly wider to fit "Select chapter" comfortably */
+.dropdown-btn {
+  min-width: 200px;                 /* enough for "Select chapter ▼" */
+  max-width: 240px;
+  text-align: left;
+  padding-left: 1.2rem;
+  padding-right: 0.8rem;
+}
+
+.dropdown-btn .arrow {
+  margin-left: 0.8rem;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+/* Dropdown menu – exact same width as its button, no extra space */
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;                      /* exactly matches button width */
+  background: rgba(30,35,40,0.95);
+  border: 1px solid var(--blue);
+  border-top: none;
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+  z-index: 20;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+.dropdown-menu li {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  color: var(--light);
+  transition: 0.15s;
+}
+
+.dropdown-menu li:hover {
+  background: rgba(100,129,159,0.25);
+}
+
+.dropdown-menu li.active {
+  background: rgba(100,129,159,0.4);
+  font-weight: bold;
+}
+
+/* Scrollbar for long dropdown */
+.dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background: var(--blue);
+  border-radius: 3px;
+}
+
+/* Scrollable story text */
+.story-content {
+  background: var(--panel);
+  border: 1px solid #3b4650;
+  padding: 1.5rem;
+  line-height: 1.6;
+  font-size: 1.05rem;
+  min-height: 200px;
+  height: auto !important;
+}
+
+/* Popup modal */
+.story-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 950;
+}
+
+.story-popup-content {
+  width: 90vw;
+  max-width: 1000px;
+  max-height: 92vh;
+  background: rgba(24,27,31,0.98);
+  border: 2px solid var(--blue);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.story-popup .story-header {
+  flex: 0 0 auto;
+  position: relative;
+  padding: 1rem;
+}
+
+#story-popup-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--light);
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.story-popup .story-content {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  padding: 1.5rem;
+}
+
+#story-text {
+  min-height: 300px;
+  visibility: visible !important;
+}
+
+/* Button styling to match the site theme */
+.notebook-btn {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.8rem 1.2rem;
+  border: 1px solid var(--blue);
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--light);
+  text-decoration: none;
+  font-family: 'DotGothic16', monospace;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.notebook-btn:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+/* Hide on mobile (900px is your existing breakpoint) */
+@media (max-width: 900px) {
+  .vera-extras {
+    display: none;
+  }
+}
+
+.music-player-wrapper {
+  position: relative;
+  margin: 2rem auto 2rem;  /* decent breathing room top/bottom, centered */
+  width: 160px;
+  text-align: center;
+}
+
+.music-trigger {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: none !important;
+  box-shadow: none !important;
+  transition: transform 0.3s ease;
+  background: transparent;
+}
+
+.music-player-wrapper:hover .music-trigger {
+  animation: gentle-sway 2.2s ease-in-out infinite;
+}
+
+.music-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0.8rem;
+  background: rgba(20,23,27,0.94);
+  color: var(--light);
+  font-size: 0.85rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--blue);
+  border-radius: 4px;
+  white-space: normal;          /* ← allow wrapping */
+  max-width: 200px;             /* ← prevent super-wide; adjust if needed */
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 25;
+  line-height: 1.3;             /* better for wrapped text */
+}
+
+.music-player-wrapper:hover .music-tooltip {
+  opacity: 1;
+  visibility: visible;
+  margin-bottom: 1rem;
+}
+
+/* Particles – now start ABOVE the image and float up/fade */
+.particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;            /* allow notes to go outside wrapper */
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.music-player-wrapper.playing .particles {
+  opacity: 1;
+}
+
+.particle {
+  position: absolute;
+  top: 10px;                   /* start ABOVE the radio */
+  font-size: .5rem;            /* slightly bigger for visibility */
+  color: var(--white);
+  opacity: 0;
+  pointer-events: none;
+  animation: float-up-from-top 5s ease-out infinite;
+  user-select: none;
+  transform-origin: center;
+}
+
+/* Randomize starting left positions & slight horizontal drift */
+.particle:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 6s; }
+.particle:nth-child(2) { left: 35%; animation-delay: 1s; animation-duration: 7s; }
+.particle:nth-child(3) { left: 60%; animation-delay: 2s; animation-duration: 5.5s; }
+.particle:nth-child(4) { left: 85%; animation-delay: 3s; animation-duration: 6.5s; }
+
+/* Float UP from top, gentle sway/drift, fade in then out */
+@keyframes float-up-from-top {
+  0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.9; }                 /* quick fade in */
+  50%  { opacity: 0.7; transform: translateY(-80px) translateX(15px) rotate(15deg); }
+  100% { transform: translateY(-150px) translateX(-10px) rotate(-10deg); opacity: 0; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header id="page-header">
+    <h1 id="header-title">Second Winter</h1>
+  </header>
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>Some deaths are final. This one was not. Nothing followed. Nothing ever followed. ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ Welcome! Feel free to have a look around. ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ This page is always updating. Save it to come back later :)‎ ‎ ‎ ‎ ‎</span>
+      <span>Some deaths are final. This one was not. Nothing followed. Nothing ever followed. ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ Welcome! Feel free to have a look around. ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ This page is always updating. Save it to come back later :)‎ ‎ ‎ ‎ ‎</span>
+    </div>
+  </div>
+  <main>
+    <nav role="tablist" aria-label="Sections">
+      <button role="tab" aria-selected="true" onclick="selectTab('home')">Home</button>
+      <button role="tab" onclick="selectTab('story')">Story</button>
+      <button role="tab" onclick="selectTab('vera')">Vera</button>
+      <button role="tab" onclick="selectTab('lena')">Lena</button>
+      <button role="tab" onclick="selectTab('art')">Art</button>
+      <button role="tab" onclick="selectTab('history')">History</button>
+      <button role="tab" onclick="selectTab('timeline')">Timeline</button>
+      <button role="tab" onclick="selectTab('about')">About</button>
+    </nav>
+    
+    <div class="content">
+    
+    
+      <!-- HOME -->
+      <section id="home" class="active">
+        <div class="panel">
+          <p>
+            This is an interactive story-driven webpage hosting a narrative titled
+            <em>Second Winter</em>.</p> <p>In 1984, Vera Mirova and Lena Volkova live together in a one-room apartment near Novosibirsk State University. Vera is a biochemist studying cellular regeneration in planaria and hydra, while Lena is a woodcarver known for her detailed animal sculptures. But when Lena is attacked by her father, a man who has tracked her across the country, her life ends abruptly. Vera, who has long studied cellular renewal, makes a choice.</p> <p>You can read the full story (WIP), learn about the main characters,
+            follow the timeline of events, view related art, and more. Please keep in mind that this is still in the process of being built and expanded on. I hope you enjoy your time here!</p>
+        </div>
+        <div class="home-buttons">
+          <button onclick="selectTab('story')">Read the Story</button>
+          <button onclick="selectTab('lena')">Lena</button>
+          <button onclick="selectTab('vera')">Vera</button>
+          <button onclick="selectTab('timeline')">Timeline</button>
+        </div>        
+      </section>
+      
+      
+      <!-- VERA -->
+      <section id="vera">
+        <script>
+          setHeader('Vera', 'https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/lenaheader.png');
+        </script>
+  <div class="panel character-intro">
+    <div class="character-summary">
+      <p>
+        Vera Mirova is a 25-year-old biochemist from Novosibirsk working at the Institute of Cytology and Genetics in Akademgorodok in 1984. She is autistic, highly systematic, and academically successful, with a focus on regeneration in organisms like hydra and planaria. She lives in a one-room apartment with her partner Lena, maintains strict routines, and tends to be socially reserved and literal. Her main interests are cellular immortality, laboratory work, and structured walks in the nearby forest. Her decision-making is driven by analytical thinking, a strong need for continuity, and loyalty to a very small number of people, primarily Lena.
+      </p> <div class="vera-extras">
+  <a href="labnotes.html" class="notebook-btn">Read Vera's Lab Notebook</a>
+  <a href="visualnovel.html" class="notebook-btn">Talk to Vera</a>
+</div>
+    </div>
+    <div class="character-image">
+      <img src="/placeholder.png" alt="Vera portrait">
+    </div>
+  </div>
+  <div class="character-details">
+    <div class="panel char-block">
+      <h3>Demographics</h3>
+      <p>Name: Vera Ivanovna Mirova</p><p>Age: 25</p><p>Sex/Gender: Female</p><p>Ethnicity: Russian (Siberian)</p><p>Birth date: March 6, 1959</p><p>Place of birth: Novosibirsk, USSR</p><p>Occupation: Biochemist at the Institute of Cytology and Genetics, Akademgorodok</p><p>Education: Master’s-level equivalent; candidate for biological sciences degree</p><p>Socioeconomic status: Lower-middle class; modest stipend and shared student housing</p><p>Affiliations: Member of Komsomol (largely obligatory); works under academician Dr. Kirillin</p><p>Public perception: Quiet, scientific, unremarkable; regarded as promising but “cold” by department peers</p><p>Other notes: Formally polite, socially distant; colleagues whisper about her private life with Lena</p> 
+    </div>
+    <div class="panel char-block">
+      <h3>Physical Appearance</h3>
+      <p>Height: 170 cm</p><p>Weight: 57 kg</p><p>Body type: Lean, long-limbed, slightly underfed</p><p>Eye color: Gray-blue</p><p>Skin color: Pale with slight olive tint from laboratory lighting</p><p>Hair color: Dark ash brown, usually tied back</p><p>Fitness level: Healthy but sedentary; walks daily with Lena in the woods</p><p>Posture/Gait: Straight-backed with deliberate, quiet steps</p><p>Coordination: Excellent fine-motor precision; clumsy with large objects</p><p>Tattoos: None</p><p>Scars/Birthmarks: Small burn scar on left wrist from a lab accident, mole under right eye</p><p>Other distinguishing features: Narrow eyes, steady gaze; hands often smell faintly of ethanol and resin</p><p>Fashion style: Practical…wool skirts, collared shirts, lab coat, worn boots</p><p>Accessories: Plain wristwatch from father; leather satchel for notebooks</p><p>Cleanliness/Grooming: Meticulous, indifferent to fashion</p>Weaknesses/Conditions: Fragile endurance, chronic neck pain, anemia, insomnia</p><p>Tics/Stim behaviors: Flexes left hand when thinking, presses palms together, hums snippets of piano music</p><p>Disabilities: Autistic; highly structured cognition and sensory regulation needs</p>
+
+    </div>
+    <div class="panel char-block">
+      <h3>History</h3>
+      <p>Family: Father Ivan (mathematician), mother Maria (schoolteacher), younger sister in Leningrad</p><p>Notable events: Early fascination with regeneration during school science clubs; recruited into state research program at 22</p><p>Criminal record: Officially clean</p><p>Skeletons in the closet: Unregistered romantic relationship with a woman; unauthorized lab experiments outside permitted scope</p><p>Secrets: Conducted Lena’s resurrection without disclosure and falsified some lab logs</p><p>Other notes: Keeps banned Western scientific articles hidden inside a standard chemistry textbook</p>
+    </div>
+    <div class="panel char-block">
+      <h3>Psychological Traits</h3>
+      <p>Personality type: INTJ</p><p>Temperament: Melancholic with rigid rational discipline</p><p>Neurotype: Autistic; emotionally restrained, literal, pattern-focused</p><p>Personality traits: Controlled, perceptive, analytical, loyal, obsessive</p><p>Introvert/Extrovert: Introvert</p><p>Self-esteem: Stable but insulated; self-worth tied to precision and productivity</p><p>Intelligence: Exceptionally high analytical and systems reasoning</p><p>Educational focus: Cell regeneration, bioelectric signaling, continuity of tissue</p><p>Morals/Virtues: Intellectual honesty, discipline, devotion</p><p>Phobias/Fears: Loss of control, public scrutiny, meaninglessness</p><p>Angered by: Sloppiness, ideological hypocrisy, romantic sentimentalism</p><p>Pet peeves: Interrupted routines and unsignaled touch</p><p>Obsessions: Permanence, cellular immortality, continuity</p><p>Desires: To understand and preserve what she loves; to prove life can resist decay at least once</p><p>Flaws: Emotional repression; arrogance about reason; tunnel vision</p><p>Bad habits: Forgets to eat; isolates when anxious</p><p>Quirks: Talks to lab cultures and to Lena’s scar as if both can hear</p><p>Favorite saying: “Nothing ends if it can be understood.”</p>
+    </div>
+    <div class="panel char-block">
+      <h3>Communication</h3>
+      <p>Languages: Russian, academic English, some German</p><p>Speech style: Formal, precise, rarely uses contractions</p><p>Accent: Provincial Siberian softened by academic speech</p><p>Pacing/Pitch: Slow, calm, low and even</p><p>Gestures: Precise, restrained; steeples fingers while thinking</p><p>Facial expression: Controlled, often unreadable to strangers</p><p>Laughter/Smile: Rare; smile is fleeting but unguarded with Lena</p><p>Other notes: Voice rarely rises above a measured conversation volume</p>
+    </div>
+    <div class="panel char-block">
+      <h3>Strengths, Weaknesses, & Abilities</h3>
+      <p>Physical strengths: Dexterity, steadiness under stress</p><p>Physical weaknesses: Poor stamina, prone to cold</p><p>Intellectual strengths: Methodical reasoning, innovation, focus under pressure</p><p>Intellectual weaknesses: Detached empathy; difficulty with ambiguity outside controlled systems</p><p>Interpersonal strengths: Loyalty, patience with those she trusts</p><p>Interpersonal weaknesses: Emotional misreads; bluntness</p><p>Abilities: Microscopy, data synthesis, experimental design, fine motor control</p><p>Mental health patterns: Mild obsessive-compulsive behaviors; rumination</p><p>Other notes: Treats emotions as variables to control rather than experiences to feel</p>
+    </div>
+    <div class="panel char-block">
+      <h3>Relationships</h3>
+      <p>Partner: Lena Volkova (explicit, mutually romantic relationship)</p><p>Parents: Ivan and Maria Mirova</p><p>Sibling: Younger sister living in Leningrad</p><p>Friends: Few; a lab colleague, Pavel, who senses her intensity but not its cause</p><p>Mentor: Dr. Kirillin, who values her precision but worries about her isolation</p><p>Rivals: Supervisor’s assistant who suspects unauthorized experiments</p><p>Idols: Pavlov, Tsiolkovsky, and obscure Soviet regeneration researchers</p><p>Non-living attachments: Personal microscope; Lena’s wooden wolf carving kept after the resurrection</p><p>Enemies: Institutional indifference; entropy as a concept</p>
+    </div>
+    <div class="panel char-block">
+      <h3>Character Growth</h3>
+      <p>Archetype: The seeker</p><p>Core values: Truth, preservation, devotion</p><p>Internal conflicts: Love versus control; proof versus peace; science versus the unknowable</p><p>External conflicts: State oversight, limited resources, moral secrecy</p><p>Goals: Preserve Lena’s life and retroactively justify it through coherent theory</p><p>Motivation: Fear of losing meaning through death; refusal to accept narrative finality</p><p>Epiphanies: The absence of consequence is its own burden; some acts remain inexplicable</p><p>Significant events: Adolescence by the river; move to Akademgorodok; Lena’s murder; the resurrection; the long silence afterward</p><p>End state: Outwardly unchanged, internally destabilized but still functioning; lives with a private miracle that refuses to become a story</p>
+    </div>
+  </div>
+</section>
+
+      
+      
+      <!-- LENA -->
+<section id="lena">
+  <script>
+    setHeader('Lena', 'https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/veraheader.png');
+  </script>
+  <div class="panel character-intro">
+    <div class="character-summary">
+      <p>
+        Lena Volkova is a 25-year-old woodcarver and informal hunter from Kemerovo Oblast who now lives in Akademgorodok. She completed technical carpentry training, works in a cooperative workshop, and is known locally for carvings of predatory mammals and trees made with hunting knives. She shares a one-room apartment and a romantic relationship with Vera, contributes practical income through manual work, and spends time in the surrounding forest gathering materials and game. Her background includes an abusive father who later tracks her down and kills her; she is subsequently revived by Vera using experimental regenerative methods. She has strong practical skills, relatively high physical fitness, and ongoing negative psychological effects.
+      </p>
+    </div>
+    <div class="character-image">
+      <img src="/placeholder.png" alt="Lena portrait">
+    </div>
+  </div>
+  <div class="character-details">
+    <div class="panel char-block">
+      <h3>Demographics</h3>
+      <p>Name: Elena “Lena” Viktorovna Volkova</p><p>Age: 25</p><p>Sex/Gender: Female</p><p>Ethnicity: Russian (Kemerovo Oblast)</p><p>Birth date: July 2, 1959</p><p>Place of birth: Kuzbass region, Kemerovo Oblast, USSR</p><p>Occupation: Carpenter, woodcarver, and informal hunter</p><p>Education: Completed secondary school; technical carpentry training</p><p>Socioeconomic status: Working class; modest income from cooperative and commissions</p><p>Affiliations: Local cooperative carpentry workshop; informal crafts market in Akademgorodok</p><p>Public perception: Skilled craftswoman, quiet, solitary, slightly uncanny</p><p>Other notes: Self-taught artist known locally for carvings of predators and twisted trees</p>
+    </div>
+    <div class="panel char-block">
+      <h3>Physical Appearance</h3>
+      <p>Height: 168 cm</p><p>Weight: 60 kg</p><p>Body type: Strong, broad-shouldered</p><p>Eye color: Amber-brown</p><p>Skin color: Light, freckled, a little reddish</p><p>Hair color: Auburn, short-medium cut, a bit messy, goes out at the ends.</p><p>Fitness level: High; accustomed to physical labor</p><p>Posture/Gait: Confident stride</p><p>Coordination: Excellent hand-eye control</p><p>Tattoos: None</p><p>Scars/Birthmarks: Knife scars on hands (small healed cuts), healed stab wound scar on lower ribs</p><p>Other distinguishing features: Slightly crooked nose from childhood accident, teeny tiny scar on upper lip</p><p>Fashion style: Rustic…flannel shirts, leather apron, wool trousers</p><p>Accessories: Hunting knife; small round silver pendant from Vera</p><p>Cleanliness/Grooming: Clean but rough; sap under nails</p><p>Weaknesses/Conditions: Lung irritation from wood dust; cold-related illness</p><p>Tics: Clicks tongue while carving</p><p>Other notes: Smells faintly of pine and wood fire smoke</p>
+    </div>
+    <div class="panel char-block">
+      <h3>History</h3>
+      <p>Family: Mother Nina; estranged father Viktor (alive at the time of the story, later disappears after killing her)</p><p>Notable events: Childhood in a logging town; father’s increasing violence after mine closures; flight with mother and stepfather south to Novosibirsk at 18</p><p>Criminal record: Minor citation for illegal hunting; otherwise clean</p><p>Skeletons in the closet: Murdered by her father near Akademgorodok and secretly revived by Vera; officially recorded as missing or presumed to have left town</p><p>Secrets: Keeps the bloodstained cloth from the night of her death hidden with her tools</p><p>Regrets: Leaving her mother to face the aftermath of her disappearance without explanation</p><p>Other notes: Keeps her father’s old hunting blade cleaned and sheathed, unable to discard it</p>
+    </div>
+    <div class="panel char-block">
+      <h3>Psychological Traits</h3>
+      <p>Personality type: ISFP</p><p>Temperament: Sanguine with a hard edge</p><p>Personality traits: Passionate, tactile, humorous, impulsive, intuitive</p><p>Introvert/Extrovert: Introvert leaning ambivert; social in small, trusted groups</p><p>Self-esteem: Confident outwardly, fragile privately</p><p>Intelligence: Creative, spatial, intuitive pattern recognition</p><p>Morals/Virtues: Loyalty, independence, courage, protectiveness</p><p>Phobias/Fears: Confinement; becoming like her father; being seen as unnatural</p><p>Angered by: Condescension, institutional hypocrisy, cruelty to animals</p><p>Obsessions: Form, motion, strength of living things; how predators move through trees</p><p>Desires: Simple permanence; to be seen and remembered clearly, especially by Vera</p><p>Flaws: Impulsivity, recklessness, reluctance to set boundaries</p><p>Bad habits: Drinks when anxious; leaves blades unsheathed; avoids medical care</p><p>Quirks: Names her carvings; talks to trees before cutting branches</p><p>Favorite saying: “Everything fights to stay.”</p>
+    </div>
+    <div class="panel char-block">
+      <h3>Communication</h3>
+      <p>Languages: Russian</p><p>Speech style: Conversational, rhythmic, teasing; swears casually</p><p>Accent: Rural Siberian with Kemerovo inflection</p><p>Pacing/Pitch: Warm, mid-to-low, sometimes roughened by cold or smoke</p><p>Gestures: Frequent, expressive; speaks with her hands and knife</p><p>Facial expression: Open, readable; emotions show quickly</p><p>Laughter/Smile: Unrestrained laughter; easy, bright smile, especially with Vera</p><p>Other notes: Uses humor to diffuse grief and tension, sometimes inappropriately</p>
+    </div>
+    <div class="panel char-block">
+      <h3>Strengths, Weaknesses, & Abilities</h3>
+      <p>Physical strengths: Endurance, dexterity, steady aim</p><p>Physical weaknesses: Lung irritation; occasional temperature dysregulation post-resurrection</p><p>Intellectual strengths: Spatial reasoning, intuitive understanding of materials and bodies</p><p>Intellectual weaknesses: Impatience with abstract theory and bureaucracy</p><p>Interpersonal strengths: Warmth, empathy, tactility</p><p>Interpersonal weaknesses: Poor self-protection; deflects with jokes</p><p>Abilities: Hunting, tracking, carving, basic survival skills in forest and snow</p><p>Mental health conditions: Mild PTSD; vivid dreams and gaps in memory around the night of her death</p><p>Other notes: Unsure if some dreams are memories of being dead, of the procedure, or imagination</p>
+    </div>
+    <div class="panel char-block">
+      <h3>Relationships</h3>
+      <p>Partner: Vera Mirova (mutual, explicit romantic relationship; share bed and home)</p><p>Parents: Viktor (estranged; later vanishes after killing her), Nina (living, unaware of the resurrection or exact fate)</p><p>Friends: Sergei, retired carpenter and mentor in the workshop</p><p>Rivals: None; occasionally mocked by less skilled coworkers but not in earnest</p><p>Enemies: The memory of her father and the violence he carries</p><p>Idols: None in name; admires animal instinct and resilience</p><p>Non-living attachments: Knives, especially the hunting blade; wooden carvings of predators and trees</p><p>Other notes: Locals assume she either followed seasonal work or left town quietly after rumors about a violent father</p>
+    </div>
+    <div class="panel char-block">
+      <h3>Character Growth</h3>
+      <p>Archetype: The survivor</p><p>Core values: Independence, love, honesty, physical presence</p><p>Internal conflicts: Fear that her survival is unnatural; uncertainty whether she is the same person as before</p><p>External conflicts: Hiding her continued existence; living in a town that does not know she died</p><p>Goals: Continue living without unraveling; keep life with Vera ordinary despite what happened</p><p>Motivations: Love of Vera; love of making tangible things in a decaying world</p><p>Epiphanies: Being alive is not the same as being whole; not every miracle is meant to explain anything</p><p>Significant events: Flight from home; move to Akademgorodok; deepening romance with Vera; murder by her father near the pond; revival in the apartment; completion of the altered wolf carving</p><p>End state: Quiet emblem of singular, unremarked immortality; a life that continues with no narrative justification beyond affection and stubbornness</p>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section id="story">
+  <div class="story-controls">
+    <button id="story-first" title="First chapter">« First</button>
+    <button id="story-prev" title="Previous chapter">← Back</button>
+    
+    <!-- Custom dropdown (button + menu) -->
+    <div class="custom-dropdown">
+      <button id="chapter-dropdown-btn" class="dropdown-btn">
+        Select chapter <span class="arrow">▼</span>
+      </button>
+      <ul id="chapter-menu" class="dropdown-menu">
+        <!-- JS will fill this -->
+      </ul>
+    </div>
+    
+    <button id="story-next" title="Next chapter">Next →</button>
+    <button id="story-popup-toggle" title="Open in popup">Popup Mode</button>
+  </div>
+
+  <div class="story-content scrollbox" id="story-text">
+    <p style="text-align:center; color:#777; margin:4rem 0;">
+      Select a chapter to begin reading.
+    </p>
+  </div>
+</section>
+
+      <!-- ART -->
+      <section id="art">
+        <div class="panel">
+          <div class="art-grid">
+            <div class="art-card"><img src="/secondwinter/secondwinterassets/lenaverachibis.jpg"></div>
+            <div class="art-card"><img src="https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/headersecondwinter.png"></div>
+          </div>
+        </div>
+      </section>
+      <!-- HISTORY -->
+      <section id="history">
+        <div class="panel scrollbox">
+          <p style="text-align: center;"><strong>Political and Institutional Context of Soviet Science in 1984</strong></p>
+
+<p>In 1984, the Soviet Union was governed by Yuri Andropov until February and by Konstantin Chernenko thereafter. State priorities emphasized military parity with the United States, nuclear deterrence, and technological self sufficiency. Scientific research was centrally planned through five year plans administered by Gosplan, which set funding targets and research priorities based on perceived state needs. Basic research was officially supported but evaluated by its long term usefulness to defense, medicine, or industry.</p>
+
+<p>The Academy of Sciences of the USSR functioned as the primary governing body for scientific research. It controlled funding allocation, personnel appointments, and publication approval. Research institutes were separated from universities, unlike Western models, and most experimental work occurred within Academy institutes rather than classrooms. Scientists were state employees with fixed salaries, housing tied to employment, and travel tightly regulated.</p>
+
+<p>Ideological oversight still existed in 1984, but it was less rigid than during the Stalin era. Genetics had been officially rehabilitated in the mid 1960s after decades of suppression under Lysenkoism. By the 1980s, molecular biology, cytology, and biochemistry were considered legitimate disciplines, although politically sensitive topics such as human genetic enhancement or lifespan extension were framed cautiously. Ethical review boards as understood in the West did not exist in the same form.</p>
+
+<p>International scientific exchange was limited but not nonexistent. Soviet researchers could access translated Western journals with delays of months or years. Some institutes received foreign visitors under supervision. Conferences abroad were rare and usually restricted to senior scientists with Party approval. This produced a research culture that was technically sophisticated but partially isolated from rapid global developments.</p>
+
+<p style="text-align: center;"><strong>Akademgorodok and Novosibirsk State University</strong></p>
+
+<p>Akademgorodok was established in 1957 approximately 30 kilometers south of Novosibirsk as the center of the Siberian Branch of the Academy of Sciences. Its location was chosen for geographic isolation, security, and proximity to natural resources. By 1984, it contained more than 30 research institutes and employed over 20,000 scientists and technical staff. The area was physically separated from industrial zones and had controlled access.</p>
+
+<p>Novosibirsk State University served as the educational core of Akademgorodok. It was founded in 1959 to train students directly within research institutes rather than through traditional lecture centered models. Undergraduate students began laboratory work early and were assigned to Academy institutes by their third year. This created a continuous pipeline between education and state research.</p>
+
+<p>The social environment of Akademgorodok differed from most Soviet cities. Scientists were concentrated in purpose built housing with access to libraries, concert halls, and academic clubs. The population was younger and more highly educated than the Soviet average. While shortages of consumer goods still existed, access to information and informal discussion was broader than in Moscow or Leningrad.</p>
+
+<p>Despite its reputation for relative intellectual freedom, Akademgorodok remained under KGB surveillance. Foreign contact, manuscript circulation, and internal seminars were monitored. However, day to day research decisions were often left to institute directors. This balance allowed technically ambitious projects to proceed as long as they avoided overt political controversy.</p>
+
+<p style="text-align: center;"><strong>Biochemistry and Molecular Biology in the Soviet Union</strong></p>
+
+<p>By 1984, Soviet biochemistry had reached a mature stage, with established schools in enzymology, protein chemistry, and metabolic regulation. Techniques such as gel electrophoresis, ultracentrifugation, and radioisotope labeling were routinely used. DNA sequencing existed but lagged behind Western standards due to equipment scarcity and limited access to reagents.</p>
+
+<p>The Siberian Branch maintained several institutes focused on biochemistry and bioorganic chemistry. These institutes studied protein synthesis, membrane transport, and cellular metabolism under extreme conditions such as cold stress. Research often emphasized comparative biology using plants, fish, and small mammals native to Siberia. This ecological framing aligned with Soviet strengths in field biology.</p>
+
+<p>Funding for biochemistry was justified through medical and industrial applications. Topics included antibiotic synthesis, wound healing agents, and metabolic disorders. Regenerative processes were studied indirectly through cell division, tissue repair, and embryonic development rather than explicit life extension. Terminology emphasizing restoration and adaptation was preferred.</p>
+
+<p>Computational resources were limited. Data analysis was performed using mainframe computers shared among institutes or by manual calculation. Experimental throughput was lower than in Western laboratories, but long term projects benefited from stable staffing and minimal pressure to publish rapidly. Career advancement depended more on institutional loyalty than citation metrics.</p>
+
+<p style="text-align: center;"><strong>Regenerative Biology and Cytology Research</strong></p>
+
+<p>Regenerative biology in 1984 was not a unified discipline but a collection of studies in cytology, developmental biology, and physiology. Soviet researchers focused on tissue regeneration in amphibians, fish, and rodents. Limb regeneration in newts and liver regeneration in mammals were active areas of investigation. These models were chosen for their clear morphological outcomes.</p>
+
+<p>The Institute of Cytology and Genetics in Akademgorodok played a central role in cellular and developmental research. Under the leadership of Dmitri Belyaev until his death in 1985, the institute emphasized genetic regulation of development and phenotype. Its work demonstrated that complex traits could shift rapidly under selection pressure, implying plasticity in developmental systems.</p>
+
+<p>Cell culture techniques were established but constrained by sterile supply availability. Primary cell cultures were more common than immortalized lines. Studies of cell differentiation relied heavily on microscopy, histological staining, and autoradiography. Molecular signaling pathways were inferred from phenotypic changes rather than direct molecular assays.</p>
+
+<p>Human regenerative research was restricted to clinically oriented studies such as bone healing, skin graft integration, and recovery after injury. Experimental manipulation of human embryos or germline cells was prohibited. Animal models served as proxies for understanding fundamental mechanisms, with findings framed as contributions to public health and labor recovery.</p>
+
+<p style="text-align: center;"><strong>Daily Life and Material Conditions of Researchers</strong></p>
+
+<p>Researchers in Akademgorodok in 1984 earned stable but modest salaries relative to state averages. Housing was provided through institutional allocation and typically consisted of small apartments. Utilities and public transportation were subsidized. Private automobiles were rare, and most residents relied on buses or walking.</p>
+
+<p>Laboratories operated under chronic shortages of consumables such as pipette tips, antibodies, and photographic film. Equipment repairs were handled internally by engineers rather than external suppliers. Improvisation was a necessary skill, and experimental protocols were adapted to available materials. Delays in experiments were common.</p>
+
+<p>Work schedules were structured but flexible within institutes. Evening seminars and weekend work were typical during critical experiments. Scientific discussion often occurred informally in kitchens or forest walks rather than official meetings. Alcohol consumption was culturally present but regulated during working hours.</p>
+
+<p>Information access depended heavily on institutional libraries. Journals such as Journal of Biological Chemistry and Nature were available in translation or microfilm. Personal copying was restricted. Manuscripts intended for foreign publication required approval from institute directors and censorship offices before submission.</p>
+
+<p style="text-align: center;"><strong>References</strong></p>
+
+<p>Josephson, Paul R. New Atlantis Revisited. Akademgorodok the Siberian City of Science. Princeton University Press. 1997.</p>
+
+<p>Graham, Loren R. Science in Russia and the Soviet Union. A Short History. Cambridge University Press. 1993.</p>
+
+<p>Krementsov, Nikolai. Stalinist Science. Princeton University Press. 1997.</p>
+
+<p>Vucinich, Alexander. Science in Russian Culture. Stanford University Press. 1970.</p>
+
+<p>Roll Hansen, Nils. The Lysenko Effect. Cambridge University Press. 2005.</p>
+
+<p>Medvedev, Zhores A. Soviet Science. Oxford University Press. 1978.</p>
+        </div>
+      </section>
+      <!-- TIMELINE -->
+<section id="timeline">
+  <div class="timeline-box">
+    <div class="timeline-explainer">
+      This is a detailed timeline of events of the story hosted on this site.
+    </div>
+
+    <div class="timeline-container">
+
+      <div class="timeline-event">
+        <div class="timeline-date">July of 1958</div>
+        <div class="timeline-card">
+          Vera Mirova is born in Novosibirsk, USSR, the eldest daughter of an engineer and a mathematics teacher.  
+          Her early fascination with natural order comes from cataloguing beetles and drawing cellular diagrams on scrap paper.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">September 1958</div>
+        <div class="timeline-card">
+          Lena Volkova is born in the same city, two months younger than Vera.  
+          Her father is a forestry worker, her mother a nurse.  
+          She grows up surrounded by pine sap and wood smoke, preferring forest paths to crowded courtyards.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">1960s</div>
+        <div class="timeline-card">
+          Both girls attend different schools but participate in the same science and nature clubs hosted by local teachers.  
+          They first meet during a river ecology trip, where eleven-year-old Vera corrects Lena’s plant identification.  
+          Their initial rivalry turns into fascination.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">1972</div>
+        <div class="timeline-card">
+          Lena’s father loses his job due to factory automation at the timber plant.  
+          His temper worsens and her mother retreats into silence.  
+          Lena begins carving small animals from scrap wood to calm herself.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">1973</div>
+        <div class="timeline-card">
+          Vera wins a regional science fair for her paper on limb regeneration.  
+          Her teachers encourage her to apply to Novosibirsk State University once she graduates.  
+          She begins keeping a laboratory notebook, labeling her personal observations “field data.”
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">1975</div>
+        <div class="timeline-card">
+          Lena’s mother leaves her abusive husband and remarries a surveyor in Akademgorodok.  
+          Lena follows reluctantly.  
+          She starts fixing tools and crafting wooden souvenirs for extra money.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">1976</div>
+        <div class="timeline-card">
+          Vera and Lena reunite unexpectedly through a regional nature workshop.  
+          They spend hours along the riverbank gathering insects and talking.  
+          Their friendship deepens into something more than expected.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">1979</div>
+        <div class="timeline-card">
+          Both graduate secondary school. Vera’s grades earn her state sponsorship for higher studies while Lena declines admission offers, choosing independence over dormitory life.
+          They promise to stay in the same city regardless of where work takes them.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">1980</div>
+        <div class="timeline-card">
+          Vera enters postgraduate study at Novosibirsk State University, researching regeneration in planaria and hydra.  
+          The scientific optimism of Akademgorodok is fading, replaced by underfunded labs and outdated equipment.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">1981</div>
+        <div class="timeline-card">
+          Lena relocates to Akademgorodok to be near Vera.  
+          She works for a forestry cooperative restoring damaged tools and selling carved animals.  She goes on to establish herself as a trusted carpenter.
+          They share a one-room student apartment with one narrow bed, one desk, and two identical coats on the rack.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">Summer 1983</div>
+        <div class="timeline-card">
+          Vera’s experiments show early regenerative responses in hybrid tissue samples.  
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">November 1983</div>
+        <div class="timeline-card">
+          A man begins asking around the cooperative for “a Lena Volkova.”  
+          Workers describe him as unshaved, carrying old forestry paperwork.  
+          When Lena recognizes her father, the old terror returns.  
+          She refuses Vera’s suggestion to flee, insisting that she won’t be chased forever.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">February 1984</div>
+        <div class="timeline-card">
+          During a power outage one freezing evening, Lena takes the forest shortcut home.  
+          Her father confronts her beneath the pines, demanding obedience.  
+          She refuses. He strikes her with his rifle.
+          He hides the body and disappears into the woods.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="timeline-date">February 1984</div>
+        <div class="timeline-card">
+          SPOILERS!!!!!
+        </div>
+      </div>
+
+    <div class="timeline-nav">
+      <button onclick="document.querySelector('#timeline .timeline-container').scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
+      <button onclick="document.querySelector('#timeline .timeline-container').scrollTo({top:document.querySelector('#timeline .timeline-container').scrollHeight,behavior:'smooth'})">↓ Bottom</button>
+    </div>
+  </div>
+</section>
+
+      <!-- ABOUT -->
+      <section id="about">
+        <div class="panel character-intro">
+          <div class="character-summary">
+            <p>Hello! I'm smallcarnivorousmammal (aka smallcarnivore or cat).</p> <p>I've been an avid artist since I could comprehend it. I mostly do digital and physical art, and I like the internet. Sometimes I do creative writing, practice my research skills, and make some really good food. I've been learning webdesign and how to code recently.</p> 
+            <p>I'm making this site to test my skills in writing, worldbuilding, research, character development and coding.</p>
+            <p>Late USSR history really fascinates me. Learning about its collapse, life during the soviet era, and how it worked and came to be is very interesting. I've always wanted to set a story in the later years of this period of time, so now I am.</p>
+            <p>I hope you'll enjoy browsing. Click the radio for music!</p>
+          </div>
+          </div>
+<div class="music-player-wrapper">
+    <div class="music-tooltip" id="music-tooltip">Click me to play music!</div>
+    
+    <img src="https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/secondwinterradio.png"
+         alt="Second Winter Radio – click to toggle music"
+         class="music-trigger"
+         id="music-trigger">
+    
+    <div class="particles">
+      <div class="particle">♪</div>
+      <div class="particle">♫</div>
+      <div class="particle">♪</div>
+      <div class="particle">♬</div>
+    </div>
+    
+    <audio id="bg-music" loop preload="none">
+      <source src="https://archive.org/download/duster2023/Constellations.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+</section>
+      
+    </div>
+  </main>
+  
+  <a href="https://smallcarnivore.neocities.org/" 
+   id="home-clock-overlay" 
+   class="home-clock-overlay">
+  <img src="https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/secondwinterclock.png" 
+       alt="Second Winter clock - click to go home" 
+       class="home-clock">
+</a>
+  
+  <div id="lightbox" aria-hidden="true">
+    <button class="lb-prev" aria-label="Previous image">←</button>
+    <div class="lb-frame">
+      <img id="lightbox-img" alt="">
+    </div>
+    <button class="lb-next" aria-label="Next image">→</button>
+  </div>
+  <footer>© smallcarnivorousmammal. Fictional work. All rights reserved.</footer>
+</div>
+
+<!-- Story Popup Modal – full controls added -->
+<div id="story-popup" class="story-popup" style="display:none;">
+  <div class="story-popup-content">
+    <div class="story-header panel">
+      <button id="story-popup-close" title="Close popup">×</button>
+    </div>
+    <div class="story-controls">
+      <button id="popup-first" title="First chapter">« First</button>
+      <button id="popup-prev" title="Previous chapter">← Back</button>
+      
+      <!-- Custom dropdown in popup -->
+      <div class="custom-dropdown">
+        <button id="popup-chapter-btn" class="dropdown-btn">
+          Select chapter <span class="arrow">▼</span>
+        </button>
+        <ul id="popup-chapter-menu" class="dropdown-menu">
+          <!-- Filled by JS -->
+        </ul>
+      </div>
+      
+      <button id="popup-next" title="Next chapter">Next →</button>
+    </div>
+    <div class="story-content scrollbox" id="popup-text">
+      <p style="text-align:center; color:#777; margin:4rem 0;">
+        Select a chapter to begin reading.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<script>
+function setHeader(title, bgUrl) {
+  const header = document.querySelector('header');
+  const h1 = document.getElementById('header-title');
+  if (h1) h1.textContent = title;
+  if (header && bgUrl) header.style.backgroundImage = `url('${bgUrl}')`;
+}
+
+function selectTab(id) {
+  // Hide all sections and reset tabs
+  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+
+  // Reset and set active tab button
+  document.querySelectorAll('[role="tab"]').forEach(t => t.setAttribute('aria-selected', 'false'));
+  // Use document.querySelector to find the clicked button safely
+  const clickedTab = document.querySelector(`button[onclick="selectTab('${id}')"]`);
+  if (clickedTab) clickedTab.setAttribute('aria-selected', 'true');
+
+  // Show/hide story controls ONLY on story tab
+  const storyControls = document.querySelector('.story-controls');
+  if (storyControls) {
+    storyControls.style.display = (id === 'story') ? 'flex' : 'none';
+  }
+
+  const clockOverlay = document.getElementById('home-clock-overlay');
+  if (clockOverlay) {
+    clockOverlay.style.display = (id === 'home') ? 'block' : 'none';
+  }
+
+  // Header background & title logic
+  const header = document.querySelector('header');
+  const title = document.getElementById('header-title');
+  if (id === 'lena') {
+    title.textContent = 'Lena';
+    header.style.backgroundImage = "url('https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/lenaheader.png')";
+  } else if (id === 'vera') {
+    title.textContent = 'Vera';
+    header.style.backgroundImage = "url('https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/veraheader.png')";
+  } else {
+    title.textContent = 'Second Winter';
+    header.style.backgroundImage = "url('https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/headersecondwinter.png')";
+  }
+
+  // Timeline scroll lock
+  const content = document.querySelector('.content');
+  if (id === 'timeline') {
+    content.classList.add('timeline-active');
+  } else {
+    content.classList.remove('timeline-active');
+  }
+
+  // Scroll to top
+  content.scrollTop = 0;
+}
+
+// Initialize correct state on page load (important!)
+document.addEventListener('DOMContentLoaded', () => {
+  selectTab('home');  // This hides controls on load and sets everything right
+});
+
+const images = Array.from(document.querySelectorAll('.art-card img'));
+let currentIndex = 0;
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+function openLightbox(index) {
+  currentIndex = index;
+  lightboxImg.src = images[currentIndex].src;
+  lightbox.classList.add('active');
+  lightbox.setAttribute('aria-hidden', 'false');
+}
+function closeLightbox() {
+  lightbox.classList.remove('active');
+  lightbox.setAttribute('aria-hidden', 'true');
+}
+function showNext() {
+  currentIndex = (currentIndex + 1) % images.length;
+  lightboxImg.src = images[currentIndex].src;
+}
+function showPrev() {
+  currentIndex = (currentIndex - 1 + images.length) % images.length;
+  lightboxImg.src = images[currentIndex].src;
+}
+images.forEach((img, i) => {
+  img.addEventListener('click', () => openLightbox(i));
+});
+document.querySelector('.lb-next').addEventListener('click', showNext);
+document.querySelector('.lb-prev').addEventListener('click', showPrev);
+document.addEventListener('keydown', (e) => {
+  if (!lightbox.classList.contains('active')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowRight') showNext();
+  if (e.key === 'ArrowLeft') showPrev();
+});
+lightbox.addEventListener('click', (e) => {
+  if (e.target === lightbox) {
+    closeLightbox();
+  }
+});
+document.getElementById('home-clock-overlay').style.display = 'block';
+
+// ────────────────────────────────────────────────
+// PUT STORY CHAPTERS HERE
+// ────────────────────────────────────────────────
+const chapters = [
+  { title: "Chapter 1", text: "<p>Chapter 1 text here...</p><p>Siberian malkin. Ragdoll siamese thai for lynx cougar, or bengal. Cornish rex bobcat munchkin, tom sphynx for american shorthair ragdoll. Norwegian forest abyssinian . Egyptian mau bobcat bobcat. Scottish fold burmese. Turkish angora kitten or sphynx so kitten turkish angora british shorthair munchkin. Bobcat sphynx or burmese so singapura. Singapura american shorthair and donskoy. Turkish angora. Balinese havana brown turkish angora turkish angora, kitty. Havana brown russian blue. Singapura russian blue turkish angora, turkish angora balinese cougar, yet lion. Birman scottish fold yet siberian cheetah but panther or ocicat kitty. Savannah puma persian so burmese for bombay mouser tom.</p><p>Siamese ocicat but birman, kitty, and scottish fold and panther. Abyssinian . Scottish fold. Leopard tom. Scottish fold himalayan. Malkin russian blue. American shorthair egyptian mau singapura.</p><p></p><p>Mouser kitten yet kitty burmese, so cougar tabby or bengal. Tiger. Thai lion so ragdoll. Lynx tiger. Persian panther yet donskoy puma but panther for panther for ocicat. Savannah havana brown tom but balinese . Cornish rex munchkin. Cheetah tom and leopard panther but singapura persian. Lynx norwegian forest or abyssinian or leopard and ocelot and scottish fold. Cheetah cougar and lion. Panther egyptian mau munchkin, cougar, yet siamese but siamese turkish angora. Siberian singapura leopard. Devonshire rex ocelot. Sphynx ragdoll siamese, for turkish angora yet tom for grimalkin cornish rex. Persian manx yet malkin tom yet russian blue. Turkish angora leopard or siamese yet devonshire rex abyssinian . Sphynx mouser but american bobtail or bombay for tiger or havana brown. Jaguar ocicat so devonshire rex, jaguar. Donskoy kitten devonshire rex tiger. Devonshire rex havana brown ocelot or abyssinian.</p><p>Siberian tabby. Panther. Tiger kitty thai tomcat. Bengal norwegian forest or cougar, tabby puma. Russian blue lynx, and cornish rex so leopard. Kitten sphynx tom british shorthair panther manx. Cougar american bobtail. Tiger kitten so persian for lion or devonshire rex and burmese. Turkish angora tabby grimalkin, tiger russian blue sphynx. Norwegian forest ragdoll puma burmese panther. Kitten cornish rex abyssinian but cheetah lynx or thai.</p><p>Thai donskoy so panther so thai but havana brown. Leopard birman for lion and cheetah and scottish fold yet jaguar. Russian blue ragdoll for turkish angora, devonshire rex norwegian forest but siberian singapura. Persian russian blue. Egyptian mau persian or bombay. Cougar ocicat for puma for ocelot but savannah lynx but bobcat. Devonshire rex persian bengal norwegian forest leopard yet mouser. Savannah scottish fold bengal grimalkin thai persian. Mouser. Bengal bobcat. Lion bobcat or american bobtail. American shorthair singapura. Savannah ocicat american shorthair or birman yet russian blue balinese . Ragdoll sphynx devonshire rex havana brown or bombay kitten. Singapura tabby for munchkin. Tom american bobtail for ocicat scottish fold cheetah or tiger. Norwegian forest malkin devonshire rex but savannah thai but bobcat.</p>" },
+  { title: "Chapter 2", text: "<p>Chapter 2 content...</p>" },
+  { title: "Chapter 3", text: "<p>Chapter 3...</p>" },
+];
+let currentChapterIndex = -1;
+
+// ────────────────────────────────────────────────
+// STORY / POPUP CODE STARTS HERE
+// ────────────────────────────────────────────────
+
+// Load chapter into a specific container
+function loadChapter(index, containerId) {
+  if (index < 0 || index >= chapters.length) return;
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = chapters[index].text;
+  currentChapterIndex = index;
+}
+
+// Unified go-to-chapter (syncs main + popup when open)
+function goToChapter(index) {
+  if (index < 0 || index >= chapters.length) return;
+  
+  loadChapter(index, 'story-text');
+  
+  // If popup is visible, update it too
+  const popup = document.getElementById('story-popup');
+  if (popup && popup.style.display === 'flex') {
+    loadChapter(index, 'popup-text');
+  }
+  
+  // Update button text in the active view(s)
+  const title = chapters[index].title;
+  document.getElementById('chapter-dropdown-btn').innerHTML = title + ' <span class="arrow">▼</span>';
+  document.getElementById('popup-chapter-btn').innerHTML = title + ' <span class="arrow">▼</span>';
+}
+
+// Navigation functions (used by both main and popup buttons)
+function firstChapter() { goToChapter(0); }
+function prevChapter()  { if (currentChapterIndex > 0) goToChapter(currentChapterIndex - 1); }
+function nextChapter()  { if (currentChapterIndex < chapters.length - 1) goToChapter(currentChapterIndex + 1); }
+
+// Populate main dropdown
+function populateChapterMenu() {
+  const menu = document.getElementById('chapter-menu');
+  if (!menu) return;
+  menu.innerHTML = '';
+  chapters.forEach((ch, i) => {
+    const li = document.createElement('li');
+    li.textContent = ch.title;
+    li.addEventListener('click', () => {
+      goToChapter(i);
+      menu.style.display = 'none';
+    });
+    menu.appendChild(li);
+  });
+}
+
+// Populate popup dropdown
+function populatePopupMenu() {
+  const menu = document.getElementById('popup-chapter-menu');
+  if (!menu) return;
+  menu.innerHTML = '';
+  chapters.forEach((ch, i) => {
+    const li = document.createElement('li');
+    li.textContent = ch.title;
+    li.addEventListener('click', () => {
+      goToChapter(i);
+      menu.style.display = 'none';
+    });
+    menu.appendChild(li);
+  });
+}
+
+populateChapterMenu();
+populatePopupMenu();
+
+// Dropdown toggle (main)
+document.getElementById('chapter-dropdown-btn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('chapter-menu');
+  if (menu) {
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+  }
+});
+
+// Dropdown toggle (popup)
+document.getElementById('popup-chapter-btn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('popup-chapter-menu');
+  if (menu) {
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+  }
+});
+
+// Close dropdowns on outside click
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.custom-dropdown')) {
+    const mainMenu = document.getElementById('chapter-menu');
+    const popupMenu = document.getElementById('popup-chapter-menu');
+    if (mainMenu) mainMenu.style.display = 'none';
+    if (popupMenu) popupMenu.style.display = 'none';
+  }
+});
+
+// Wire ALL navigation buttons (main + popup)
+document.getElementById('story-first').onclick = firstChapter;
+document.getElementById('story-prev').onclick  = prevChapter;
+document.getElementById('story-next').onclick  = nextChapter;
+
+document.getElementById('popup-first').onclick = firstChapter;
+document.getElementById('popup-prev').onclick  = prevChapter;
+document.getElementById('popup-next').onclick  = nextChapter;
+
+// Popup open: show + load current chapter if any
+document.getElementById('story-popup-toggle').onclick = () => {
+  const popup = document.getElementById('story-popup');
+  popup.style.display = 'flex';
+  
+  if (currentChapterIndex >= 0) {
+    loadChapter(currentChapterIndex, 'popup-text');
+    // Sync popup button text
+    const title = chapters[currentChapterIndex].title;
+    document.getElementById('popup-chapter-btn').innerHTML = title + ' <span class="arrow">▼</span>';
+  }
+};
+
+// Inside document.getElementById('story-popup-toggle').onclick = () => { ... }
+const popupControls = document.querySelector('#story-popup .story-controls');
+if (popupControls) popupControls.style.display = 'flex';
+
+// Popup close
+document.getElementById('story-popup-close').onclick = () => {
+  document.getElementById('story-popup').style.display = 'none';
+};
+
+// Escape key closes popup
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('story-popup').style.display === 'flex') {
+    document.getElementById('story-popup').style.display = 'none';
+  }
+});
+
+// Close popup on overlay click
+document.getElementById('story-popup').onclick = function(e) {
+  if (e.target === this) {
+    this.style.display = 'none';
+  }
+};
+
+// Music toggle for About page (consolidated version with particles)
+document.addEventListener('DOMContentLoaded', () => {
+  const trigger = document.getElementById('music-trigger');
+  const audio   = document.getElementById('bg-music');
+  const tooltip = document.getElementById('music-tooltip');
+  const wrapper = document.querySelector('.music-player-wrapper');
+
+  if (!trigger || !audio || !tooltip || !wrapper) return;
+
+  const songName = "Duster - Constellations";
+
+  trigger.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play().catch(e => console.log("Play prevented (browser policy):", e));
+      tooltip.textContent = `Playing: ${songName}`;
+      wrapper.classList.add('playing');
+    } else {
+      audio.pause();
+      tooltip.textContent = "Click me to play music!";
+      wrapper.classList.remove('playing');
+    }
+  });
+});
+let audioUnlocked = false;
+document.body.addEventListener('click', () => {
+  if (!audioUnlocked) {
+    document.getElementById('bg-music').load();
+    audioUnlocked = true;
+  }
+}, { once: true });
+</script>
+</body>
+</html>

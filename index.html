@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mariner's Wharf</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+  <style>
+  :root {
+    --accent: #43B3D2;
+    --bg: #000;
+    --text: #fff;
+    --border-light: rgba(255,255,255,0.35);
+    --border-dark: rgba(0,0,0,0.85);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    font-family: 'VT323', monospace;
+    color: var(--text); font-size: 19px; line-height: 1.25;
+  }
+
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+  /* --- Layout Structure (Homepage Match) --- */
+  .site {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    align-items: start;
+  }
+
+  /* Sidebar Tab */
+  .sidebar {
+    margin: 14px 0 14px 14px;
+    padding: 12px;
+    background: rgba(0,0,0,0.88);
+    border: 1px solid var(--border-light);
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    position: sticky;
+    top: 14px;
+  }
+
+  .sidebar h2 { margin: 0 0 8px; color: var(--accent); }
+
+  .nav a {
+    display: block; color: var(--text); text-decoration: none;
+    padding: 4px 8px; border-radius: 4px; transition: 0.2s;
+  }
+
+  .nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+  
+/* Highlight for current page */
+  .nav a.current { 
+    background: rgba(67, 179, 210, 0.35) !important; 
+    color: #43B3D2 !important; 
+    border-left: 4px solid #43B3D2 !important;
+    display: block !important;
+  }
+    
+ /* --- Art Dropdown Styles --- */
+  .dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+  .show-art .dropdown-content { display: block; }
+  .arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+  .show-art .arrow { transform: rotate(90deg); }
+
+  /* Content Box */
+  .content {
+    margin: 14px 14px 14px 0;
+    padding: 14px;
+    background: rgba(0,0,0,0.88);
+    border: 1px solid var(--border-light);
+    border-radius: 0 10px 10px 10px;
+    display: grid;
+    gap: 12px;
+  }
+
+header {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: url("indexheader.png") no-repeat center center;
+  background-size: cover;
+}
+
+header h1 {
+  margin: 0; 
+  font-size: 2.7rem;
+  color: #000;
+  /* This creates a clean white outline around ONLY the black text */
+text-shadow: 
+    -2px -2px 0 #fff,  
+     2px -2px 0 #fff,
+    -2px  2px 0 #fff,
+     2px  2px 0 #fff,
+     0px -2px 0 #fff,
+     0px  2px 0 #fff,
+    -2px  0px 0 #fff,
+     2px  0px 0 #fff;
+}
+
+    section {
+      background: #000; border-radius: 8px; padding: 10px 12px;
+      border: 1px solid var(--border-light);
+    }
+
+    section h2 { margin: 0 0 6px; color: var(--accent); }
+
+    .updates { height: 180px; overflow-y: auto; padding: 0; }
+    .updates-header { position: sticky; top: 0; background: #000; padding: 6px 10px; border-bottom: 1px solid var(--border-light); }
+    .updates-body { padding: 8px 10px; }
+
+  /* Custom Blue Scrollbars */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+    footer { text-align: center; padding: 10px; font-size: 0.9rem; border-top: 1px solid var(--border-light); margin-top: 10px; }
+
+    /* Mobile Logic */
+  @media(max-width:850px){ 
+    .site { grid-template-columns: 1fr; }
+    .sidebar { margin: 14px auto; width: 95%; border-right: 1px solid var(--border-light); border-radius: 10px; position: relative; top: 0; }
+    .content { margin: 14px; border-radius: 10px; }
+}
+    
+    .intro-row {
+  display: flex;
+  gap: 12px; /* Matches the gap in your .content box */
+}
+
+.intro-row section {
+  flex: 1; /* Makes both boxes the same width */
+}
+
+/* On mobile, stack them back on top of each other */
+@media (max-width: 600px) {
+  .intro-row {
+    flex-direction: column;
+  }
+}
+  </style>
+</head>
+<body>
+
+<div class="site">
+  <aside class="sidebar">
+  <h2>Navigation</h2>
+  <nav class="nav">
+    <a href="index.html" class="current">Home</a>
+    <a href="about.html">About</a>
+    
+    <div class="nav-group" id="art-group">
+      <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+        Art <span class="arrow">▶</span>
+      </a>
+      <div class="dropdown-content">
+        <a href="art.html">Overview</a>
+        <a href="digital.html">Digital</a>
+        <a href="mspaint.html">MS Paint</a>
+        <a href="2dart.html">2D Art</a>
+        <a href="3dart.html">3D Art</a>
+        <a href="studies.html">Skill Lab</a>
+      </div>
+    </div>
+
+    <a href="commissions.html">Commissions</a>
+    <a href="journal.html">Journal</a>
+    <a href="stories.html">Stories</a>
+    <a href="characters.html">Characters</a>
+    <a href="sharks.html">Sharks</a>
+    <a href="cats.html">Cats</a> 
+    <a href="resources.html">Resources</a>
+    <a href="sitemap.html">Sitemap</a>
+  </nav>
+</aside>
+
+  <main class="content">
+    <header>
+      <h1>MARINER'S WHARF</h1>
+    </header>
+    
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>Welcome to the wharf! Enjoy your time here.  ⭑  Art, writing, science, cats, sharks and more!!  ⭑  This page is always updating. Save it to come back later :) </span>
+    </div>
+  </div>
+
+<div class="intro-row">
+    <section>
+      <h2>Welcome to my website!</h2>
+      <p>
+        This page is an art and writing archive, blog, and general personal space. It's always being updated, so check back for more! Enjoy your viewing experience :)
+      </p>
+    </section>
+
+    <section>
+      <h2>The webmaster</h2>
+      <p>
+        I'm smallcarnivorousmammal (smallcarnivore), an artist interested in felinology,
+        deep sea ecology, and marine biology. You can learn more about me in the about section of this website! 
+      </p>
+      <p>⭑ Thanks for stopping by! ⭑</p>
+    </section>
+  </div>
+
+    <section class="updates">
+      <div class="updates-header">
+        <h2>Changelog</h2>
+      </div>
+      <div class="updates-body">
+      <p>2026-01-28 - Made a visual novel type page for Second Winter, a page for Spices, and now I'm trying to fix margins and related issues. Going to revamp the characters page to link to their respective pages.
+        <p>2026-01-23 - Wow!! So much happened. Fixed pretty much all the pages, made a new one a few days ago called Second Winter as a sort of test run for future character/story/worldbuilding pages. Fixed up the home page layout, added a marquee + a button. Fixed the resources page.
+        <p>2026-01-08 - Trying to fix a newly added dream section on the characters page, added more blinkies/stamps.
+        <p>2026-01-04 - Fixed even more, added a characters page, recipes, creatures I find interesting, my blinkie/stamp collection, updated everything, etc.
+        <p>2026-01-03 - Fixed lots more, added my cat to the cats page, added my persona to the about page, and more.
+        <p>2026-01-02 - Fixed sitemap, resources, sharks, etc. Having fun!
+        <p>2026-01-01 - Site launched.</p>
+      </div>
+    </section>
+    
+    <div style="
+      display: flex; 
+      justify-content: center; 
+      gap: 15px; 
+      margin: 5px 0; /* Reduced top/bottom margin */
+      flex-wrap: wrap;
+    ">
+      <img src="images/blinkies/thispagebestviewedwithcomputerandmonitor.gif" 
+           alt="Best viewed with monitor" 
+           style="height: 45px; image-rendering: pixelated;">
+      
+      <img src="images/blinkies/openeyes.png" 
+           alt="Open eyes" 
+           style="height: 45px; image-rendering: pixelated;">
+      
+      <img src="images/blinkies/wwwconnect.png" 
+           alt="WWW Connect" 
+           style="height: 45px; image-rendering: pixelated;">
+    </div>
+
+    <footer>
+All original artwork and writing on this site are ©2026 by smallcarnivorousmammal. Unauthorized use is prohibited.
+    </footer>
+  </main>
+</div>
+<script>
+  // Detects the current page file name
+  const currentPath = window.location.pathname.split("/").pop() || "index.html";
+  
+  document.querySelectorAll('.nav a').forEach(link => {
+      // 1. Highlight the current link
+      if (link.getAttribute('href') === currentPath) {
+          link.classList.add('current');
+          
+          // 2. If the current link is inside the Art folder, open the folder automatically
+          if (link.closest('.dropdown-content')) {
+              document.getElementById('art-group').classList.add('show-art');
+          }
+      }
+  });
+</script>
+</body>
+</html>

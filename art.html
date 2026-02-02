@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf ART</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent:#43B3D2;
+  --bg:#000;
+  --text:#fff;
+  --border-light:rgba(255,255,255,0.35);
+  --border-dark:rgba(0,0,0,0.85);
+}
+* { box-sizing:border-box; }
+html, body { 
+  margin:0; padding:0; 
+  font-family:'VT323',monospace; 
+  color:var(--text); font-size:19px; line-height:1.25; 
+}
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+/* --- DESKTOP LAYOUT --- */
+.site { 
+  max-width:1100px; 
+  margin:0 auto; 
+  display:grid; 
+  grid-template-columns: 220px 1fr; /* Sidebar width vs Content */
+  align-items: start;
+}
+
+.sidebar { 
+  margin: 14px 0 14px 14px;
+  padding:12px; 
+  background:rgba(0,0,0,0.88);
+  border:1px solid var(--border-light); 
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  position: sticky;
+  top: 14px;
+  z-index: 10;
+}
+
+.content { 
+  margin: 14px 14px 14px 0;
+  padding:14px; 
+  background:rgba(0,0,0,0.88); 
+  border:1px solid var(--border-light);
+  border-radius: 0 10px 10px 10px;
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+  overflow: hidden;
+}
+
+/* --- NAVIGATION & DROPDOWN --- */
+.sidebar h2 { margin:0 0 8px; color:var(--accent); }
+.nav a { 
+  display:block; color:var(--text); text-decoration:none; 
+  padding:4px 8px; border-radius:4px; transition: 0.2s;
+}
+.nav a:hover { background: rgba(67, 179, 210, 0.2); color: var(--accent); }
+
+.nav a.current {
+  background: rgba(67, 179, 210, 0.35) !important;
+  color: #43B3D2 !important;
+  border-left: 4px solid #43B3D2 !important;
+}
+
+.dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+.show-art .dropdown-content { display: block; }
+.arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+.show-art .arrow { transform: rotate(90deg); }
+
+/* --- ART ELEMENTS --- */
+header { 
+  padding:10px 12px; border-radius:8px; border:1px solid var(--border-light); 
+  background:linear-gradient(to bottom,rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%,#000 80%); 
+}
+header h1 { 
+  margin:0; font-size:2.7rem; 
+  background:linear-gradient(to bottom, #9be5f4, var(--accent)); 
+  background-clip:text; -webkit-background-clip:text; color:transparent; 
+}
+section { 
+  background: #000; 
+  border-radius: 8px; 
+  padding: 20px; 
+  border: 1px solid var(--border-light); 
+}
+section p {
+  text-align: left;
+  margin: 10px 0 20px 0;
+}
+section > div[style*="flex"] {  /* Targets the 2D/3D button wrapper */
+  justify-content: center;
+}
+h2 { color: var(--accent); margin-top: 0; text-align: left; }
+
+/* Scrolling Fix */
+.scroll-container { width: 100%; overflow: hidden; background: rgba(0,0,0,0.5); padding: 15px 0; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
+.scroll-track { 
+  display: flex; 
+  width: max-content; 
+  animation: scrollArt 25s linear infinite; 
+}
+.scroll-container:hover .scroll-track {
+  animation-play-state: paused;
+}
+.preview-img { width: 180px; height: 130px; margin: 0 10px; border: 1px solid var(--border-light); border-radius: 4px; object-fit: cover; }
+@keyframes scrollArt { 
+  0% { transform: translateX(0); } 
+  100% { transform: translateX(-50%); }
+}
+.scroll-track {
+  display: flex; 
+  width: max-content; 
+  animation: scrollArt 25s linear infinite; 
+}
+
+.art-btn { 
+  display: inline-block; 
+  padding: 10px 22px; 
+  background: var(--accent); 
+  color: #000 !important; 
+  text-decoration: none; 
+  border-radius: 8px; 
+  font-weight: bold; 
+}
+.art-btn-wrapper {
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* MS Paint Window */
+.drawbox-area { 
+  background: #c0c0c0; 
+  border: 2px solid #fff; 
+  border-right-color: #808080; 
+  border-bottom-color: #808080; 
+  padding: 15px; 
+  color: #000; 
+  margin: 20px auto; 
+  max-width: 400px; 
+  text-align: center;   /* This centers all text inside */
+}
+.paint-btn { 
+  background: #c0c0c0; 
+  display: inline-block; 
+  border: 2px solid #fff; 
+  border-right-color: #000; 
+  border-bottom-color: #000; 
+  padding: 6px 20px; 
+  text-decoration: none; 
+  color: #000 !important; 
+  margin-top: 10px;   /* Optional: adds a little breathing room above the button */
+}
+
+/* --- MOBILE FIXES (Crucial) --- */
+@media (max-width: 850px) {
+  .site { 
+    grid-template-columns: 100%; /* Forces content to take full width */
+  }
+  
+  .sidebar { 
+    margin: 10px auto; 
+    width: calc(100% - 20px); 
+    border-right: 1px solid var(--border-light); 
+    border-radius: 10px; 
+    position: relative;
+    top: 0;
+  }
+  
+  .content { 
+    margin: 10px auto; 
+    width: calc(100% - 20px);
+    border-radius: 10px;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+/* --- FLOATING BUTTONS --- */
+.floating-btns { 
+  position: fixed; 
+  bottom: 20px; 
+  right: 20px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+  z-index: 1000; 
+}
+.back-button, .top-button {
+  background: linear-gradient(135deg, var(--accent), #9be5f4);
+  color: #000; 
+  padding: 10px 16px; 
+  text-decoration: none; 
+  border-radius: 8px;
+  border: 1px solid var(--border-light); 
+  font-family: 'VT323', monospace; 
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="site">
+  <aside class="sidebar">
+    <h2>Navigation</h2>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      
+      <div class="nav-group" id="art-group">
+        <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+          Art <span class="arrow">▶</span>
+        </a>
+        <div class="dropdown-content">
+          <a href="art.html" class="current">Overview</a>
+          <a href="digital.html">Digital</a>
+          <a href="mspaint.html">MS Paint</a>
+          <a href="2dart.html">2D Art</a>
+          <a href="3dart.html">3D Art</a>
+          <a href="studies.html">Skill Lab</a>
+        </div>
+      </div>
+
+      <a href="commissions.html">Commissions</a>
+      <a href="journal.html">Journal</a>
+      <a href="stories.html">Stories</a>
+      <a href="characters.html">Characters</a>
+      <a href="sharks.html">Sharks</a>
+      <a href="cats.html">Cats</a>
+      <a href="resources.html">Resources</a>
+      <a href="sitemap.html">Sitemap</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <header><h1>ART GALLERY</h1></header>
+
+    <section>
+      <p>Welcome to my art archives! I store pretty much all of the art I've made over the years here. Hover over the galleries to pause the scroll.</p>
+    </section>
+
+    <section>
+      <h2>Digital Art</h2>
+      <p>All art made digitally.</p>
+      
+<div class="scroll-container">
+      <div class="scroll-track">
+        <img src="images/art/digital/02B02A2.png" class="preview-img">
+        <img src="images/art/digital/outfishing.png" class="preview-img">
+        <img src="images/art/digital/itsnearlywinter.jpg" class="preview-img">
+        <img src="images/art/digital/cutesweetsgirl.png" class="preview-img">
+        <img src="images/art/digital/bandagedplague.png" class="preview-img">
+        <img src="images/art/digital/brightgreenlightportrait.png" class="preview-img">
+        <img src="images/art/digital/nighttimepark.jpg" class="preview-img">
+        <img src="images/art/digital/funexperimentwires.png" class="preview-img">
+      </div>
+    </div>
+      
+      <div class="art-btn-wrapper">
+  <a href="digital.html" class="art-btn">View Digital Art</a>
+</div>
+
+      <div class="drawbox-area">
+        <h3>MS Paint Archive</h3>
+        <p>Doodles and drawings made in MS Paint and more.</p>
+        <a href="mspaint.html" class="paint-btn">Open Archive</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Traditional Art</h2>
+      <p>Physical 2D and 3D works.</p>
+      
+      <div class="scroll-container">
+      <div class="scroll-track">
+        <img src="images/art/traditional/2d/littlenaopencil.jpg" class="preview-img">
+        <img src="images/art/traditional/3d/fishpencilframe1.jpg" class="preview-img">
+        <img src="images/art/traditional/2d/handspencil.jpg" class="preview-img">
+        <img src="images/art/traditional/3d/lambcrochet.jpg" class="preview-img">
+        <img src="images/art/traditional/2d/deadmarkercomputer.jpg" class="preview-img">
+        <img src="images/art/traditional/3d/fishbagcrochet.jpg" class="preview-img">
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+      <a href="2dart.html" class="art-btn">2D Art</a>
+      <a href="3dart.html" class="art-btn">3D Art</a>
+    </div>
+  </section>
+
+   <section>
+      <h2>Skill Lab</h2>
+      <p>Technical studies and art exercises.</p>
+      
+      <div class="scroll-container">
+        <div class="scroll-track"> 
+          <img src="images/art/exercises/cardboardbuffetdetail.jpg" class="preview-img">
+          <img src="images/art/exercises/foxtonbeach1.jpg" class="preview-img">
+          <img src="images/art/exercises/illustration3.png" class="preview-img">
+          <img src="images/art/exercises/mourningchild.png" class="preview-img">
+          <img src="images/art/exercises/plantmatter.jpg" class="preview-img">
+          <img src="images/art/exercises/wolflinocut1.png" class="preview-img">
+        </div>
+      </div>
+
+      <div class="art-btn-wrapper">
+  <a href="studies.html" class="art-btn">See Improvement</a>
+</div>
+    </section>
+
+  </main>
+</div>
+
+<div class="floating-btns">
+  <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+  <a href="index.html" class="back-button">← HOME</a>
+</div>
+
+<script>
+  const currentPath = window.location.pathname.split("/").pop() || "index.html";
+  const artGroup = document.getElementById('art-group');
+  
+  document.querySelectorAll('.nav a').forEach(link => {
+      const href = link.getAttribute('href');
+      
+      // 1. Highlight the current link
+      if (href === currentPath) {
+          link.classList.add('current');
+          
+          // 2. If it's any art-related page, ensure the folder is open
+          // This checks if the link is inside the dropdown OR if the link itself is "art.html"
+          if (link.closest('.dropdown-content') || href === "art.html") {
+              artGroup.classList.add('show-art');
+          }
+      }
+  });
+  
+  // This forces the art folder to stay open on the overview page
+  document.getElementById('art-group').classList.add('show-art');
+</script>
+</body>
+</html>

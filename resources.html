@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf RESOURCES</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #43B3D2;
+    --bg: #000;
+    --text: #fff;
+    --border-light: rgba(255,255,255,0.35);
+    --border-dark: rgba(0,0,0,0.85);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    font-family: 'VT323', monospace;
+    color: var(--text); font-size: 19px; line-height: 1.25;
+  }
+
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+  /* --- Layout Structure (Homepage Match) --- */
+  .site {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    align-items: start;
+  }
+
+  /* Sidebar Tab */
+  .sidebar {
+    margin: 14px 0 14px 14px;
+    padding: 12px;
+    background: rgba(0,0,0,0.88);
+    border: 1px solid var(--border-light);
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    position: sticky;
+    top: 14px;
+  }
+
+  .sidebar h2 { margin: 0 0 8px; color: var(--accent); }
+
+  .nav a {
+    display: block; color: var(--text); text-decoration: none;
+    padding: 4px 8px; border-radius: 4px; transition: 0.2s;
+  }
+
+  .nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+  
+/* Highlight for current page */
+  .nav a.current { 
+    background: rgba(67, 179, 210, 0.35) !important; 
+    color: #43B3D2 !important; 
+    border-left: 4px solid #43B3D2 !important;
+    display: block !important;
+  }
+
+  /* --- Art Dropdown Styles --- */
+  .dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+  .show-art .dropdown-content { display: block; }
+  .arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+  .show-art .arrow { transform: rotate(90deg); }
+
+  /* Content Box */
+  .content {
+    margin: 14px 14px 14px 0;
+    padding: 14px;
+    background: rgba(0,0,0,0.88);
+    border: 1px solid var(--border-light);
+    border-radius: 0 10px 10px 10px;
+    display: grid;
+    gap: 12px;
+  }
+
+  header {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%, #000 80%);
+  }
+
+  header h1 {
+    margin: 0; font-size: 2.7rem;
+    background: linear-gradient(to bottom, #9be5f4, var(--accent));
+    -webkit-background-clip: text; color: transparent;
+  }
+
+/* --- Final Resource Layout --- */
+  .toc { 
+    background: rgba(17, 17, 17, 0.8); 
+    border: 1px solid var(--border-light);
+    padding: 15px; margin-bottom: 12px; border-radius: 12px; text-align: center;
+  }
+  
+  .category-btn {
+    display: inline-block; padding: 8px 15px; margin: 4px;
+    background: linear-gradient(135deg, #43B3D2, #9be7ff);
+    color: #000 !important; text-decoration: none; border-radius: 10px;
+    font-family: 'VT323', monospace; font-size: 1.1rem;
+    border: 1px solid rgba(0,0,0,0.3); transition: transform 0.12s;
+  }
+  .category-btn:hover { transform: scale(1.08); }
+
+  .resource-category { margin-bottom: 12px; scroll-margin-top: 25px; }
+  .resource-category h2 { color: var(--accent); margin: 0 0 8px 0; font-size: 1.8rem; text-align: center; }
+
+  .category-scrollbox {
+    max-height: 400px; overflow-y: auto; 
+    background: rgba(0,0,0,0.4); border: 1px solid var(--border-light);
+    border-radius: 8px; padding: 10px;
+    scrollbar-width: thin; scrollbar-color: var(--accent) #111;
+  }
+  .category-scrollbox::-webkit-scrollbar { width: 6px; }
+  .category-scrollbox::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+  .resource-item {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 15px; padding: 10px; margin-bottom: 8px; border-radius: 8px; 
+    background: #000; border: 1px solid rgba(255,255,255,0.1); 
+    text-decoration: none; color: var(--text); transition: 0.15s;
+  }
+  .resource-item:hover { border-color: var(--accent); background: rgba(67,179,210,0.05); }
+
+  .resource-details { order: 1; flex: 1; }
+  .resource-details h3 { margin: 0; color: var(--accent); font-size: 1.5rem; line-height: 1.1; }
+  .resource-details p { margin: 4px 0 0; font-size: 0.95rem; color: #ccc; line-height: 1.2; }
+
+  .resource-img {
+    width: 80px; height: 55px; background: #111; border: 1px solid var(--border-light);
+    border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; overflow: hidden; order: 2;
+  }
+  .resource-img img { max-width: 90%; max-height: 90%; object-fit: contain; image-rendering: pixelated; }
+
+  /* Optional class to remove image box per item */
+  .no-img .resource-img { display: none; }
+  
+  /* Webkit scrollbar for the boxes */
+  .category-scrollbox::-webkit-scrollbar { width: 6px; }
+  .category-scrollbox::-webkit-scrollbar-track { background: #111; }
+  .category-scrollbox::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+  .resource-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    background: #000;
+    border: 1px solid rgba(255,255,255,0.1);
+    text-decoration: none;
+    color: var(--text);
+    transition: 0.15s;
+  }
+  .resource-item:hover {
+    border-color: var(--accent);
+    background: rgba(67,179,210,0.05);
+  }
+
+  .resource-graphic {
+    width: 80px; height: 50px;
+    background: #111; border: 1px solid var(--border-light);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 4px; flex-shrink: 0; overflow: hidden;
+  }
+  .resource-graphic img { max-width: 90%; max-height: 90%; object-fit: contain; image-rendering: pixelated; }
+
+  .resource-details h3 { margin: 0; color: var(--accent); font-size: 1.4rem; line-height: 1; }
+  .resource-details p { margin: 4px 0 0; font-size: 0.95rem; color: #ccc; line-height: 1.2; }
+  
+  /* Custom Blue Scrollbars */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+.floating-btns { 
+    position: fixed; bottom: 20px; right: 20px; 
+    display: flex; flex-direction: column; gap: 10px; z-index: 1000; 
+  }
+
+  .back-button, .top-button { 
+    background: linear-gradient(135deg, var(--accent), #9be5f4);
+    color: #000; padding: 10px 16px; text-decoration: none; border-radius: 8px; 
+    border: 1px solid var(--border-light); font-family: 'VT323', monospace; text-align: center;
+    font-size: 19px; line-height: 1.25; min-width: 80px;
+  }
+  
+  .back-button:hover, .top-button:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 10px rgba(67, 179, 210, 0.5);
+  }
+
+  @media(max-width:850px){ 
+    .site { grid-template-columns: 1fr; }
+    .sidebar { margin: 14px auto; width: 95%; border-right: 1px solid var(--border-light); border-radius: 10px; position: relative; top: 0; }
+    .content { margin: 14px; border-radius: 10px; }
+    .resource-item { flex-direction: column-reverse; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="site">
+  <aside class="sidebar">
+    <h2>Navigation</h2>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      
+      <div class="nav-group" id="art-group">
+        <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+          Art <span class="arrow">▶</span>
+        </a>
+        <div class="dropdown-content">
+          <a href="art.html">Overview</a>
+          <a href="digital.html">Digital</a>
+          <a href="mspaint.html">MS Paint</a>
+          <a href="2dart.html">2D Art</a>
+          <a href="3dart.html">3D Art</a>
+          <a href="studies.html">Skill Lab</a>
+        </div>
+      </div>
+
+      <a href="commissions.html">Commissions</a>
+      <a href="journal.html">Journal</a>
+      <a href="stories.html">Stories</a>
+      <a href="characters.html">Characters</a>
+      <a href="sharks.html">Sharks</a>
+      <a href="cats.html">Cats</a>
+      <a href="resources.html" class="current">Resources</a>
+      <a href="sitemap.html">Sitemap</a>
+    </nav>
+  </aside>
+
+<main class="content">
+  <header><h1>RESOURCES</h1></header>
+
+  <section class="toc">
+    <h2>Categories</h2>
+    <div class="toc-links">
+      <a href="#tools" class="category-btn">Tools</a>
+      <a href="#graphics" class="category-btn">Graphics and Resources</a>
+      <a href="#code" class="category-btn">Code Resources</a>
+      <a href="#cats" class="category-btn">Cats</a>
+      <a href="#personal" class="category-btn">Cool Personal Sites</a>
+    </div>
+  </section>
+
+  <div class="resource-category" id="tools">
+    <h2>Tools</h2>
+    <div class="category-scrollbox">
+      <a href="https://www.webdesignmuseum.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Web Design Museum</h3><p>Thousands of screenshots and videos of websites, apps, software, and Flash games from the 1990s to the 2000s.</p></div>
+      </a>
+      <a href="https://app.dithermark.com/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Dithermark</h3><p>A free, open-source web application that lets you interactively apply various dithering algorithms and color quantization techniques to your own images directly in your browser.</p></div>
+      </a>
+      <a href="https://film-grab.com/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>FilmGrab</h3><p>A free, carefully curated reference library run by one person (Dawn)! Thousands of movies.</p></div>
+      </a>
+      <a href="https://ptable.com/?lang=en#Properties" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Ptable</h3><p>A wonderfully interactive periodic table. So many features!!</p></div>
+        <div class="resource-img"><img src="images/resources/ptable-logo.svg" alt="Ptable logo"></div>
+      </a>
+      <a href="https://onelook.com/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>OneLook</h3><p>A database of 16,965,772 entries in 805 dictionaries. Use it to find definitions, related words, quotes, names, lyrics, colors, etc.</p></div>
+      </a>
+      <a href="https://x6ud.github.io/#/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Animal Photo Art References Search</h3><p>Select a skull, move it, find a reference photo of a particular species.</p></div>
+      </a>
+      <a href="https://frutigeraeroarchive.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>The Frutiger Aero Archive</h3><p>Dedicated to archiving wallpapers, music, videos, and various media from the Frutiger Aero aesthetic but also other nostalgic things from the 2000s.</p></div>
+        <div class="resource-img"><img src="images/resources/frutigeraeroarchivebutton.png" alt="Frutiger Aero Archive button"></div>
+      </a>
+      <a href="https://wave.webaim.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>WAVE Web Accessibility Evaluation Tools</h3><p>WAVE® is a suite of evaluation tools that helps authors make their web content more accessible to individuals with disabilities.</p></div>
+        <div class="resource-img"><img src="images/resources/wavelogo.svg" alt="WAVE logo"></div>
+      </a>
+      <a href="https://www.remove.bg/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>removebg</h3><p>Removes image backgrounds for free.</p></div>
+      </a>
+      <a href="https://mywildflowers.com/identify.asp" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Wildflower Identification Tool</h3><p>Intended to help hobbyists identify wildflowers based on easily observable characteristics.</p></div>
+      </a>
+      <a href="https://tunaipsum.com/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Tuna Ipsum</h3><p>A fishier alternative to Lorem Ipsum.</p></div>
+        <div class="resource-img"><img src="images/resources/tunaipsum.png" alt="WAVE logo"></div>
+      </a>
+      <a href="http://www.catipsum.com/index.php" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Cat Ipsum</h3><p>A furrier alternative to Lorem Ipsum. I prefer the “just breeds” setting.</p></div>
+        <div class="resource-img"><img src="images/resources/catipsum.svg" alt="WAVE logo"></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="resource-category" id="graphics">
+    <h2>Graphics and Resources</h2>
+    <div class="category-scrollbox">
+      <a href="https://gifcities.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>GifCities</h3><p>The Geocities GIF catalog search, an Internet Archive project.</p></div>
+        <div class="resource-img"><img src="images/resources/spinning-ia-logo.gif" alt="Spinning IA logo"></div>
+      </a>
+      <a href="https://www.glitter-graphics.com/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Glitter-Graphics</h3><p>“Your #1 community for graphics, layouts, glitter text, animated backgrounds and more.”</p></div>
+        <div class="resource-img"><img src="images/resources/glittergraphics.jpg" alt="Glitter Graphics"></div>
+      </a>
+      <a href="https://gifcity.carrd.co/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>gifcity</h3><p>Codes, backgrounds, blinks, graphics, etc.</p></div>
+      </a>
+      <a href="https://pixelsafari.neocities.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Pixel Safari</h3><p>A graphics resource site!</p></div>
+        <div class="resource-img"><img src="images/resources/pixelsafari.gif" alt="Pixel Safari button"></div>
+      </a>
+      <a href="https://pixelsafari.neocities.org/webring/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Re:source Ring</h3><p>A webring for people who provide resources such as graphics, layouts, or tutorials.</p></div>
+      </a>
+      <a href="https://nukochannel.neocities.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>nuko Channel</h3><p>The biggest Nuko collection on the web with over 2000+ emotes, emojis, decomail, banners and stickers.</p></div>
+        <div class="resource-img"><img src="images/resources/nukochannelbutton.gif" alt="nuko Channel button"></div>
+      </a>
+      <a href="https://pixelbank.neocities.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>pixel bank</h3><p>Amazingly sorted web graphics collection.</p></div>
+      </a>
+      <a href="https://graphic.neocities.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Bonnibel's Graphic Collection</h3><p>Extensive and well-sorted graphics collection.</p></div>
+        <div class="resource-img"><img src="images/resources/bonsgraphiccollection.png" alt="Bon's Graphic Collection button"></div>
+      </a>
+      <a href="https://bettysgraphics.neocities.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Betty’s Graphics</h3><p>An absolutely enormous graphics collection! Over 16,000 images.</p></div>
+      </a>
+      <a href="https://y2k.neocities.org/collections" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Y2K collections</h3><p>Blinkies, buttons, stamps and teddies.</p></div>
+      </a>
+      <a href="https://tomomi.neocities.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>tomomi</h3><p>Pixels, dolls, dividers, blinkies and other resources.</p></div><div class="resource-img"><img src="https://tomomi.neocities.org/89.gif" alt="tomomi button"></div>
+      </a>
+      <a href="https://wilardo.crd.co/#" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Wilardo.crd.co</h3><p>Gifs/pngs, dividers, pixels, blinkies, stamps, etc.</p></div>
+        <div class="resource-img"><img src="images/resources/wilardocrdco.png" alt="Wilardo.crd.co"></div>
+      </a>
+      <a href="http://backgroundsarchive.com/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Backgrounds Archive</h3><p>Free tileable and desktop wallpapers and Myspace backgrounds (widescreen and regular resolutions).</p></div>
+        <div class="resource-img"><img src="images/resources/backgroundsarchivebutton.gif" alt="Backgrounds Archive button"></div>
+      </a>
+      <a href="https://engrampixel.tumblr.com/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Engram Pixel</h3><p>A blog of cute pixels, codes, backgrounds, graphics and more.</p></div>
+        <div class="resource-img"><img src="images/resources/engrampixel.gif" alt="Engram Pixel button"></div>
+      </a>
+      <a href="https://biscuit.crd.co/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>biscuit.crd.co</h3><p>Pixels, gifs, dividers, blinkies, backgrounds, graphics and more.</p></div>
+      </a>
+      <a href="https://autism.crd.co/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Autism.Crd.Co</h3><p>Graphics, dividers, stamps, blinkies, and more.</p></div>
+      </a>
+      <a href="https://rentry.co/rsrcs" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Jay’s Resources</h3><p>A collection of pixels, dividers, blinkies, stamps and more.</p></div>
+      </a>
+      <a href="https://jasminnie.weebly.com/resources.html" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Jasminnie</h3><p>A truly expansive list of resources (all kinds).</p></div>
+        <div class="resource-img"><img src="images/resources/jasminnie.png" alt="Jasminnie button"></div>
+      </a>
+      <a href="https://rentry.co/marshresourcelist" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>marsh’s resource database</h3><p>Collection of links to other resources.</p></div>
+      </a>
+      <a href="https://doqmeat.com/notebook/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>des' resources - graphics collection</h3><p>On the graphics tab you can find emoticons, pixels, dividers, stickers, gifs and frames.</p></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="resource-category" id="code">
+    <h2>Code Resources</h2>
+    <div class="category-scrollbox">
+      <a href="https://codes.crd.co/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>codes.crd.co</h3><p>Codes, tutorials, links, and great advice.</p></div>
+      </a>
+      <a href="https://ishimori.crd.co/#codes" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>ishimori!</h3><p>Mostly codes, but also fonts, backgrounds, and other links.</p></div>
+      </a>
+      <a href="https://jdan.github.io/98.css/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>98.css</h3><p>A CSS library for building interfaces that look like Windows 98.</p></div>
+      </a>
+      <a href="https://botoxparty.github.io/XP.css/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>XP.css</h3><p>XP.css is an extention of 98.css. A CSS library for building interfaces that look like old UIs</p></div>
+      </a>
+      <a href="https://khang-nd.github.io/7.css/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>7.css</h3><p>A CSS framework for building interface components that look like Windows 7.</p></div>
+      </a>
+      <a href="https://scripted.neocities.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>scripted resources</h3><p>Codes, links, and resources to beautify your website.</p></div>
+        <div class="resource-img"><img src="images/resources/scriptedbutton.png" alt="scripted button"></div>
+      </a>
+      <a href="https://ribozone.github.io/artsite/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Sharing your art online</h3><p>A guide/workshop on how to make a free & handmade portfolio site. Made by ribo.zone’s owner!</p></div>
+      </a>
+      <a href="https://ribo.zone/free/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>webcraft supplies (ribo.zone)</h3><p>Code snippets, layouts, guides, and some graphics too.</p></div>
+      </a>
+      <a href="https://doqmeat.com/notebook/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>des’ resources</h3><p>Mostly codes, tutorials, materials, resources, and some graphics.</p></div>
+      </a>
+      <a href="https://webguide.neocities.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>A Beginner's Guide to HTML and CSS</h3><p>Exactly what the title says.</p></div>
+      </a>
+      <a href="https://www.w3schools.com/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>W3Schools</h3><p>A free educational website for learning web development, created in 1998 by Refsnes Data. It's one of the world's largest web developer resources!</p></div>
+        <div class="resource-img"><img src="images/resources/w3schoolsbutton.gif" alt="W3Schools button"></div>
+      </a>
+      <a href="https://www.noaa.gov/ocean-and-coastal-tools-sanctuary-permits-charts-and-images" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>NOAA’s Ocean and Coastal Tools</h3><p>Ocean and coastal tools, sanctuary permits, charts and images, tides and currents, coastal zone management tools, etc…</p></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="resource-category" id="cats">
+    <h2>Cats</h2>
+    <div class="category-scrollbox">
+      <a href="http://messybeast.com/catarchive.htm" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Messybeast Cats</h3><p>A helpful site with everything about cats, with resources on genetics, cat care, welfare, rescue, history, and breeds.</p></div>
+        <div class="resource-img"><img src="images/resources/messybeast-banner.jpg" alt="Messybeast banner"></div>
+      </a>
+      <a href="https://user.xmission.com/~emailbox/catstuff.htm" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>CatStuff</h3><p>A wonderfully cat-filled website with a huge library of articles, graphics, postcards, ASCII art, games, and much, much more.</p></div>
+        <div class="resource-img"><img src="images/resources/catstuff.gif" alt="CatStuff button"></div>
+      </a>
+      <a href="https://cattherapy.neocities.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Cat Therapy</h3><p>A new cat every 4 seconds.</p></div>
+      </a>
+      <a href="https://meow.camera/#4258783365322591678" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>meow.camera</h3><p>Watch some kitties go about their daily life! Meow.camera is a livestreaming platform that showcases automatic feeders for stray cats in China.</p></div>
+        <div class="resource-img"><img src="images/resources/meowcameralogo.png" alt="meow.camera logo"></div>
+        
+      <a href="https://read-nekojiru.neocities.org/" target="_blank" class="resource-item">
+        <div class="resource-details"><h3>Read Nekojiru</h3><p>This website's goal is to eventually make all of Nekojiru accessible in English. It just so happens that there's a cat in nearly every story, usually the main character.</p></div>
+        <div class="resource-img"><img src="images/resources/readnekojirubutton.gif" alt="Read Nekojiru button"></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="resource-category" id="personal">
+    <h2>Cool Personal Sites</h2>
+    <div class="category-scrollbox">
+      <a href="https://ribo.zone/" target="_blank" class="resource-item"><div class="resource-details"><h3>ribo.zone</h3></div><div class="resource-img"><img src="images/resources/ribozonebutton.gif" alt="ribo.zone button"></div></a>
+    
+      <a href="https://waxwing.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>waxwing@neocities</h3></div></a>
+      
+      <a href="https://tectrix.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>Tectrix</h3></div><div class="resource-img"><img src="images/resources/tectrixbutton.gif" alt="Tectrix button"></div></a>
+      
+      <a href="https://reigen.moe/home" target="_blank" class="resource-item"><div class="resource-details"><h3>reigen.moe</h3></div><div class="resource-img"><img src="images/resources/reigendotmoe.gif" alt="Reigen.moe button"></div></a>
+      
+      <a href="https://burgeritchi.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>burgeritchi</h3></div><div class="resource-img"><img src="https://files.catbox
+      .moe/29hdqz.webp" width="88" height="31" alt="burgeritchi button"></div></a>
+      
+      <a href="https://marshdotcom.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>marshdotcom</h3></div><div class="resource-img"><img src="images/resources/marshdotcombutton.gif" alt="marshdotcom button"></div></a>
+      
+      <a href="https://cloverbell.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>Cloverbell</h3></div><div class="resource-img"><img src="images/resources/cloverbellbutton.gif" alt="Cloverbell button"></div></a>
+      
+      <a href="https://fuchi.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>fuchi</h3></div><div class="resource-img"><img src="https://fuchi.neocities.org/fuchi_button.jpg" target="_blank" alt= "fuchi button"></div></a>
+      
+      <a href="https://burger.nekoweb.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>burger.nekoweb.org</h3><p>Burgers.</p></div></a>
+      
+      <a href="https://doqmeat.com/" target="_blank" class="resource-item"><div class="resource-details"><h3>doqmeat.com</h3></div><div class="resource-img"><img src="images/resources/doqmeatbutton.png" alt="doqmeat button"></div></a>
+      
+      <a href="https://daikonet.neocities.org/home" target="_blank" class="resource-item"><div class="resource-details"><h3>DAIKONET</h3></div><div class="resource-img"><img src="images/resources/daikonetbutton.gif" alt="DAIKONET button"></div></a>
+      
+      <a href="https://sweet-pea.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>sweet-pea</h3></div></a>
+      
+      <a href="https://selachemist.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>Sal’s Garden</h3></div><div class="resource-img"><img src="images/resources/selachemistbutton.png" alt="Sal's Garden button"></div></a>
+      
+      <a href="https://slushienova.neocities.org/home" target="_blank" class="resource-item"><div class="resource-details"><h3>Slushienova</h3></div></a>
+      
+      <a href="https://humanfinny.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>human finny</h3></div><div class="resource-img"><img src="https://humanfinny.neocities.org/humanfinny_88x31_3.jpg" alt="human finny button"></div></a>
+      
+      <a href="https://plumbum.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>Tangerine Tree</h3></div><div class="resource-img"><img src="https://plumbum.neocities.org/Button.png" alt="Tangerine Tree button"></div></a>
+      
+      <a href="https://goldhillmall.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>Gold Hill Mall</h3></div><div class="resource-img"><img src="images/resources/goldhillmallbutton.gif" alt="Gold Hill Mall button"></div></a>
+      
+      <a href="https://petrapixel.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>petrapixel</h3></div><div class="resource-img"><img src="https://cdn.jsdelivr.net/gh/petracoding/petrapixel.neocities.org@latest/public/assets/img/linkback.gif" alt="petrapixel button"></div></a>
+      
+      <a href="https://lazybones.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>lazybones</h3></div><div class="resource-img"><img src="https://lazybones.neocities.org/IMAGES/lazybonesicon4.png" alt="lazybones button"></div></a>
+      <a href="https://sugarangel.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>sugarangel</h3></div><div class="resource-img"><img src="images/resources/sugarangel.png" alt="sugarangel button"></div></a>
+      <a href="https://turd.neocities.org/" target="_blank" class="resource-item"><div class="resource-details"><h3>turd</h3></div><div class="resource-img"><img src="images/resources/turdbutton.png" alt="turd button"></div></a>
+      
+      <a href="https://bugkisser.neocities.org/home" target="_blank" class="resource-item"><div class="resource-details"><h3>bugkisser!</h3></div><div class="resource-img"><img src="images/resources/bugkisserbutton.png" alt="bugkisser button"></div></a>
+    </div>
+  </div>
+</main>
+</div>
+<div class="floating-btns">
+    <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+    <a href="index.html" class="back-button">← HOME</a>
+</div>
+<script>
+// Handle Art Dropdown only
+  document.querySelectorAll('.nav a').forEach(link => {
+      if (link.classList.contains('current') && link.closest('.dropdown-content')) {
+          document.getElementById('art-group').classList.add('show-art');
+      }
+  });
+  document.addEventListener('DOMContentLoaded', () => {
+    const tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+    tocLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const href = link.getAttribute('href');
+        if (href === '#' || href === '') return;
+        const targetId = href.substring(1);
+        const target = document.getElementById(targetId);
+        if (target) {
+          const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 100;
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>

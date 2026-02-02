@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf JOURNAL</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #43B3D2;
+    --bg: #000;
+    --text: #fff;
+    --border-light: rgba(255,255,255,0.35);
+    --border-dark: rgba(0,0,0,0.85);
+  }
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Update your existing .entry style */
+.entry { 
+  background: #000; 
+  border-radius: 8px; 
+  padding: 12px; 
+  border: 1px solid var(--border-light);
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.12);
+  
+  /* This ensures the entry doesn't hit the very top of the screen */
+  scroll-margin-top: 25px; 
+}
+
+  /* Custom Blue Scrollbars */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    font-family: 'VT323', monospace;
+    color: var(--text); font-size: 19px; line-height: 1.25;
+  }
+
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+  /* --- WHARF STANDARD LAYOUT --- */
+  .site {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    align-items: start;
+  }
+
+  /* Sidebar - Unified Match */
+  .sidebar {
+    margin: 14px 0 14px 14px;
+    padding: 12px;
+    background: rgba(0,0,0,0.88);
+    border: 1px solid var(--border-light);
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    position: sticky;
+    top: 14px;
+  }
+
+  .sidebar h2 { margin: 0 0 8px; color: var(--accent); }
+
+  .nav a {
+    display: block; color: var(--text); text-decoration: none;
+    padding: 4px 8px; border-radius: 4px; transition: 0.2s;
+  }
+  .nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+  
+  /* Current Page Highlight */
+.nav a.current { 
+    background: rgba(67, 179, 210, 0.35) !important; 
+    color: #43B3D2 !important; 
+    border-left: 4px solid #43B3D2 !important;
+    display: block !important;
+  }
+
+  /* Art Dropdown */
+  .dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+  .show-art .dropdown-content { display: block; }
+  .arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+  .show-art .arrow { transform: rotate(90deg); }
+
+  /* Content Area */
+.content {
+  margin: 14px 14px 14px 0;
+  padding: 14px;
+  background: rgba(0,0,0,0.88);
+  border: 1px solid var(--border-light);
+  border-radius: 0 10px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+  header {
+    padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-light);
+    background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%, #000 80%);
+  }
+  header h1 { margin: 0; font-size: 2.7rem; background: linear-gradient(to bottom, #9be5f4, var(--accent)); -webkit-background-clip: text; color: transparent; }
+
+  /* --- JOURNAL SPECIFIC --- */
+  section { 
+    background: #000; border-radius: 8px; padding: 12px; border: 1px solid var(--border-light);
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,0.12);
+  }
+  
+  .toc { background: #111; }
+  .toc h2 { margin: 0 0 6px; color: var(--accent); }
+  .toc a { display: block; color: var(--text); text-decoration: none; padding: 2px 4px; border-radius: 4px; }
+  .toc a:hover { color: var(--accent); background: rgba(67,179,210,0.2); }
+  
+  .entry {
+  scroll-margin-top: 20px; /* Adjust this number to your liking */
+}
+  .entry h2 { margin: 0 0 10px; color: var(--accent); border-bottom: 1px dashed var(--border-light); padding-bottom: 5px; }
+
+  /* --- FLOATING BUTTONS (Wharf Standard) --- */
+  .floating-btns { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+  .back-button, .top-button { 
+    background: linear-gradient(135deg, var(--accent), #9be5f4);
+    color: #000; padding: 10px 16px; text-decoration: none; border-radius: 8px; 
+    border: 1px solid var(--border-light); font-family: 'VT323', monospace; text-align: center;
+    font-size: 19px; line-height: 1.25;
+  }
+
+  /* Mobile Logic */
+  @media (max-width: 850px) {
+    .site { grid-template-columns: 1fr; }
+    .sidebar { margin: 14px auto; width: 95%; border-right: 1px solid var(--border-light); border-radius: 10px; position: relative; top: 0; }
+    .content { margin: 14px; border-radius: 10px; }
+  }
+  html {
+  scroll-behavior: smooth;
+}
+/* The Animated Background Class */
+.animated-box {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+.animated-box::before {
+  content: ""; 
+  position: absolute;
+  top: -100px; left: -100px; right: -100px; bottom: -100px;
+  background: repeating-linear-gradient(
+    -45deg, 
+    rgba(67, 179, 210, 0.12), 
+    rgba(67, 179, 210, 0.12) 15px, 
+    transparent 15px, 
+    transparent 30px
+  );
+  animation: moveStripes 3s linear infinite;
+  pointer-events: none; 
+  z-index: 0;
+}
+
+@keyframes moveStripes {
+  from { transform: translate(0, 0); }
+  to { transform: translate(42.42px, 0); } 
+}
+
+/* Ensures text stays above the moving stripes */
+.animated-box > * { 
+  position: relative; 
+  z-index: 1; 
+}
+</style>
+</head>
+<body>
+
+<div class="site">
+  <aside class="sidebar">
+    <h2>Navigation</h2>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      
+      <div class="nav-group" id="art-group">
+        <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+          Art <span class="arrow">▶</span>
+        </a>
+        <div class="dropdown-content">
+          <a href="art.html">Overview</a>
+          <a href="digital.html">Digital</a>
+          <a href="mspaint.html">MS Paint</a>
+          <a href="2dart.html">2D Art</a>
+          <a href="3dart.html">3D Art</a>
+          <a href="studies.html">Skill Lab</a>
+        </div>
+      </div>
+
+      <a href="commissions.html">Commissions</a>
+      <a href="journal.html" class="current">Journal</a>
+      <a href="stories.html">Stories</a>
+      <a href="characters.html">Characters</a>
+      <a href="sharks.html">Sharks</a>
+      <a href="cats.html">Cats</a>
+      <a href="resources.html">Resources</a>
+      <a href="sitemap.html">Sitemap</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <header><h1>JOURNAL</h1></header>
+    
+    <section class="animated-box">
+      <p>Welcome to my personal journal. Here I write updates, thoughts, and reflections. Happy reading!</p>
+    </section>
+    
+    <section class="toc">
+      <h2>Table of Contents</h2>
+      <a href="#entry7">25 January 2026 - Cool dream</a>
+      <a href="#entry6">23 January 2026 - SIGH</a>
+      <a href="#entry5">3 January 2026 - On a roll!</a>
+      <a href="#entry4">2 January 2026 - Lots of stuff done</a>
+      <a href="#entry3">1 January 2026 - Happy new year!</a>
+      <a href="#entry2">10 December 2025 - Messing around</a>
+      <a href="#entry1">29 November 2025 - RPGMaker MZ finally works</a>
+    </section>
+    
+                <section class="entry" id="entry7">
+      <h2>25 January 2026 - Cool dream</h2>
+<p>Had a dream where the main character was some sort of undercover parks and rec/national parks journalist went to “work” for some incredibly rich man who lived at the edge of a large lake to find out more about the lake. The lake was absolutely massive and always had a thick fog over top, which was the main draw for tourists at the southeast end and wealthy residents like the rich man. The problem was that due to the terrain and property ownership nobody had figured out what the fog actually was. People assumed it was water but it probably wasn’t. It always had this weird stuffy smell that you couldn’t quite place as anything in particular. </p>
+
+<p>So the MC needs to figure out why so many rich people live around the lake, what the fog is, and more history. He shows up to his “job” and sets up camp maybe half a mile southwest of the rich man’s mansion (it was curved with massive glass windows, the closest structure to the lake, directly overlooking it, super modern looking). He’s supposed to be some kind of groundskeeper or land consultant as a cover. He reminds me of Indiana Jones a little bit. Brown hair and hat and all that. Well, he sets up and pulls out a few large maps surveying the area. One in particular was his focus and it was one drawing property lines around the lake. </p>
+
+<p>It turned out that there was some kind of factory with an undisclosed purpose on the north side of the lake that owned pretty much all of the Northern land around the lake, and the factory was riiiight at the edge. The map didn’t have a size set for the factory so the guy decided to check it out. Before that, though, he built up some rapport with the rich guy and pretended to do something. He also got some shots of the lake fog from the inside of the mansion. After that, he set off with a backpack of surveying stuff and hiked up to the start of the factory property line. </p>
+
+<p>At that point it’s already really suspicious that a factory is at the edge of a lake. Why? So he goes further into the property and eventually gets close enough that he can see this huge, dark building around the bend of the lake (he couldn’t before because of the fog) and goes closer. It’s a weird type of structure and only half looks like a factory. It’s apparently spewing SOMETHING into the lake. First big red flag. It’s right on the edge, even more than the map said. Second big red flag. It looks really dark and menacing for some reason (why if it’s supposed to be a factory? Why spend more on style)? Third big red flag… So it’s already really suspicious. He goes up to the gate and snaps a ton of photos. </p>
+
+<p>After that he tells the rich guy that there’s a factory ruining his view and spewing something into the lake (idk why don’t ask me) which gets him incredibly mad. He goes off to call a bunch of other rich people to form an acceptable opinion. The MC has a suspicion that the closer rich person mansions are being paid off somehow. </p>
+
+<p>Anyways there’s this whole big thing about getting into the factory and figuring out things that’s all a blur for me so I’ll give you “spoilers.” The fog is a substance from a hellish dimension that the factory draws from as a byproduct so otherworldly deals don’t arouse suspicion. Why? I have no idea. The fog comes from a sea of “kelp” that spew toxic gases when cut. They’re using it for something though and need a place to put the evil gas, so they stuck it on a scenic lake that they know nobody can get close enough to. Then they had people buy up the shoreline properties so nobody could get close enough if they tried. Somehow, the factory can get up. </p>
+
+<p>Once they were found out, it uprooted itself from the ground and walked off. The evil mist guys were surprisingly nice. The MC got a hard hat and everything. I think they were going to kill him anyways so they were just answering his questions beforehand. There was also a fog leak detecting golden retriever. How did they train a dog for that? I guess you could but I don’t know why. Maybe so you don’t drop dead at work…? Well, it was a cute dog. </p>
+    </section>
+    
+            <section class="entry" id="entry6">
+      <h2>23 January 2026 - SIGH</h2>
+      <p>Man, I did so much, but there are still bugs!! I always go back and fix things over and over again, I wish I had more time to implement things. Made the homepage look awesome, but the margins and sidebar (nav bar) are off and it's annoying me to no end. I've gone line by line and I can't figure it out! Other than the main site I've been building a test character/worldbuilding site called Second Winter, and that's going great. I made an awesome notebook and the aesthetics are looking great. I think I might migrate all my characters/worlds to their own pages. Mobile is a pain to account for but I've still gotta. I'm pretty pround of the accessibility of my pages so far, but I need to test them all. Well, it was a good time.</p>
+    </section>
+    
+        <section class="entry" id="entry5">
+      <h2>3 January 2026 - On a roll!</h2>
+      <p>Fixed a bunch of pages and added a prev/next button for easy image viewing. My cat is on the cats page now! I was playing around and managed to make it interactive. Very fun. Now I've just got to upload all the art...argh!! It's going to take a long time. In other news, I made another cute little plushie out of the rest of an old t-shirt to go with my stick-figure type guy. It's super cute! Great weather today. I went out for maybe five walks? Can't remember. Made an amazing sandwich in the morning for breakfast. Overall a pretty good day.</p>
+    </section>
+    
+    <section class="entry" id="entry4">
+      <h2>2 January 2026 - Lots of stuff done</h2>
+      <p>So much work done today!! Made all the pages, standardized the look, added fun effects and more. Still need to upload all my art, but at least I've got my MS Paint page done! There's even a drawbox you can use to make your own art. Had a mishap fixing the favicon where the entire MS Paint page disappeared completely and I spent nearly two hours trying to fix it. Luckily, it's back now. Sigh! At least it was fun to mimic the styles of MS Paint and Kid Pix. Looks great in the end. Image carousels are hard to make...well, I'm done for today.</p>
+    </section>
+
+    <section class="entry" id="entry3">
+      <h2>1 January 2026 - Happy new year!</h2>
+      <p>Today I launched my website! Feels pretty cool to code it myself. I don't miss google sites at all. Went for a walk in the park, and it was unseasonably warm. Pleasant, but I had to carry around my jacket for an hour. "New year, new website," as they (probably don't) say. I have a good feeling about this new project.</p>
+    </section>
+    
+    <section class="entry" id="entry2">
+      <h2>10 December 2025 - Messing around</h2>
+      <p>It's pretty fun to come up with random things to implement on this website. I've been messing around with some HTML code and I managed to make a half-hearted attempt at a "book" you can flip through. It's annoying to try and format it, though, but I might use the code somewhere. At least it scales!</p>
+     </section>
+
+    <section class="entry" id="entry1">
+      <h2>29 November 2025 - RPGMaker MZ finally works</h2>
+      <p>I managed to finally get RPG Maker MZ to work! I still haven't gotten a refund for MV, which I'm disappointed about, but y'know. I can't do much about it. The graphics error was some kind of a rewrite that was happening, and I've fixed it! It doesn't seem to like when you get rid of battle mechanics, so I was forced to give my test character a class. Parallax backgrounds for maps also finally work and I figured out how to make tiles walkable :) </p>
+    </section>
+  </main>
+</div>
+
+<script>
+  // Ultra-reliable smooth scrolling for TOC links
+  document.addEventListener('DOMContentLoaded', () => {
+    const tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+    
+    tocLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault(); // Stop the default jump
+        
+        const href = link.getAttribute('href');
+        if (href === '#' || href === '') return;
+        
+        const targetId = href.substring(1);
+        const target = document.getElementById(targetId);
+        
+        if (target) {
+          // Use window.scrollTo for maximum compatibility
+          const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 100;
+          
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  });
+</script>
+
+<div class="floating-btns">
+    <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+    <a href="index.html" class="back-button">← HOME</a>
+</div>
+
+</body>
+</html>

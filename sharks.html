@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf SHARKS</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+--accent:#43B3D2;
+--bg:#000;
+--text:#fff;
+--border-light:rgba(255,255,255,0.35);
+--border-dark: rgba(0,0,0,0.85);
+}
+/* Custom Blue Scrollbars */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+* { box-sizing:border-box; }
+html, body {
+margin:0; padding:0;
+font-family:'VT323',monospace;
+color:var(--text); font-size:19px; line-height:1.25;
+}
+body {
+background:url("deepcoral.jpg") no-repeat center center fixed;
+background-size:cover;
+padding:10px; /* Standard Wharf Body Padding */
+}
+/* --- WHARF STANDARD LAYOUT --- */
+.site {
+max-width:1100px;
+margin:0 auto;
+display:grid;
+grid-template-columns:220px 1fr;
+align-items:start;
+}
+/* Sidebar - Homepage Match */
+.sidebar {
+margin: 14px 0 14px 14px;
+padding: 12px;
+background: rgba(0,0,0,0.88);
+border: 1px solid var(--border-light);
+border-right: none;
+border-radius: 10px 0 0 10px;
+position: sticky;
+top: 14px;
+}
+.sidebar h2 { margin:0 0 8px; color:var(--accent); }
+.nav a {
+display:block; color:var(--text); text-decoration:none;
+padding:4px 8px; border-radius:4px; transition: 0.2s;
+}
+.nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+/* Current Page Highlight */
+.nav a.current {
+background: rgba(67, 179, 210, 0.35) !important;
+color: #43B3D2 !important;
+border-left: 4px solid #43B3D2 !important;
+display: block !important;
+}
+/* Art Dropdown logic */
+.dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+.show-art .dropdown-content { display: block; }
+.arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+.show-art .arrow { transform: rotate(90deg); }
+/* Content Area - Homepage Match */
+.content {
+margin: 14px 14px 14px 0;
+padding: 14px;
+background: rgba(0,0,0,0.88);
+border: 1px solid var(--border-light);
+border-radius: 0 10px 10px 10px;
+display: grid;
+gap: 14px;
+}
+header {
+position: relative; /* Add this */
+padding: 10px 12px;
+min-height: 80px; /* Gives the header enough room for a big shark */
+display: flex;
+align-items: center;
+border-radius: 8px;
+border: 1px solid var(--border-light);
+background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%, #000 80%);
+}
+.header-gif {
+position: absolute;
+right: 10px; /* Distance from the right edge */
+top: 50%; /* Center it vertically */
+transform: translateY(-50%);
+
+/* SET YOUR SIZE HERE */
+height: 160px; /* This is now much bigger than the text */
+width: auto;
+
+z-index: 10; /* Keeps it on top of the background */
+pointer-events: none; /* Allows you to click things 'under' the shark if needed */
+}
+header h1 {
+margin:0; font-size:2.7rem;
+background:linear-gradient(to bottom,#9be5f4,var(--accent));
+-webkit-background-clip:text; color:transparent;
+}
+/* --- PAGE SPECIFIC: SHARK CARDS --- */
+.shark {
+display:flex; gap:14px;
+border:1px solid var(--border-light);
+border-radius:8px; padding:12px;
+background:#000;
+box-shadow: inset 1px 1px 0 rgba(255,255,255,0.12), inset -1px -1px 0 var(--border-dark);
+}
+.shark-text { flex:2; }
+.shark-header {
+display: flex; align-items: center; justify-content: space-between;
+margin-bottom: 10px; padding: 0 8px;
+}
+.shark-header h2 { margin:0; color:var(--accent); }
+.expand-btn {
+background: linear-gradient(135deg, var(--accent), #9be5f4);
+color: #000; border: none; padding: 4px 12px; border-radius: 6px;
+font-family: 'VT323', monospace; cursor: pointer; font-size: 1.1rem;
+}
+.shark-scroll {
+max-height: 220px; overflow-y: auto;
+padding: 16px; margin: 10px 0;
+border: 1px solid var(--border-light); border-radius: 8px;
+background: #111; line-height: 1.4;
+}
+.shark-img {
+flex: 1; display: flex; justify-content: center; align-items: center;
+min-width: 250px;
+}
+.shark-img img {
+max-width: 100%; height: auto;
+border: 1px solid rgba(255,255,255,0.3); border-radius: 8px;
+}
+/* --- FLOATING BUTTONS (Standard Wharf Style) --- */
+.floating-btns {
+position: fixed;
+bottom: 20px;
+right: 20px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+z-index: 3000;
+}
+.back-button, .top-button {
+background: linear-gradient(135deg, var(--accent), #9be5f4);
+color: #000;
+padding: 10px 16px;
+text-decoration: none;
+border-radius: 8px;
+border: 1px solid var(--border-light);
+font-family: 'VT323', monospace;
+text-align: center;
+/* Ensure font size and line height match Cats page */
+font-size: 19px;
+line-height: 1.25;
+}
+.back-button:hover, .top-button:hover {
+filter: brightness(1.1);
+}
+/* --- MODAL --- */
+.shark-modal {
+display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+background:rgba(0,0,0,0.9); justify-content:center; align-items:center;
+padding:20px; z-index:2000;
+}
+.shark-modal-content {
+background:#000; border:1px solid var(--border-light);
+border-radius:10px; padding:30px; max-width:900px;
+max-height:88vh; overflow-y:auto; position:relative;
+}
+.shark-close { position:absolute; top:10px; right:15px; color:var(--accent); font-size:2rem; cursor:pointer; }
+.shark-modal .expand-btn { display: none !important; }
+/* Mobile Logic */
+@media(max-width:850px){
+.site { grid-template-columns:1fr; }
+.sidebar {
+margin: 14px auto; width: 95%;
+border-right: 1px solid var(--border-light);
+border-radius: 10px; position: relative; top: 0;
+}
+.content { margin: 14px; border-radius: 10px; }
+.shark { flex-direction:column; }
+.shark-img { min-width: 100%; }
+}
+.shark-of-day {
+background: #000;
+border: 2px dashed var(--accent);
+border-radius: 8px;
+padding: 15px;
+text-align: center;
+margin-bottom: 14px;
+}
+</style>
+</head>
+<body>
+<div class="site">
+<aside class="sidebar">
+<h2>Navigation</h2>
+<nav class="nav">
+<a href="index.html">Home</a>
+<a href="about.html">About</a>
+
+<div class="nav-group" id="art-group">
+<a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+Art <span class="arrow">▶</span>
+</a>
+<div class="dropdown-content">
+<a href="art.html">Overview</a>
+<a href="digital.html">Digital</a>
+<a href="mspaint.html">MS Paint</a>
+<a href="2dart.html">2D Art</a>
+<a href="3dart.html">3D Art</a>
+<a href="studies.html">Skill Lab</a>
+</div>
+</div>
+<a href="commissions.html">Commissions</a>
+<a href="journal.html">Journal</a>
+<a href="stories.html">Stories</a>
+<a href="characters.html">Characters</a>
+<a href="sharks.html" class="current">Sharks</a>
+<a href="cats.html">Cats</a>
+<a href="resources.html">Resources</a>
+<a href="sitemap.html">Sitemap</a>
+</nav>
+</aside>
+<main class="content">
+<header>
+<h1>SHARKS</h1>
+<img src="images/sharks/tinyshark.gif" alt="Tiny Shark" class="header-gif">
+</header>
+
+<div class="shark-of-day">
+<h3>Shark of the Day: <span id="sotd-name">Searching the depths...</span></h3>
+<p id="sotd-fact">Thinking of a shark...</p>
+</div>
+<!-- GREENLAND SHARK -->
+<div class="shark">
+<div class="shark-text">
+<div class="shark-header">
+<h2>Greenland Shark</h2>
+<button class="expand-btn" onclick="openShark(this)">EXPAND</button>
+</div>
+<div class="shark-scroll">
+<p>The Greenland shark (Somniosus microcephalus) is a massive, slow-moving shark inhabiting the cold waters of the North Atlantic and Arctic Oceans. It is the longest-living vertebrate known, with individuals estimated to live for centuries (some possibly over 400 years) due to its extremely slow metabolism and growth rate of about 1 cm per year. Reaching lengths up to 6.4 meters and weights of over 1,000 kg, it is one of the largest shark species and the biggest fish in the Arctic!</p>
+<p>This deep-sea dweller typically lives at depths down to 1,200 meters, though it can descend beyond 2,000 meters. It thrives in frigid temperatures between −0.6°C and 12°C, often migrating vertically with the seasons, venturing into shallower waters during winter and retreating to deeper zones in warmer months. Despite its slow swimming speed of around 1.2 km/h, it is an effective predator, most likely ambushing prey such as fish, seals, and seabirds, possibly targeting sleeping seals. It also scavenges on carrion, including whales, reindeer, and even polar bears.</p>
+<p>Greenland sharks are ovoviviparous, giving birth to live young, with litters of up to 10 pups measuring around 40 cm at birth. They are thought to reach sexual maturity at around 150 years old, though little is known about their reproductive behavior, and no definitive mating or nursery areas have been confirmed. A single gravid female has ever been documented in the wild.</p>
+<p>Many Greenland sharks host a 30 mm (1.2 in) long pinkish-white parasitic copepod (Ommatokoita elongata) on their eyes, which often causes blindness but appears to have little impact on their survival in the dark depths they inhabit. Impressive!</p>
+<p>Greenland sharks rely on high concentrations of trimethylamine N-oxide (TMAO) in their tissues to survive extreme deep-sea conditions. TMAO counteracts the protein-destabilizing effects of urea, which sharks retain for osmoregulation, protects against the damaging impact of high hydrostatic pressure at depth, and helps maintain proper cellular function in freezing temperatures. By stabilizing proteins and enzymes, it allows Greenland sharks to thrive in cold, high-pressure environments where other vertebrates could not survive.</p>
+<p>They face few natural predators, though rare cases of sperm whales feeding on them have been recorded. Historically hunted for their liver oil, they are now mostly caught as bycatch. Their flesh contains high levels of urea and TMAO, making it toxic unless fermented or dried—such as in the Icelandic dish hákarl.</p>
+<p>Expanding on the preparation for consumption, here are the usual steps (traditional):</p>
+<p>The shark meat is first cleaned and prepared, and then buried close to the sea to allow salty water to flood over it for several weeks (6-12 depending on the season), or in boreal forests to suck out the toxins. Afterward, the meat is dried for several months or even years, resulting in a significant loss of weight (around 30% during fermentation and 60% during drying, leaving only about 8% of the original meat). The modern method uses a large plastic container with drain holes to press out the fluids instead of burying it. The resulting fermented shark dish is often served in small pieces after removing the brown crust that develops during the drying process. The process breaks down the urea into ammonia and reduces the toxicity.</p>
+<p>The modern method skips burial and instead uses large plastic containers with drain holes to press the meat. The final product has a strong ammonia smell, often compared to cleaning products or rotten cheese, and an acquired taste described as fishy, briny, and cheesy. It is traditionally served with a shot of brennivín, an Icelandic spirit, during the midwinter festival Þorrablót.</p>
+<p>They're my favorite shark and so precious!!</p>
+</div>
+</div>
+<div class="shark-img">
+<img src="images/sharks/greenlandshark.jpg" alt="Greenland shark">
+</div>
+</div>
+<!-- ADD MORE SHARKS BY COPYING THE BLOCK ABOVE -->
+
+<!-- PACIFIC SLEEPER SHARK -->
+<div class="shark">
+<div class="shark-text">
+<div class="shark-header">
+<h2>Pacific Sleeper Shark</h2>
+<button class="expand-btn" onclick="openShark(this)">EXPAND</button>
+</div>
+<div class="shark-scroll">
+<p>The Pacific sleeper shark (Somniosus pacificus) is a large, deep-sea shark species belonging to the family Somniosidae. It inhabits the Pacific Ocean, ranging from the Arctic to tropical waters, including regions near Alaska, Japan, the Solomon Islands, and the Tonga Trench.</p>
+<p>Despite its name, it is not sluggish but an active, opportunistic predator and scavenger!</p>
+<p>This species typically reaches lengths of around 4.4 meters, though unconfirmed reports and deep-sea photographs suggest some individuals may grow up to 7 meters, potentially making it one of the largest predatory fish in the world. Newborns measure about 40 to 42 centimeters. Average weight is 318–889 kg (700–1,958 lbs).</p>
+<p>It has a heavy, cylindrical body with a flabby, dark brown or grayish appearance and small, rounded fins. The snout is short and rounded, and the skin feels rough due to tooth-like scales called dermal denticles. It lacks an anal fin and has two dorsal fins of similar size, with the first positioned closer to the pelvic fins than the pectoral fins. The tail is asymmetrical, featuring a well-developed lower lobe.</p>
+<p>Pacific sleeper sharks inhabit depths from the surface down to at least 2,000 meters, often near the seafloor but capable of moving throughout the water column.</p>
+<p>They are opportunistic feeders, with juveniles consuming fish, squid, and octopus, while larger sharks may prey on fast-swimming species like salmon and even marine mammals such as seals and dolphins. Evidence also shows they scavenge on carrion, including whale remains.</p>
+<p>Little is known about their reproduction and lifespan. They are ovoviviparous, meaning embryos develop inside eggs retained in the mother’s body, but the number of pups and gestation period remain uncertain. No mature individuals have been definitively identified in Alaskan waters, where most caught specimens are juveniles, raising concerns about the impact of commercial fisheries. Due to their soft vertebrae, traditional aging methods fail, making population and longevity studies difficult.</p>
+<p>Pacific sleeper sharks are often caught as bycatch in longline and trawl fisheries. While not currently protected, they are listed as Near Threatened by the IUCN due to overfishing pressures and knowledge gaps in their biology.</p>
+<p>They're so cute!!</p>
+</div>
+</div>
+<div class="shark-img">
+<img src="images/sharks/pacificsleepershark.jpg" alt="Pacific sleeper shark">
+</div>
+</div>
+
+<!-- GOBLIN SHARK -->
+<div class="shark">
+<div class="shark-text">
+<div class="shark-header">
+<h2>Goblin Shark</h2>
+<button class="expand-btn" onclick="openShark(this)">EXPAND</button>
+</div>
+<div class="shark-scroll">
+<p>The goblin shark (Mitsukurina owstoni) is a rare, deep-sea predator found in the Atlantic, Pacific, and Indian Oceans, typically at depths of 800 to 3,000 feet. It is the only living species in the family Mitsukurinidae, a lineage dating back 125 million years. Its most striking feature is its long, flattened snout, which houses a high concentration of electroreceptors called ampullae of Lorenzini, organs that detect the faint electrical fields produced by prey such as fish, squid, and crustaceans in the pitch-black deep sea.</p>
+<p>The goblin shark’s most remarkable adaptation is its protrusible jaw. When prey is detected, its entire jaw can shoot forward at a maximum velocity of 3.14 meters per second (about 10.3 feet per second), with the lower jaw moving nearly twice as fast as the upper jaw due to its upward and forward motion. The entire jaw extension occurs in roughly 0.3 seconds, reaching up to 9.4% of the shark’s body length, far exceeding the 1–2% seen in other sharks. This makes it the fastest recorded jaw protrusion of any fish. This slingshot-like mechanism, powered by elastic ligaments, allows it to capture agile prey despite its slow, sluggish swimming. Rows of long, needle-like teeth grip soft-bodied animals, while rear teeth are adapted for crushing.</p>
+<p>Its body is flabby and pinkish due to semi-translucent skin that reveals underlying blood vessels. It lacks a swim bladder but maintains neutral buoyancy through low-density liver oils, conserving energy in the food-scarce deep ocean. Though poorly understood, goblin sharks are thought to grow slowly and live up to 60 years. Most specimens are caught as bycatch, and no pregnant female has ever been studied.</p>
+<p>The goblin shark poses no threat to humans. The IUCN lists it as Least Concern due to its wide distribution and stable population, though deep-sea fishing pressures remain a concern.</p>
+<p>Positively fascinating!</p>
+</div>
+</div>
+<div class="shark-img">
+<img src="images/sharks/goblinshark.gif" alt="Goblin shark">
+</div>
+</div>
+
+<!-- COOKIECUTTER SHARK -->
+<div class="shark">
+<div class="shark-text">
+<div class="shark-header">
+<h2>Cookiecutter Shark</h2>
+<button class="expand-btn" onclick="openShark(this)">EXPAND</button>
+</div>
+<div class="shark-scroll">
+<p>The cookiecutter shark (Isistius brasiliensis), also known as the cigar shark, is a small but remarkable deep-sea predator found in warm oceanic waters worldwide. Despite reaching only 42–56 cm (16.5–22 in) in length, this shark has earned its name through a unique feeding behavior .</p>
+<p>The cookiecutter shark has an elongated, cigar-shaped body with a short, rounded snout and large, forward-facing green eyes. Its most striking features are its specialized teeth: small, narrow upper teeth that act as anchors, and large, knife-like lower teeth that interlock to form a single saw-like cutting edge.The shark is chocolate brown with a distinctive dark "collar" around its throat and gill region, while its underside is covered in light-producing photophores that emit a vivid green glow.</p>
+<p>The cookiecutter shark is famous for gouging round, cookie-shaped plugs of flesh from much larger prey. The photophores on its belly create counter-illumination that helps it blend with downwelling light, while the dark collar may mimic the silhouette of a small fish, acting as a lure. When a larger animal approaches, the shark attaches itself using suctorial lips and a specialized pharynx, then uses its bandsaw-like lower teeth to excise a circular chunk of flesh, often aided by twisting its body.</p>
+<p>Bite marks from cookiecutter sharks have been found on an astonishing variety of animals, including dolphins, whales, seals, great white sharks, basking sharks, tunas, and even submarines and undersea cables. Off the coast of Hawaii, nearly every adult spinner dolphin bears scars from this species!</p>
+<p>This shark performs one of the most extreme vertical migrations in the ocean, traveling up to 3 km (1.9 mi) daily—spending the day at depths of 1–3.7 km and rising toward the surface at night. It's often found near islands and has been known to travel in schools, which may enhance the effectiveness of its lure.</p>
+<p>While generally not considered dangerous due to its small size and offshore habitat, there have been documented attacks on humans, particularly long-distance swimmers in Hawaiian waters. Several swimmers crossing channels between Hawaiian islands have been bitten, suffering distinctive circular wounds. The shark has also caused practical problems. During the 1970s and 1980s, U.S. Navy submarines were damaged by cookiecutter shark bites to sonar domes and cables, initially mistaken for enemy weapons until the culprit was identified!</p>
+<p>The species is currently listed as Least Concern by the IUCN, as it's widely distributed, has no commercial value, and isn't significantly threatened by fisheries.</p>
+<p>So adorable!!</p>
+</div>
+</div>
+<div class="shark-img">
+<img src="images/sharks/cookiecuttershark.jpg" alt="Cookiecutter shark">
+</div>
+</div>
+
+<!-- FRILLED SHARK -->
+<div class="shark">
+<div class="shark-text">
+<div class="shark-header">
+<h2>Frilled Shark</h2>
+<button class="expand-btn" onclick="openShark(this)">EXPAND</button>
+</div>
+<div class="shark-scroll">
+<p>The frilled shark (Chlamydoselachus anguineus) is one of the most ancient and enigmatic shark species, often referred to as a "living fossil" due to its primitive features and unchanged appearance over millions of years. It inhabits deep waters in the Atlantic and Pacific Oceans, typically at depths of 100–1,200 meters (330–3,940 ft), though it's most commonly found between 300–1,000 meters.</p>
+<p>This eel-like shark can grow up to 2.2 meters in length, with a slender, dark brown or gray body that helps it blend into the dimly lit depths. Its most distinctive feature is the presence of six pairs of gills, each separated by a narrow flap of skin, which gives the species its name. The shark has large, round eyes adapted to low-light conditions and a wide, expandable mouth lined with numerous rows of small, needle-like teeth arranged in a spiral pattern. This allows it to engulf prey in a single, powerful strike. Its swimming style is slow and undulating, resembling that of an eel, which helps it move stealthily through the water.</p>
+<p>The frilled shark primarily feeds on squid, octopus, and other deep-sea fish, using ambush tactics to capture its prey. It reproduces through ovoviviparity, meaning the embryos develop inside eggs that remain within the mother’s body until they hatch, after which live young are born. Litters usually consist of 20 to 30 pups, with some reports suggesting up to 40. The gestation period is exceptionally long, estimated at around three years, making the species particularly vulnerable to population decline.</p>
+<p>It rarely interacts with people and has no interest in human activity. It is occasionally caught as bycatch in deep-sea fishing operations, which poses a potential risk to its survival. The International Union for Conservation of Nature (IUCN) lists the frilled shark as vulnerable due to its slow reproductive rate and limited population numbers.</p>
+<p>Their teeth are so satisfying to look at!</p>
+</div>
+</div>
+<div class="shark-img">
+<img src="images/sharks/frilledshark.jpg" alt="Frilled shark">
+</div>
+</div>
+
+<!-- VELVET BELLY LANTERNSHARK -->
+<div class="shark">
+<div class="shark-text">
+<div class="shark-header">
+<h2>Velvet Belly Lanternshark</h2>
+<button class="expand-btn" onclick="openShark(this)">EXPAND</button>
+</div>
+<div class="shark-scroll">
+<p>The velvet belly lanternshark (Etmopterus spinax) is a small, bioluminescent deep-sea shark found in the northeastern Atlantic Ocean and Mediterranean Sea. This fascinating species typically grows to about 45 cm (18 in) in length and inhabits depths ranging from 70 to 2,000 meters (230–6,560 ft), though it's most commonly found between 200–500 meters.</p>
+<p>This shark has a slender, dark brown to black body with a distinctive velvety-black underside that gives it its common name. Like the cookiecutter shark, it possesses photophores (light-producing organs) on its belly and flanks that emit a blue-green glow. The shark has two dorsal fins, each preceded by a grooved spine, with the second dorsal fin being notably larger than the first.</p>
+<p>The belly glow helps the shark blend with downwelling light when viewed from below, making it nearly invisible to predators. The light patterns might help individuals recognize each other, or lure small prey animals. Interestingly, the dark ventral patch that lacks photophores may create a silhouette that mimics a small fish, potentially attracting larger predators that the shark can then avoid or exploit.</p>
+<p>This lanternshark feeds primarily on small bony fish, crustaceans (especially krill and shrimp), and cephalopods. It's a relatively slow swimmer that hunts in deep waters, often forming schools or aggregations.</p>
+<p>The velvet belly is ovoviviparous, meaning females retain eggs inside their bodies until they hatch, giving birth to live young. Litters typically consist of 6–20 pups, each measuring about 12–14 cm at birth.</p>
+<p>Currently listed as Least Concern by the IUCN, though it's occasionally caught as bycatch in deep-sea trawl fisheries. It has no commercial value and isn't targeted by fisheries, which helps protect its populations.</p>
+<p>So cute with its big eyes!!</p>
+</div>
+</div>
+<div class="shark-img">
+<img src="images/sharks/velvetbellylanternshark.jpg" alt="Velvet belly lanternshark">
+</div>
+</div>
+
+<!-- CHAIN CATSHARK -->
+<div class="shark">
+<div class="shark-text">
+<div class="shark-header">
+<h2>Chain Catshark</h2>
+<button class="expand-btn" onclick="openShark(this)">EXPAND</button>
+</div>
+<div class="shark-scroll">
+<p>The chain catshark, also known as the chain dogfish, is a small shark species named for the distinctive chain-like patterns on its skin. It inhabits the western Atlantic Ocean, from Georges Bank in Massachusetts down to Nicaragua and Barbados, including the Gulf of Mexico and the Caribbean Sea. Typically found at depths between 36 and 750 meters, it prefers rocky, sandy, or muddy seafloor environments and is often seen resting near structures like boulders or shipwrecks during the day. Its activity increases at night when it hunts for food such as squid, small bony fish, crustaceans, and polychaete worms.</p>
+<p>This shark has a slender body with a blunt snout and narrow, oval-shaped eyes that give it a cat-like appearance. One of its most remarkable traits is biofluorescence. Its skin contains compounds that cause it to glow bright green under blue or ultraviolet light. Scientists believe this may help with communication, camouflage, or identifying mates in the dimly lit deep-sea environment. The chain catshark is harmless to humans and is not targeted by commercial fisheries, though it may occasionally be caught as bycatch.</p>
+<p>Reproduction in chain catsharks is oviparous, meaning they lay eggs. Females produce pairs of egg cases, commonly known as "mermaid’s purses," which have long, coiled tendrils that anchor them to vertical structures like coral or wreckage. These egg cases are transparent when first laid but harden and darken over time. Embryonic development lasts between 8 to 12 months, depending on water temperature. Notably, females can store sperm for extended periods (up to two years) allowing them to fertilize eggs long after mating. In captivity, they are known to lay eggs regularly, sometimes producing over 40 in a single breeding season.</p>
+<p>Due to their small size, calm behavior, and striking appearance, chain catsharks are popular in public aquariums, where they are often bred and studied. Research on their reproductive biology and embryonic development provides valuable insights into shark evolution and deep-sea adaptation. Despite living in deep waters and being rarely seen by humans, they are classified as Least Concern by the IUCN, indicating a stable population across their range.</p>
+<p>The chain pattern is so mesmerising!</p>
+</div>
+</div>
+<div class="shark-img">
+<img src="images/sharks/chaincatshark.jpg" alt="Chain catshark">
+</div>
+</div>
+
+<!-- PYJAMA SHARK -->
+<div class="shark">
+<div class="shark-text">
+<div class="shark-header">
+<h2>Pyjama Shark</h2>
+<button class="expand-btn" onclick="openShark(this)">EXPAND</button>
+</div>
+<div class="shark-scroll">
+<p>The pyjama shark is a small, bottom-dwelling species found exclusively in temperate coastal waters of South Africa, from the Atlantic to the Indian Ocean side. It inhabits kelp forests, rocky reefs, and caves, typically at depths up to 100 meters, though it can be found as deep as 282 meters. Named for its bold black longitudinal stripes on a pale body, it grows to about 1 meter and is often seen resting in crevices or among vegetation during the day, as it is primarily nocturnal.</p>
+<p>This opportunistic predator feeds on a wide range of prey, including crustaceans, small fish like anchovies and hakes, cephalopods such as octopus and squid (including the chokka squid during spawning events) and even the egg cases of other sharks. It uses a unique spinning "death roll" behavior to subdue and dismember prey, and when threatened, it curls into a circle with its tail covering its head for protection.</p>
+<p>Pyjama sharks are oviparous, laying pairs of dark brown, rectangular egg cases (commonly known as "mermaid’s purses") year-round. These eggs are anchored to kelp or rocks by long, coiled tendrils and take around five to six months to hatch, depending on water temperature. Pups emerge at about 15 cm long and grow slowly, reaching maturity at approximately 0.8 meters.</p>
+<p>Though not targeted commercially, they are frequently caught as bycatch in gillnets, longlines, and trawls, and are often killed by fishers who view them as pests. Despite this, their population is currently stable and classified as Least Concern by the IUCN, with evidence suggesting an increasing trend. They are protected from commercial exploitation in South African waters and are popular in public aquariums due to their hardiness and striking appearance.</p>
+<p>I love watching them swim!</p>
+</div>
+</div>
+<div class="shark-img">
+<img src="images/sharks/pyjamashark.jpg" alt="Pyjama shark">
+</div>
+</div>
+
+<!-- KITEFIN SHARK -->
+<div class="shark">
+<div class="shark-text">
+<div class="shark-header">
+<h2>Kitefin Shark</h2>
+<button class="expand-btn" onclick="openShark(this)">EXPAND</button>
+</div>
+<div class="shark-scroll">
+<p>The kitefin shark (Dalatias licha) is a deep-sea predator found globally in temperate and tropical waters, inhabiting depths from 200 to 1,800 meters, primarily on continental slopes and seamounts. It has a slender, cigar-shaped body, large eyes, thick fringed lips, and a short, blunt snout. Its coloration is uniformly brown to blackish, with translucent fins and a black-tipped caudal fin.</p>
+<p>This species is ovoviviparous, giving birth to 10–16 pups per litter after a gestation period estimated at around two years. Newborns measure 30–45 cm (12–18 inches), and the shark reaches maturity at approximately 2.5–5.2 feet (77–159 cm). Males mature slightly smaller than females.</p>
+<p>First confirmed to be bioluminescent in 2020, the kitefin shark emits a blue-green light (455–486 nm) from specialized skin cells called photocytes, primarily on its ventral surface and dorsal fins. This glow is hormonally controlled by melatonin, unlike most bioluminescent organisms that use neural triggers. Scientists believe the light helps with camouflage by counter-illuminating its silhouette against faint surface light, avoiding detection by predators or prey.</p>
+<p>As a slow-moving, solitary hunter, it uses its large, oil-filled liver for buoyancy, allowing it to hover efficiently above the seafloor. It feeds on a wide range of prey, including deepwater bony fish, smaller sharks, cephalopods, crustaceans, polychaete worms, and even scavenges on larger animals, sometimes taking bites from whales or other sharks.</p>
+<p>Once heavily fished (especially off the Azores from the 1970s to 1990s) for its liver oil (rich in squalene), meat, and skin, the kitefin shark has a low reproductive rate, making it vulnerable to overfishing. Due to population declines, it is classified as Vulnerable (VU) by the IUCN. Most current captures are incidental bycatch, and post-release survival is low due to depth-related stress.</p>
+<p>Bioluminescence is so cool!</p>
+</div>
+</div>
+<div class="shark-img">
+<img src="images/sharks/kitefinshark.jpg" alt="Kitefin shark">
+</div>
+</div>
+</main>
+</div>
+<div id="sharkModal" class="shark-modal">
+<div class="shark-modal-content">
+<span class="shark-close">&times;</span>
+<div id="sharkModalBody"></div>
+</div>
+</div>
+<div class="floating-btns">
+<a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+<a href="index.html" class="back-button">← HOME</a>
+</div>
+<script>
+// --- MODAL LOGIC ---
+const sharkModal = document.getElementById("sharkModal");
+const sharkModalBody = document.getElementById("sharkModalBody");
+const sharkClose = document.querySelector(".shark-close");
+function openShark(button) {
+// Finds the closest shark-text div, clones it, and puts it in the modal
+const sharkText = button.closest(".shark-text").cloneNode(true);
+sharkModalBody.innerHTML = "";
+sharkModalBody.appendChild(sharkText);
+sharkModal.style.display = "flex";
+}
+if(sharkClose) {
+sharkClose.onclick = () => { sharkModal.style.display = "none"; };
+}
+window.onclick = (e) => {
+if (e.target === sharkModal) sharkModal.style.display = "none";
+};
+// --- SHARK OF THE DAY LOGIC ---
+const sharkSpecies = [
+{ name: "Greenland Shark", fact: "They can live for over 400 years and don't reach middle age until they are 150!" },
+{ name: "Goblin Shark", fact: "Its jaw can snap forward at roughly 10 feet per second to catch prey." },
+{ name: "Cookiecutter Shark", fact: "They are bioluminescent and use a 'glow-in-the-dark' belly to lure in curious predators." },
+{ name: "Frilled Shark", fact: "Often called 'living fossils,' they have 300 trident-shaped teeth arranged in 25 rows." },
+{ name: "Pacific Sleeper Shark", fact: "They are one of the few sharks found in the freezing waters of the High Arctic year-round." },
+{ name: "Velvet Belly Lanternshark", fact: "They have glowing spines on their backs that act like 'lightsabers' to warn off predators." },
+{ name: "Bluntnose Sixgill Shark", fact: "Unlike most sharks with five gill slits, this deep-sea predator has six, a trait shared with ancient prehistoric sharks." },
+{ name: "Ninja Lanternshark", fact: "Discovered in 2010, this stealthy black shark uses bioluminescence for perfect camouflage in the deep ocean." },
+{ name: "Dwarf Lanternshark", fact: "The world's smallest shark, growing only to about 8 inches, it glows with photophores to blend into the twilight zone." },
+{ name: "Prickly Shark", fact: "Covered in thorn-like denticles, this slow-moving deep-sea shark can reach up to 13 feet in length." },
+{ name: "Portuguese Dogfish", fact: "One of the deepest-living sharks, it inhabits depths over 12,000 feet and is often caught as bycatch." },
+{ name: "Kitefin Shark", fact: "It can take huge cookie-cutter-like chunks out of whales and larger prey despite its modest size." },
+{ name: "Megamouth Shark", fact: "This rare filter-feeder, discovered in 1976, has a massive mouth and swims with it wide open to scoop plankton." },
+{ name: "Blackbelly Lanternshark", fact: "It uses a glowing streak of photophores on its belly for counter-illumination camouflage in the dark depths." },
+{ name: "Viper Dogfish", fact: "This rare deep-sea shark has needle-like teeth and photophores that allow it to glow in the abyss." },
+{ name: "Shortnose Demon Catshark", fact: "A mysterious ground shark found only in the deep waters of the East China Sea." },
+{ name: "Gulper Shark", fact: "With its long snout and large mouth, it swallows prey whole in the murky depths where it's listed as endangered." },
+{ name: "Roughskin Dogfish", fact: "Known for its incredibly rough, spiny skin, this deep-water dogfish thrives in extreme pressures." },
+{ name: "Etmopterus Lanternshark", fact: "Many species in this genus produce light for hunting and defense, earning them the nickname 'lanternsharks'." },
+{ name: "Smalleye Pygmy Shark", fact: "One of the smallest sharks, it has tiny eyes adapted to the perpetual darkness of the deep sea." },
+{ name: "Lined Lanternshark", fact: "It features distinctive glowing markings along its body that help in species recognition in the deep." },
+{ name: "Broadnose Catshark", fact: "This deep-dwelling catshark has a flattened head perfect for navigating the ocean floor." },
+{ name: "Taillight Shark", fact: "It has light-producing organs near its tail to confuse predators in the pitch-black depths." },
+{ name: "Cylindrical Lanternshark", fact: "A small bioluminescent shark that uses its glow to attract prey in the midwater zone." },
+{ name: "Combtooth Dogfish", fact: "With comb-like teeth, it crushes hard-shelled prey like crabs in the deep seafloor." },
+{ name: "Rasptooth Dogfish", fact: "Its rasp-like teeth are perfect for scraping flesh from larger carcasses on the deep ocean floor." },
+{ name: "Plunket Shark", fact: "A rare deep-sea dogfish with a stout body, often found scavenging in cold abyssal waters." },
+{ name: "Bareskin Dogfish", fact: "This smooth-skinned deep-water shark lacks the typical denticles found on most sharks." },
+{ name: "Sherwood Dogfish", fact: "A lesser-known deep-sea species named after a researcher, it lurks in the shadows of continental slopes." },
+{ name: "Granular Dogfish", fact: "Covered in granular skin, this small deep-sea shark is adapted to life under immense pressure." }
+];
+function getDailyShark() {
+const day = new Date().getDate();
+const todayShark = sharkSpecies[day % sharkSpecies.length];
+const nameEl = document.getElementById("sotd-name");
+const factEl = document.getElementById("sotd-fact");
+
+if(nameEl) nameEl.innerText = todayShark.name;
+if(factEl) factEl.innerText = todayShark.fact;
+}
+// Run the function
+getDailyShark();
+</script>
+</body>
+</html>

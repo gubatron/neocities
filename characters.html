@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mariner's Wharf CHARACTERS</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Merchant Copy';
+      src: url('fonts/Merchant Copy.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Merchant Copy Wide';
+      src: url('fonts/Merchant Copy Wide.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Merchant Copy Doublesize';
+      src: url('fonts/Merchant Copy Doublesize.ttf') format('truetype');
+    }
+    :root {
+      --accent:#43B3D2;
+      --bg:#000;
+      --text:#fff;
+      --border-light:rgba(255,255,255,0.35);
+      --border-dark:rgba(0,0,0,0.85);
+    }
+    html { scroll-behavior: smooth; }
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+    html, body { 
+      margin:0; padding:0; 
+      font-family:'VT323',monospace; 
+      color:var(--text); font-size:19px; line-height:1.25; 
+    }
+    body { 
+      background:url("ocean.JPG") no-repeat center center fixed; 
+      background-size:cover; padding:10px; 
+    }
+
+    .site { 
+      max-width:1100px; margin:0 auto; 
+      display:grid; grid-template-columns:220px 1fr; 
+      align-items: start;
+    }
+
+    /* Sidebar */
+    .sidebar { 
+      margin: 14px 0 14px 14px;
+      padding:12px; 
+      background:rgba(0,0,0,0.88);
+      border:1px solid var(--border-light); 
+      border-right: none;
+      border-radius: 10px 0 0 10px;
+      position: sticky;
+      top: 14px;
+    }
+    .sidebar h2 { margin:0 0 8px; color:var(--accent); }
+    .nav a { 
+      display:block; color:var(--text); text-decoration:none; 
+      padding:4px 8px; border-radius:4px; transition: 0.2s;
+    }
+    .nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+    .nav a.current { 
+      background: rgba(67,179,210,0.25); 
+      color: var(--accent); 
+      border-left: 3px solid var(--accent); 
+    }
+
+    /* Dropdown */
+    .dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+    .show-art .dropdown-content { display: block; }
+    .arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+    .show-art .arrow { transform: rotate(90deg); }
+
+    /* Content */
+    .content { 
+      margin: 14px 14px 14px 0;
+      padding:14px; 
+      background:rgba(0,0,0,0.88); 
+      border:1px solid var(--border-light);
+      border-radius: 0 10px 10px 10px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    header {
+      position: relative;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-light);
+      background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%, #000 80%);
+      min-height: 85px;
+      display: flex;
+      align-items: center;
+      overflow: visible;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.7rem;
+      background: linear-gradient(to bottom, #9be5f4, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      z-index: 1;
+    }
+    /* Page description - journal style with exact animated box stripes */
+    .page-desc {
+      position: relative;
+      overflow: hidden;
+      background: #000;
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid var(--border-light);
+      box-shadow: inset 1px 1px 0 rgba(255,255,255,0.12);
+    }
+    .page-desc::before {
+      content: "";
+      position: absolute;
+      top: -100px; left: -100px; right: -100px; bottom: -100px;
+      background: repeating-linear-gradient(
+        -45deg,
+        rgba(67, 179, 210, 0.12),
+        rgba(67, 179, 210, 0.12) 15px,
+        transparent 15px,
+        transparent 30px
+      );
+      animation: moveStripes 3s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes moveStripes {
+      from { transform: translate(0, 0); }
+      to { transform: translate(42.42px, 0); }
+    }
+    .page-desc > * {
+      position: relative;
+      z-index: 1;
+    }
+    /* TOC - exact journal style */
+    .toc {
+      background: #111;
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid var(--border-light);
+    }
+    .toc h3 { margin: 0 0 10px; color: var(--accent); }
+    .toc a {
+      display: block;
+      color: var(--text);
+      text-decoration: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin: 2px 0;
+    }
+    .toc a:hover { color: var(--accent); background: rgba(67,179,210,0.2); }
+    /* Spices Section - paper theme restored */
+    .project-section.spices {
+      background: #EBE1C1;
+      color: #000;
+      border: 5px solid #E19B60; /* Thicker border */
+      border-radius: 8px;
+     padding: 15px; 
+    }
+    .spices-desc {
+      background: rgba(255,255,255,0.9);
+      color: #000;
+      border-radius: 8px;
+      padding: 12px;
+      border: 5px solid #E19B60;
+      margin-bottom: 20px;
+      box-shadow: inset 1px 1px 0 rgba(255,255,255,0.5);
+    }
+      
+.project-title {
+    background: url('images/characters/spicesheader.webp') no-repeat center center;
+    background-position: center center; /* Centers the image */
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 40px 20px;
+    margin: -15px -15px 20px -15px; /* Pulls image to edges of the container */
+    text-align: left;
+    font-size: 2.2rem;
+    color: #fff;
+    text-shadow: none;
+    
+    /* These properties fix the corners and the border alignment */
+    border-radius: 3px 3px 0 0; /* Slight rounding to fit inside the parent border */
+    position: relative;
+    z-index: 1; /* Ensures it stays inside the parent's layout */
+}
+
+/* Ensure the parent section handles the rounding and border overlap */
+.project-section.spices {
+    overflow: hidden; /* Clips the header image to the parent's rounded corners */
+}
+    .character-profile {
+      padding: 15px;
+      border: 5px solid #E19B60;
+      background: rgba(255,255,255,0.9);
+      border-radius: 8px;
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+      align-items: flex-start;
+      flex-wrap: nowrap; /* Stick to right on desktop */
+      color: #000;
+    }
+    
+/* Updated Image Container: Fixed height, flexible width */
+.char-image-container {
+    position: relative;
+    flex: 0 0 auto;       /* Allows the container to only be as wide as needed */
+    width: auto;
+    height: 400px;        /* Adjust this to your preferred "standing" height */
+    display: flex;
+    align-items: flex-end; /* Stands them on the bottom */
+    justify-content: center;
+    overflow: visible;
+}
+
+.char-image-container img {
+    width: auto;          /* Don't force 100% width, let chibis be their natural shape */
+    height: 100%;         /* Fill the container height */
+    max-width: 368px;     /* Ensure they don't exceed your max width */
+    object-fit: contain;  /* Keeps proportions perfect */
+    object-position: bottom;
+    border: none;
+    border-radius: 0;
+}
+
+/* Fix for the text box taking up remaining space */
+.char-text { 
+    flex: 1; 
+    min-width: 250px; /* Prevents text from getting too skinny */
+    margin: auto 0;
+    max-height: 400px; 
+    overflow-y: auto;
+}
+
+
+    /* CTA Section */
+    .cta-section {
+      font-family: 'Merchant Copy', monospace;
+      font-size: 22px;
+      background: #222;
+      border: 1px solid #555;
+      border-radius: 0;
+      padding: 0;
+    }
+    .cta-title {
+      background: url('images/characters/CTAheader.webp') no-repeat center center;
+      background-size: cover;
+      padding: 30px 20px;
+      margin: 0;
+      text-align: left;
+      font-size: 2rem;
+      color: #fff;
+      text-shadow: 2px 2px 4px #000;
+    }
+    .cta-subsection {
+      margin: 0 0 20px 0;
+    }
+    .cta-subsection-title {
+      background: linear-gradient(to right, #333, #444);
+      padding: 15px 20px;
+      margin: 0;
+      font-size: 1.6rem;
+      color: #fff;
+      border-bottom: 1px solid #555;
+    }
+/* This makes the text white and fixes the arrow color for Damir & Marek */
+.cta-subsection-content {
+  padding: 20px;
+  background: linear-gradient(to bottom, #333, #222);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  border: 1px solid #555;
+  border-top: none;
+  color: #fff; /* Forces text to white */
+}
+
+.cta-subsection-content .character-profile {
+  background: transparent; /* Removes the white paper background */
+  border: none;
+  color: #fff;
+}
+    /* Wiki Buttons */
+    .wiki-btn {
+      display: block;
+      width: fit-content;
+      margin: 15px auto;
+      padding: 16px 32px;
+      color: #000;
+      text-decoration: none;
+      border-radius: 8px;
+      font-family: 'VT323', monospace;
+      text-align: center;
+      font-size: 1.3rem;
+      transition: transform 0.12s;
+    }
+    .wiki-btn:hover { transform: scale(1.08); }
+    .wiki-btn.spices-btn {
+      background: #E19B60;
+      border: 3px solid #E19B60;
+    }
+    .wiki-btn.cta-btn {
+      background: linear-gradient(135deg, #555, #888);
+      color: #fff;
+      border: 1px solid #777;
+      border-radius: 0;
+    }
+    /* Floating Buttons */
+    .floating-btns { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+    .back-button, .top-button {
+      background: linear-gradient(135deg, var(--accent), #9be7ff);
+      color: #000; padding: 10px 16px; text-decoration: none; border-radius: 8px;
+      border: 1px solid var(--border-light); font-family: 'VT323', monospace; text-align: center;
+    }
+@media (max-width: 850px) {
+  /* ── Exact same as normal pages ── */
+  .site{ grid-template-columns:1fr; } 
+  .sidebar{ margin: 14px auto; width: 95%; border-right: 1px solid var(--border-light); border-radius: 10px; position: relative; top: 0; } 
+  .content { margin: 14px; border-radius: 10px; }
+  .nav-btn { font-size: 2.2rem; }
+
+  /* ── Character profiles: simple vertical stack, centered, no forced heights ── */
+.character-profile {
+    margin: 20px auto;          /* or even 12px / 24px — match .content gap */
+    padding: 16px 12px;
+  }
+
+  /* Name tab: safer, centered, doesn't hang off-screen */
+  .character-profile::before {
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 16px;
+    font-size: 1.05rem;
+    border-radius: 6px 6px 0 0;
+    z-index: 2;
+    white-space: nowrap;
+  }
+
+  .char-image-container {
+    width: 100%;
+    max-width: 260px;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .char-image-container img {
+    max-width: 100%;
+    height: auto;
+    max-height: 45vh;
+    object-fit: contain;
+  }
+
+  .char-text {
+    width: 100%;
+    max-height: none;
+    overflow-y: visible;
+    padding-right: 0;
+    font-size: 1.05rem;               /* slight bump for readability */
+  }
+
+  .char-text::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── Dream section specific overrides (only what's needed) ── */
+  #dreams-project {
+    display: block !important;
+  }
+
+  .dreams-desc {
+    margin: 0 0 24px 0 !important;    /* consistent bottom spacing like normal sections */
+  }
+
+  .dreams-pill-title {
+    margin: 16px auto 20px auto;      /* centered + breathing room */
+  }
+
+  /* Clear the top of dream characters so tabs don't overlap pill/desc */
+  #dreams-project .character-profile {
+    margin-top: 50px !important;      /* enough for tab + some air */
+    padding-top: 40px !important;
+  }
+
+  /* Specifically fix the two problem ones */
+  #char-alienboy.character-profile,
+  #char-medusa-mage.character-profile {
+    margin-top: 55px !important;
+    padding-top: 45px !important;
+  }
+
+  #char-alienboy.character-profile::before {
+    display: block !important;        /* force visible unless you really want it gone */
+    top: -32px;
+  }
+
+  /* Prevent bottom bleed into next section */
+  #dreams-project .character-profile:last-of-type {
+    margin-bottom: 50px !important;
+  }
+}
+    /* Haru - Border CHANGE LATER!!!*/ 
+#char-haru { border: 4px solid #70B446; background-color: #CBE3BA;}
+#char-haru::before { content: "HARU MORI"; background: #70B446; }
+#char-haru p { color: #4C792F; }
+
+/* Nao - Border */
+#char-nao { border: 4px solid #8F978C; background-color: #CDD1CC;}
+#char-nao::before { content: "NAO MORI"; background: #8F978C; }
+#char-nao p { color: #596057; }
+
+/* Kahna - Border */
+#char-kahna { border: 4px solid #F28DA8; background-color: #FDE8EF;}
+#char-kahna::before { content: "KAHNA NOMA"; background: #F28DA8; }
+#char-kahna p { color: #A90F42; }
+
+/* Suzu - Border */
+#char-suzu { border: 4px solid #D0A067; background-color: #EEDDC9;}
+#char-suzu::before { content: "SUZU KAHO"; background: #D0A067; }
+#char-suzu p { color: #93642F; }
+
+/* Parents - Grey/Brown Border */
+#char-mrsmori, #char-mrmori { border: 4px solid #687165; background-color: #D5D9D3;}
+#char-mrsmori::before { content: "MRS. MORI"; background: #687165; }
+#char-mrmori::before { content: "MR. MORI"; background: #687165; }
+#char-mrsmori p { color: #555D50; }
+#char-mrmori p { color: #555D50; }
+
+.character-profile {
+  position: relative;
+  margin-top: 50px; /* Creates space for the tab above the box */
+  padding: 15px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  border-width: 8px !important; /* Thick border as requested */
+  border-style: solid;
+  border-radius: 8px;
+}
+/* This makes the internal title less "title-like" since the tab has the name */
+.character-profile h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  opacity: 0.8;
+  border-bottom: 1px dashed rgba(0,0,0,0.2);
+}
+.character-profile::before {
+  /* This is the Tab Graphic */
+  position: absolute;
+  top: -42px; /* Adjusted to sit exactly on the top border */
+  left: 2px;
+  padding: 2px 20px;
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+  color: white;
+  border-radius: 10px 10px 0 0;
+  z-index: 10;
+  /* Shadow removed */
+}
+/* --- 1. SCROLLBOX FUNCTIONALITY --- */
+/* Target the text containers. 
+   We use :not(:has(.character-profile)) to ensure the Setting scrolls, 
+   but the Damir/Marek container lets the internal char-text handle it instead. */
+.char-text, 
+.spices-desc, 
+.cta-subsection-content:not(:has(.character-profile)) { 
+    max-height: 400px; 
+    overflow-y: auto; 
+    padding-right: 15px; 
+}
+
+/* --- 2. GLOBAL / DEFAULT (White & Minimal) --- */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { 
+    background: #fff; 
+    border-radius: 6px; 
+}
+
+/* --- 3. SCI-FI SECTION (CTA) --- */
+/* Apply square scrollbars to the setting text OR the character text */
+.cta-section .cta-subsection-content::-webkit-scrollbar-thumb,
+.cta-section .char-text::-webkit-scrollbar-thumb {
+    background: #fff;
+    border-radius: 0;
+    border: 1px solid #555;
+}
+
+/* Specific fix for Damir & Marek Image Container */
+#cta-damir-marek .char-image-container {
+    overflow: hidden !important;
+}
+
+/* --- 4. SPICES SECTION (Custom Colored Borders) --- */
+/* Remove background and match thumb border to character theme */
+.project-section.spices .char-text::-webkit-scrollbar-track,
+.spices-desc::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Specific character scrollbar colors */
+#char-haru .char-text::-webkit-scrollbar-thumb { border: 2px solid #70B446; border-radius: 10px; }
+#char-nao .char-text::-webkit-scrollbar-thumb { border: 2px solid #8F978C; border-radius: 10px; }
+#char-kahna .char-text::-webkit-scrollbar-thumb { border: 2px solid #F28DA8; border-radius: 10px; }
+#char-suzu .char-text::-webkit-scrollbar-thumb { border: 2px solid #D0A067; border-radius: 10px; }
+#char-mrsmori .char-text::-webkit-scrollbar-thumb, 
+#char-mrmori .char-text::-webkit-scrollbar-thumb { border: 2px solid #687165; border-radius: 10px; }
+
+/* The Spices Project Description scrollbar */
+.spices-desc::-webkit-scrollbar-thumb {
+    border: 2px solid #E19B60;
+    border-radius: 10px;
+}
+
+/* Dream section scrollbars */
+.project-section.dreams .char-text::-webkit-scrollbar {
+  width: 10px;
+}
+
+.project-section.dreams .char-text::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.project-section.dreams .char-text::-webkit-scrollbar-thumb {
+  background: #ffffff;
+  border: 2px solid #6fa6d9;
+  border-radius: 10px;
+}
+
+/* Dream Characters Section — calm, rounded, gradient */
+.project-section.dreams {
+  background: linear-gradient(
+    to bottom,
+    #ffffff,
+    #dceeff
+  );
+  color: #1f4f8a;
+  border: 5px solid #6fa6d9;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 4px 10px rgba(0,0,0,0.4);
+}
+
+/* Header image behavior (matches Spices logic) */
+.project-section.dreams .project-title {
+  margin: -15px -15px 20px -15px;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Description box inside Dreams */
+.dreams-desc {
+  background: rgba(255,255,255,0.9);
+  border: 5px solid #6fa6d9;
+  color: #1f4f8a;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 0px;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.08);
+  max-height: none;
+  overflow: visible;
+}
+/* Pill-shaped title for Dream Characters */
+.dreams-pill-title {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 16px 32px;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  color: #1f4f8a;
+  background: linear-gradient(
+    to bottom,
+    #ffffff,
+    #dceeff
+  );
+
+  border: 5px solid #6fa6d9;
+  border-radius: 999px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 1px 2px rgba(0,0,0,0.15);
+}
+/* Pill-shaped title for Dream Characters */
+.dreams-pill-title {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 6px 16px;
+  margin-left: auto;
+  margin-right: auto;
+  display: table;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  color: #1f4f8a;
+  background: linear-gradient(
+    to bottom,
+    #ffffff,
+    #dceeff
+  );
+
+  border: 5px solid #6fa6d9;
+  border-radius: 999px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 1px 2px rgba(0,0,0,0.15);
+}
+
+/* Dream Characters — character boxes */
+.project-section.dreams .character-profile {
+  background: rgba(255,255,255,0.85);
+  border: 5px solid #6fa6d9;
+  color: #1f4f8a;
+}
+
+.project-section.dreams .character-profile:first-of-type {
+  margin-top: 10px; /* just enough for the tab */
+}
+
+.project-section.dreams .character-profile p {
+  color: #1f4f8a;
+}
+/* 2. Remove the margin on the description so it doesn't push down */
+#dreams-project .dreams-desc {
+    margin-bottom: 0 !important;
+    border-width: 8px;
+}
+.dreams-pill-title {
+  border-width: 8px;
+}
+/* Targeted fix: Only affects the Dream section layout */
+#dreams-project {
+    display: block !important; /* Forces it out of Grid mode to ignore the 12px gap */
+}
+
+#dreams-project .character-profile:first-of-type {
+    margin-top: 45px !important; /* The minimum space needed for the tab to clear the box above */
+}
+/* This physically pulls the box up regardless of grid or block settings */
+#dreams-project .dreams-desc {
+    margin-bottom: 0px !important;
+}
+
+#dreams-project #char-alienboy.character-profile {
+    margin-top: 15px !important; /* INCREASE this number for more space, DECREASE for less */
+    padding-top: 45px !important; /* Moves the text down so the tab doesn't overlap it */
+}
+
+#dreams-project #char-medusa-mage.character-profile {
+    margin-top: 15px !important; /* INCREASE this number for more space, DECREASE for less */
+    padding-top: 45px !important; /* Moves the text down so the tab doesn't overlap it */
+}
+
+#dreams-project #char-alienboy.character-profile::before {
+    display: none !important;
+}
+
+.dreams .char-image-container {
+    position: relative;
+    flex: 0 0 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ensure the arrows are visible and positioned correctly over the image */
+.dreams .switch-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.7); /* Optional: adds a slight bubble background for visibility */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.dreams .switch-arrow.left { left: 10px; }
+.dreams .switch-arrow.right { right: 10px; }sform: scale(0.9);
+}
+
+  </style>
+</head>
+<body>
+<div class="site">
+  <aside class="sidebar">
+    <h2>Navigation</h2>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <div class="nav-group" id="art-group">
+        <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+          Art <span class="arrow">▶</span>
+        </a>
+        <div class="dropdown-content">
+          <a href="art.html">Overview</a>
+          <a href="digital.html">Digital</a>
+          <a href="mspaint.html">MS Paint</a>
+          <a href="2dart.html">2D Art</a>
+          <a href="3dart.html">3D Art</a>
+          <a href="studies.html">Skill Lab</a>
+        </div>
+      </div>
+      <a href="commissions.html">Commissions</a>
+      <a href="journal.html">Journal</a>
+      <a href="stories.html">Stories</a>
+      <a href="characters.html" class="current">Characters</a>
+      <a href="sharks.html">Sharks</a>
+      <a href="cats.html">Cats</a>
+      <a href="resources.html">Resources</a>
+      <a href="sitemap.html">Sitemap</a>
+    </nav>
+  </aside>
+  <main class="content">
+    <header>
+      <h1>CHARACTERS</h1>
+    </header>
+    <div class="page-desc">
+      <p>This page showcases profiles for my original characters from two of my worldbuilding projects, Spices (character-focused) and the CTA (sci-fi) as well as a description of what the CTA is. You can find more information about either on their respective Notion wikis. Have fun exploring!</p>
+    </div>
+
+    <section class="toc">
+      <h3>Table of Contents</h3>
+      <a href="#spices-project">Spices Project</a>
+      <a href="#char-haru">  ↳ Haru Mori</a>
+      <a href="#char-nao">  ↳ Nao Mori</a>
+      <a href="#char-kahna">  ↳ Kahna Noma</a>
+      <a href="#char-suzu">  ↳ Suzu Kaho</a>
+      <a href="#char-mrsmori">  ↳ Mrs. Mori</a>
+      <a href="#char-mrmori">  ↳ Mr. Mori</a>
+      <a href="#cta-project">Central Trade Authority (CTA) Project</a>
+      <a href="#cta-setting">  ↳ Setting</a>
+      <a href="#cta-damir-marek">  ↳ Damir & Marek</a>
+      <a href="#dreams-project">Dream Characters</a>
+      <a href="#char-alienboy"> ↳ Alien Boy (Unnamed)</a>
+      <a href="#char-medusa-mage"> ↳ Medusa and Mage</a>
+    </section>
+
+    <section id="spices-project" class="project-section spices">
+      <h2 class="project-title">Spices Project</h2>
+      <div class="spices-desc">
+        <p>A character-focused worldbuilding project exploring everyday life and relationships.</p>
+      </div>
+      <a href="https://www.notion.so/Spices-Wiki-25d28c1a6db4809d833cf5f7ae2e5785?source=copy_link" target="_blank" class="wiki-btn spices-btn">Spices Wiki on Notion</a>
+      
+       <div id="char-haru" class="character-profile">
+  <div class="char-text">
+<p>Haru Mori is an on-call electronics repair and IT technician who works primarily within her hometown, providing maintenance and troubleshooting for personal devices, home systems, and small business equipment. Her work often involves assisting elderly residents, many of whom rely on her familiarity and patience as much as her technical skill. She is reliable without being rigid, preferring practical solutions over perfection.</p> <p>She has an easygoing and socially open personality, and she tends to form casual but genuine relationships with the people she helps. Haru is emotionally honest and perceptive, often noticing when others are frustrated or overwhelmed. While she is capable and confident, she does not approach her work competitively and avoids defining herself through productivity alone.</p> <p>Haru’s appearance reflects her hands-on lifestyle. She wears her naturally brown, wavy hair up out of habit and convenience, often leaving it slightly messy. Her clothing is functional and layered, favoring comfort and movement. She is naturally tanned and physically strong from outdoor work and carrying equipment.</p> <p>She lives with her girlfriend, Kahna, and values the steady routine they have built together. Haru maintains fond memories of her father and remains emotionally distant from her mother. Her relationship with her older sister, Nao, is strained; although she has attempted reconciliation in the past, she is now cautiously trying to understand what caused the fracture between them.</p> <p>Haru has grown more expressive and relaxed over time, becoming someone others find approachable and dependable. She has a habit of fixing things even when no one asks, often leaving tools or parts around mid-project. This tendency reflects her underlying desire to stay useful and connected to the people around her.</p>
+  </div>
+  <div class="char-image-container">
+    <img id="haru-chibi" src="images/characters/haruchibi.png" alt="Haru Mori chibi">
+  </div>
+</div>
+
+ <div id="char-nao" class="character-profile">
+  <div class="char-text">
+<p>Nao Mori works as a logistics and internal documentation officer at A.K. Agricultural Exchange. Her responsibilities include managing schedules, maintaining internal systems, formatting documents, and overseeing editorial consistency. Her work is detail-oriented and largely invisible, but critical to the organization’s function.</p> <p>Nao is reserved and emotionally guarded. She is polite and professional but avoids unnecessary interaction, preferring clear boundaries between herself and others. She communicates concisely and occasionally uses understated sarcasm. Chronic fatigue is evident in her demeanor, though she does not comment on it or seek accommodation.</p> <p>Her appearance is neat and subdued, favoring muted colors and long sleeves. She maintains a consistent, restrained style that prioritizes order and minimal attention. At home, she allows herself to relax slightly, tying her hair up and maintaining a controlled but quieter environment.</p> <p>Nao is estranged from her younger sister, Haru, and limits contact to infrequent messages. She keeps in occasional contact with her father and remains distant from her mother. Although she resembles her mother in work habits and emotional reserve, she lacks her mother’s confidence and ambition, instead operating from obligation and endurance.</p> <p>She collects stationery but rarely uses it, keeping most items untouched. This reflects a broader pattern of restraint and deferral. Her history with Suzu Kaho remains unresolved, shaped by misinterpretation and avoidance rather than overt conflict.</p>
+  </div>
+  <div class="char-image-container">
+    <img id="nao-chibi" src="images/characters/naochibi.png" alt="Nao Mori chibi">
+  </div>
+</div>
+
+<div id="char-kahna" class="character-profile">
+  <div class="char-text">
+<p>Kahna Noma works as a pet groomer and part-time assistant in child education. Her professional roles center on care, patience, and attentiveness. She is well-regarded for her calm presence and ability to make both animals and children feel secure.</p> <p>Kahna is emotionally intelligent and nurturing, though she occasionally misses subtle social cues. She communicates gently and thoughtfully, often choosing affirming language. Her speech sometimes carries the tone she uses with children or pets into adult conversations, which she notices and finds mildly embarrassing.</p> <p>She dresses in soft, practical clothing, favoring neutral and pastel colors. Her appearance is warm and understated, and she adjusts her clothing for ease of movement when working. Her manner is unhurried, contributing to her calming presence.</p> <p>Kahna lives with Haru and provides a steady emotional anchor within their shared home. She is aware of Haru’s family history but avoids prying, offering support when it is welcomed. She values emotional stability and routine, shaped by helping raise her younger brother after their mother’s death.</p> <p>She maintains small, consistent social habits, such as calling her brother weekly and sharing tea with her landlady. Kahna is observant and conversational, preferring depth over volume in her interactions.</p>
+  </div>
+  <div class="char-image-container">
+    <img id="kahna-chibi" src="images/characters/kahnachibi.png" alt="Kahna Noma chibi">
+  </div>
+</div>
+
+<div id="char-suzu" class="character-profile">
+  <div class="char-text">
+<p>Suzu Kaho works in client communications and final review at A.K. Agricultural Exchange. Her role involves coordinating with clients, ensuring clarity in correspondence, and maintaining a smooth handoff between departments. She is dependable and attentive, often stepping in to resolve minor issues before they escalate.</p> <p>Suzu is outgoing and friendly, with a natural tendency toward mediation. She pays close attention to the emotional state of those around her while respecting boundaries. Her communication style is clear and warm, even in formal contexts.</p> <p>She presents herself neatly, with a consistent and modest office style that includes skirts, cardigans, and collared blouses. Small personal touches, such as simple accessories or desk plants, reflect her attentiveness to atmosphere.</p> <p>Suzu makes an effort to include quieter coworkers, particularly Nao, without pressuring her. She remembers birthdays, brings extra coffee, and checks in when someone seems unwell. These gestures are habitual rather than performative.</p> <p>She and Nao attended the same school and shared a period of interaction that Suzu remembers as unremarkable. She is unaware of the significance this time holds for Nao, creating an imbalance in their current dynamic.</p>
+  </div>
+  <div class="char-image-container">
+    <img id="suzu-chibi" src="images/characters/suzuchibi.png" alt="Suzu Kaho chibi">
+  </div>
+</div>
+
+<div id="char-mrsmori" class="character-profile">
+  <div class="char-text">
+<p>Tomoko Mori is a nuclear engineer, author, and public speaker with a long-standing professional reputation. Her career involves frequent travel, research, and public engagement. She communicates efficiently and maintains a tightly structured schedule.</p> <p>Her personality is rational and reserved. She speaks quietly but with authority, particularly when lecturing or presenting. Outside professional settings, she keeps conversation brief and focused, avoiding emotional topics.</p> <p>Tomoko’s appearance reflects her utilitarian approach. She wears business formal clothing exclusively, favoring trousers, turtlenecks, and long coats. Jewelry and makeup are minimal and consistent. Her private habits remain similarly functional.</p> <p>As a parent, Tomoko was administratively present but emotionally distant. She handled school-related logistics and homework but did not engage deeply in her daughters’ personal lives. She remains distant from both Haru and Nao and does not consciously prioritize family relationships.</p> <p>She met her husband in college during a sketching class and remains married, though they live largely independent lives. Her identity is closely tied to her work, and she rarely reflects on her role within the family.</p>
+  </div>
+  <div class="char-image-container">
+    <img id="mrsmori-chibi" src="images/characters/mrsmorichibi.png" alt="Mrs. Mori chibi">
+  </div>
+</div>
+
+<div id="char-mrmori" class="character-profile">
+  <div class="char-text">
+<p>Hiro Mori is a retired artist who lives alone on the outskirts of the village, near the base of one of the surrounding mountains. His daily life is quiet and self-directed, structured around observation, routine, and maintenance rather than external demands.</p> <p>He spends much of his time drawing birds in greyscale, arranging studies into small grids that emphasize form and variation. His red–green colorblindness influenced this focus early on, leading him to prioritize contrast and structure. He works in a separate shed used exclusively for sketching.</p> <p>Hiro dresses simply and for comfort, favoring flannel shirts, t-shirts, and athletic pants. He always wears an analog watch inherited from his grandfather. He is soft-spoken, slow to speak, and rarely interrupts, often listening more than responding.</p> <p>As a father, Hiro was more emotionally present than his wife but avoided confrontation and authority. He handled daily routines and companionship but struggled to intervene when family tensions escalated. He remains in contact with both daughters and wants to be involved, though personal limitations affect his consistency.</p> <p>He met Tomoko in a college sketching class, where their shared interest in art initially connected them. Over time, their priorities diverged. Hiro’s life now is defined by small, sustained habits rather than ambition or change.</p>
+  </div>
+  <div class="char-image-container">
+    <img id="mrmori-chibi" src="images/characters/mrmorichibi.png" alt="Mr. Mori chibi">
+  </div>
+</div>
+
+    </section>
+
+    <section id="cta-project" class="cta-section">
+      <h2 class="cta-title">Central Trade Authority (CTA) Project</h2>
+      <a href="https://www.notion.so/CTA-WORLD-WIKI-25028c1a6db48080876ce74bda95ebd5?source=copy_link" target="_blank" class="wiki-btn cta-btn">CTA World Wiki on Notion</a>
+
+      <div id="cta-setting" class="cta-subsection">
+        <div class="cta-subsection-title">Setting Explanation</div>
+        <div class="cta-subsection-content">
+          <p>The Central Trade Authority (CTA) is a pseudo-governmental organization that manages trade, infrastructure, and basic services across seven star systems. It was formed in Cycle Year 0 by quartermasters, relay engineers, and archivists after a major interstellar war left no stable governments. Originally intended as a temporary solution to coordinate resources and prevent starvation, it became permanent because no other faction developed comparable organizational capacity. The CTA standardized currency (credits), time measurement, and contract law, which allowed it to regulate trade and work across multiple systems.</p>
+          <p>The organization is structured around a High Directorate of nine rotating delegates who manage portfolios including Transit, Energy, Infrastructure, Security, and Agriculture. Below them are Sector Committees and specialized divisions like the Security Enforcement Arm (SEA) and the Market Registry. The Market Registry assigns citizens a six-tier status that determines their mobility, work eligibility, and access to services. Most administrative power is centralized in the Core systems, while outer stations operate with more autonomy as long as they file reports.</p>
+          <p>The CTA maintains control primarily through infrastructure management and bureaucratic systems rather than military force. It operates chain routes (trade lanes), manages utilities like water filtration and waste reclamation, and requires permits for travel and relocation. Citizens carry ID cards linked to their work contracts and medical records. The organization funds public services, communal education, and basic healthcare, with quality varying between Core and peripheral stations. Most people accept the system because it provides predictable access to food, air, and employment.</p>
+          <p>By the current period (320+ CY), the CTA is described as declining but still operational, maintaining authority through established routines and resource distribution rather than active governance. Resistance exists but remains localized due to the same bureaucratic barriers that limit general mobility. The organization continues to function largely through institutional inertia and the absence of viable alternatives.</p>
+        </div>
+      </div>
+
+      <div id="cta-damir-marek" class="cta-subsection">
+        <div class="cta-subsection-title">Damir & Marek</div>
+        <div class="cta-subsection-content">
+          <div class="character-profile" style="border:none; background:none; padding:0; margin:0;">
+            <div class="char-text">
+              <p>Damir and Marek are two altered humanoids, raised together in the SEVRA project as a paired unit, who now operate as independent field operatives aboard their salvaged ship, HAULER-DREV-3349.</p>
+              <p>Damir is a visibly altered humanoid with an unclassified status, while Marek is a cyborg with mechanical augmentations. They were trained in the SEVRA project to function as a single unit. Their bond makes separation highly destabilizing. They survive off of odd jobs, including repairs, hauling, and more.</p>
+            </div>
+            <div class="char-image-container">
+              <img id="cta-chibi" src="images/characters/damirandmarekchibi.png" alt="Damir & Marek chibi">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+<section id="dreams-project" class="project-section dreams">
+  <h2 class="dreams-pill-title">Dream Characters</h2>
+
+  <div class="dreams-desc">
+    <p>Characters who originated from my actual dreams. They're fun and technically created by my brain so they get a spot here. Besides, Damir and Marek were originally from a series of dreams.</p>
+  </div>
+
+  <div id="char-alienboy" class="character-profile">
+    <div class="char-text">
+      <p>This guy (currently unnamed) appeared in a dream where I was on a road trip, finally stopping in a small town. It was nightfall and we were at a gas station. Because I wasn’t very hungry, I just got a water and a snack for later. When I walked out to wait for my grandparents, with whom I was traveling, I looked to the side and saw a guy around the same age as I was. He was stuck on the edge of the gas station roof, dangling by the hood of his sweatshirt. He called out to me for help, and baffled, I asked him why he was up there and told him I would call the police or firefighters. The guy told me he was stuck, and not to call the number because he’d like my number instead. I called anyways, but out of pity and maybe a bit of guilt, I gave him my number.</p> 
+      <p>The next day, he texted me asking me to come to a random field. I told him it was incredibly “sketch” and to explain why, because I wasn’t going out in the middle of nowhere with some stranger. He then proceeded to detail how an alien spaceship had crash landed in his uncle’s field, and that he needed my help with something. I didn’t believe him at first, so I requested photo proof and he obliged. I took an electric scooter/motorcycle available to the public and arrived at the perimeter of the field to find him waiting for me. He explained that he had found an alien language inside of the ship and he thought I could help because I “seemed really smart.” I warned him that I might not be able to decipher it, but I could try. As we walked through the field towards the alien spacecraft, he told me that his grandfather had two separate alien crash landings on his farm and that he’d seen the last one when it happened. He told me that he had been trying to figure out what the text was for a few months now, and especially stressed just how alien it was. We made small talk, got to know each other better, and I ended up being rather fond of the guy. By the time we got to the spaceship, it had already been visible for a few minutes. It was a sleek, silver, and highly reflective structure that was admittedly very beautiful and unmistakably alien.</p> 
+      <p>He handed me a flashlight and we headed inside, down a slanted corridor. I clicked mine on, and shone it on the spot he was pointing to, exclaiming about how strange and unfamiliar it was. When my eyes adjusted to the light, I saw that it was…Spanish and French. Just a regular warning. For a minute or two I just stared at him utterly shocked. Thinking back to the gas station, there were signs in both languages and the cashier was speaking Spanish. Stunned, I asked him how he didn’t know what the languages were. After I informed him he floundered about, clearly embarrassed. Somehow he’d never read them written down. He apologized for the hassle but I assured him it was alright, and we carefully walked out of the wreckage. The gist of his reasoning was “I guess I never saw it like that…I just didn’t make the connection.” I think he may have been dyslexic looking back. We walked back over to his uncle’s farmhouse and sat on the back porch talking late into the night, sipping sodas and watching the wheat rustle in the light breeze. He was incredibly entertaining and a real funny guy. I don’t regret talking to him at all and I think we became great friends after that.</p></div>
+    <div class="char-image-container">
+      <img id="alienboy-chibi" src="images/characters/alienboychibi.png" alt="Alien Boy chibi">
+    </div>
+  </div> <div id="char-medusa-mage" class="character-profile">
+    <div class="char-text">
+    <p>Use the arrows to switch between character art.</p>
+      <p>Had a dream from the perspective of a powerful mage that usually avoided using her magic for tasks asked of her if they had a better or easier solution. I only clearly remember the last part where she wandered into a town with several lifelike stone statues dotting the landscape. She walked over to a nearby citizen and asked them if Medusa lived here, and they pointed the mage to her house, but only before complaining about how much of a bummer it was that their loved ones were being turned to stone. She’s such a nice lady, though. Man, what an inconvenience. When the mage knocked on her door, Medusa answered with her head down before realizing who was there and immediately looking up to give her a hug, exclaiming happily that it was such a pleasure to see her again. She explained how her only wish was to see her husband once more and not be such a nuisance to the town. The mage said something along the lines of “I’ll see what I can do.” Medusa and her husband went about their day with the mage trailing behind to observe. At the market, a large sheep escaped and barreled down the main street, knocking into Medusa and startling her, causing two or three passing residents to be turned into stone. She covered her eyes and mumbled in shame as the mage walked over and asked her why she didn’t just wear glasses. The mage figured that if she lined the inside of a pair of glasses with one-way mirror film, Medusa would be able to freely look people in the eye. So, she handed a pair to Medusa who promptly put them on, looking amazed. As she embraced her husband and profusely giving thanks, the mage was walking around reverting people turned into stone to their original forms. As extra thanks, the mage got dinner, a free stay at the inn, and a hefty bag of gold coins.</p> 
+      </div>
+    <div class="char-image-container">
+      <span class="switch-arrow left" onclick="toggleDreamImage()">◀</span>
+      
+      <img id="dream-swap-img" src="images/characters/medusachibi.png" alt="Medusa chibi">
+      
+      <span class="switch-arrow right" onclick="toggleDreamImage()">▶</span>
+    </div>
+  </div>
+</section>
+    
+  </main>
+</div>
+
+<div class="floating-btns">
+  <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+  <a href="index.html" class="back-button">← HOME</a>
+</div>
+
+<script>
+  let isMedusa = true;
+
+  function toggleDreamImage() {
+    const img = document.getElementById('dream-swap-img');
+    
+    if (isMedusa) {
+      img.src = 'images/characters/magechibi.png'; // Path to Mage image
+      img.alt = 'Mage chibi';
+    } else {
+      img.src = 'images/characters/medusachibi.png'; // Path to Medusa image
+      img.alt = 'Medusa chibi';
+    }
+    
+    isMedusa = !isMedusa;
+  }
+</script>
+
+</body>
+</html>

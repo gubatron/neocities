@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mariner's Wharf ABOUT</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+    --accent: #43B3D2;
+    --bg: #000;
+    --text: #fff;
+    --border-light: rgba(255,255,255,0.35);
+    --border-dark: rgba(0,0,0,0.85);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    font-family: 'VT323', monospace;
+    color: var(--text); font-size: 19px; line-height: 1.25;
+  }
+
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+  .site {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    align-items: start;
+  }
+  
+  /* Sidebar Tab */
+  .sidebar {
+    margin: 14px 0 14px 14px;
+    padding: 12px;
+    background: rgba(0,0,0,0.88);
+    border: 1px solid var(--border-light);
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    position: sticky;
+    top: 14px;
+  }
+
+  .sidebar h2 { margin: 0 0 8px; color: var(--accent); }
+
+  .nav a {
+    display: block; color: var(--text); text-decoration: none;
+    padding: 4px 8px; border-radius: 4px; transition: 0.2s;
+  }
+
+  .nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+  
+/* Highlight for current page */
+  .nav a.current { 
+    background: rgba(67, 179, 210, 0.35) !important; 
+    color: #43B3D2 !important; 
+    border-left: 4px solid #43B3D2 !important;
+    display: block !important;
+  }
+    
+ /* --- Art Dropdown Styles --- */
+  .dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+  .show-art .dropdown-content { display: block; }
+  .arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+  .show-art .arrow { transform: rotate(90deg); }
+
+
+    /* Content */
+    .content { 
+      margin: 14px 14px 14px 0;
+      padding:14px; 
+      background:rgba(0,0,0,0.88); 
+      border:1px solid var(--border-light);
+      border-radius: 0 10px 10px 10px;
+      display:grid; gap:12px; 
+    }
+
+    /* --- HEADER AND TITLE GUY --- */
+header {
+  position: relative;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%, #000 80%);
+  min-height: 85px;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.7rem; /* Exact match to Cats page */
+  background: linear-gradient(to bottom, #9be5f4, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  z-index: 1;
+}
+
+/* Adjusting the "Title Guy" to sit like Mila does */
+.header-me-container {
+  position: absolute;
+  right: 20px;
+  bottom: -4px; /* Matching Mila's overhang for consistency */
+  line-height: 0;
+  z-index: 10;
+}
+
+.header-me-icon {
+  height: 100px; /* Matching Mila's height */
+  width: auto;
+  display: block;
+  filter: drop-shadow(4px 8px 8px rgba(0,0,0,0.7));
+}
+
+.header-me-container .hover-text {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -9px; /* Moves text into the 12px gap area */
+  top: auto;
+  color: #fff;
+  font-size: 16px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+    .header-me-container:hover .hover-text { opacity: 1; }
+
+    /* --- CONTACT GUY WRAP --- */
+.contact-me-gif {
+  height: 150px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
+}
+/* MOBILE FIX: Prevent overlapping text */
+@media (max-width: 850px) {
+.contact-me-gif {
+    height: 140px;             /* Your original mobile size */
+    margin: 0 auto;            /* Extra safety for centering */
+    display: block;
+  }
+  
+  /* Ensure the text stays left-aligned and readable */
+.contact-section p {
+    text-align: left;
+    margin-top: 0;
+  }
+}
+
+    /* --- FLOATING POPUP --- */
+    #floating-me-container {
+      position: fixed;
+      left: 30px;
+      bottom: -10px; /* Anchored lower */
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      text-align: center;
+    }
+    #floating-me-container.visible {
+      opacity: 1;
+      pointer-events: auto;
+      animation: bounceIn 0.9s ease-out;
+    }
+    .little-me-gif { height: 310px; width: auto; filter: drop-shadow(10px 20px 20px rgba(0,0,0,0.9)); }
+    
+#floating-me-message {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -25px; /* MOVED TO TOP: message floats above his head */
+  width: 220px;
+  color: #fff;
+  font-size: 18px;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.95);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  line-height: 1.3;
+}
+    #floating-me-container.visible:hover #floating-me-message { opacity: 1; }
+
+    @keyframes bounceIn {
+      0% { transform: translateY(250px); opacity: 0; }
+      60% { transform: translateY(-30px); }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Sections */
+    section { 
+      background: #000; border-radius: 8px; padding: 10px 12px; border: 1px solid var(--border-light);
+      box-shadow: inset 1px 1px 0 rgba(255,255,255,0.12), inset -1px -1px 0 var(--border-dark);
+    }
+    section h2 { margin: 0 0 6px; color: var(--accent); }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+    .social-btn {
+      display:inline-block; padding:12px 20px;
+      background:linear-gradient(135deg,#43B3D2,#9be7ff);
+      color:#000; text-decoration:none; border-radius:10px;
+      border:1px solid rgba(0,0,0,0.3); transition:transform 0.12s;
+    }
+    .social-btn:hover { transform:scale(1.08); }
+
+    .fun-fact-container {
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+      min-height: 250px; 
+    }
+    #funfact-box {
+      flex-grow: 1;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media(max-width:850px){ 
+      .site{ grid-template-columns:1fr; } 
+      .sidebar{ margin: 14px auto; width: 95%; border-right: 1px solid var(--border-light); border-radius: 10px; position: relative; top: 0; } 
+      .content { margin: 14px; border-radius: 10px; }
+      #floating-me-container, .header-me-container .hover-text { display: none !important; }
+      .header-me-icon { height: 110px; }
+      .header-me-container { bottom: 0px; }
+.contact-me-container .hover-text {
+    display: none !important;
+  }
+}
+    section {
+  background: #000;
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-light);
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.12), inset -1px -1px 0 var(--border-dark);
+  margin-top: 0; /* ensures no extra margin overrides grid gap */
+}
+/* Contact guy hover text - matches the style of Mila and header guy */
+.contact-me-container {
+  position: relative;
+  float: right;
+  margin-left: 20px;
+  margin-bottom: 8px;        /* Reduced from 15px → less bottom space */
+  line-height: 0;
+}
+
+.contact-me-container .hover-text {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 100%;              /* Places text above the image */
+  margin-bottom: 12px;
+  color: #fff;
+  font-family: 'VT323', monospace;
+  font-size: 15px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 20;
+}
+
+.contact-me-container:hover .hover-text,
+.contact-me-container:focus-within .hover-text {
+  opacity: 1;
+}
+/* Mobile overrides */
+@media (max-width: 850px) {
+.contact-me-container {
+    float: none;
+    display: block;
+    margin: 0 auto 12px auto;  /* Reduced from 20px → tighter on mobile too */
+    text-align: center;
+  }
+
+  .contact-me-gif {
+    height: 140px;
+  }
+
+  .contact-me-container .hover-text {
+    display: none !important; /* Hidden on mobile */
+  }
+
+  .contact-section p {
+    text-align: left;
+    margin-top: 0;
+  }
+}
+.social-buttons-container {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 850px) {
+  .social-buttons-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .social-btn {
+    width: 100%;
+    text-align: center;
+    padding: 14px 20px;
+  }
+}
+/* Floating buttons - matches Cats/Sharks pages */
+.floating-btns {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.back-button, .top-button {
+  background: linear-gradient(135deg, var(--accent), #9be7ff);
+  color: #000;
+  padding: 10px 16px;
+  text-decoration: none;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  font-family: 'VT323', monospace;
+  text-align: center;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+}
+
+.back-button:hover, .top-button:hover {
+  transform: scale(1.08);
+}
+
+/* Mobile: slightly smaller buttons */
+@media (max-width: 850px) {
+  .back-button, .top-button {
+    padding: 10px 14px;
+    font-size: 1rem;
+  }
+  
+  .floating-btns {
+    bottom: 15px;
+    right: 15px;
+  }
+}
+/* --- EXACT SHARK STYLES FOR CREATURES --- */
+.shark {
+  display:flex; gap:14px;
+  border:1px solid var(--border-light);
+  border-radius:8px; padding:12px;
+  background:#000;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.12), inset -1px -1px 0 var(--border-dark);
+  margin-bottom:14px;
+}
+.shark-text { flex:2; }
+.shark-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px; padding: 0 8px;
+}
+.shark-header h2 { margin:0; color:var(--accent); }
+.expand-btn {
+  background: linear-gradient(135deg, var(--accent), #9be5f4);
+  color: #000; border: none; padding: 4px 12px; border-radius: 6px;
+  font-family: 'VT323', monospace; cursor: pointer; font-size: 1.1rem;
+}
+.shark-scroll {
+  max-height: 220px; overflow-y: auto;
+  padding: 16px; margin: 8px 0;
+  border: 1px solid var(--border-light); border-radius: 8px;
+  background: #111; line-height: 1.4;
+}
+.shark-img {
+  flex: 1; display: flex; justify-content: center; align-items: center;
+  min-width: 250px;
+}
+.shark-img img {
+  max-width: 100%; height: auto;
+  border: 1px solid rgba(255,255,255,0.3); border-radius: 8px;
+}
+
+/* Modal - hidden by default */
+.shark-modal {
+  display: none; /* Fixed: was causing flash on load */
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9); justify-content: center; align-items: center;
+  padding: 20px; z-index: 2000;
+}
+.shark-modal-content {
+  background: #000; border: 1px solid var(--border-light);
+  border-radius: 10px; padding: 30px; max-width: 900px;
+  max-height: 88vh; overflow-y: auto; position: relative;
+}
+.shark-close { 
+  position: absolute; top: 10px; right: 15px; color: var(--accent); 
+  font-size: 2rem; cursor: pointer; font-weight: bold; 
+}
+.shark-modal .expand-btn { display: none !important; }
+.shark-modal .shark-scroll { 
+  max-height: none; border: none; background: transparent; 
+  padding: 0; margin: 0;
+}
+
+/* Recipes - more condensed */
+.recipe-entry {
+  border:1px solid var(--border-light);
+  border-radius:8px; padding:10px;
+  background:#000;
+  margin-bottom:10px; /* Reduced from 14px */
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.12), inset -1px -1px 0 var(--border-dark);
+}
+.recipe-header {
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; user-select: none; padding: 2px 0;
+}
+.recipe-header h3 { margin:0; color:var(--accent); font-size:1.1rem; }
+.recipe-triangle { font-size:1.6rem; transition: transform 0.2s; margin-left:8px; }
+.recipe-entry.expanded .recipe-triangle { transform: rotate(90deg); }
+.recipe-details {
+  display: none; margin-top: 8px; /* Reduced */
+}
+.recipe-entry.expanded .recipe-details { display: block; }
+/* Recipes - fixed image behavior and layout */
+.recipe-details {
+  display: none; 
+  margin-top: 8px;
+}
+.recipe-entry.expanded .recipe-details { 
+  display: block; 
+}
+
+.recipe-content {
+  padding: 12px;
+  border: 1px solid var(--border-light); 
+  border-radius: 8px;
+  background: #111; 
+  max-height: 400px; 
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr minmax(200px, 280px);
+  gap: 16px;
+  align-items: start;
+  font-size: 0.95rem; 
+  line-height: 1.3;
+}
+
+/* Text takes full width if no images */
+.recipe-content > div:first-child:last-child {
+  grid-column: 1 / -1;
+}
+
+/* Image column - stack multiple images, sticky top */
+.recipe-img {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;                    /* Space between multiple images */
+  align-items: center;
+  position: sticky;
+  top: 12px;
+  align-self: start;
+}
+
+.recipe-img img {
+  max-width: 100%;
+  max-height: 300px;            /* Limits tall images */
+  height: auto;
+  object-fit: contain;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+}
+
+/* Mobile: text first, then all images below */
+@media (max-width: 850px) {
+  .recipe-content {
+    grid-template-columns: 1fr;
+  }
+  .recipe-img {
+    position: static;
+    margin-top: 16px;
+  }
+}
+
+/* --- UPDATED BLINKIES & STAMPS --- */
+.blinkie-gallery, .stamp-gallery {
+  display: grid;
+  /* 'auto-fill' creates the 'tile' effect automatically */
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); 
+  gap: 8px; /* Perfectly even margins between all items */
+  margin-top: 10px;
+  justify-items: center;
+  align-items: start;
+  padding: 8px 0;
+}
+
+/* Stamps - Forced Row Tiling */
+.stamp-gallery {
+  display: flex;
+  flex-wrap: wrap;       /* Allows them to move to the next line */
+  justify-content: center; /* Centers the whole group */
+  gap: 10px;             /* This creates the exact, consistent margin */
+  margin-top: 10px;
+  padding: 8px 0;
+  width: 100%;
+}
+
+/* Standardizing the images so they don't distort */
+.blinkie-gallery img, .blinkie-gallery a img,
+.stamp-gallery img, 
+.stamp-gallery a img {
+  height: auto;
+  max-height: 100px;     /* Keeps them at a consistent height */
+  width: auto;           /* Lets the width be natural */
+  display: block;
+  image-rendering: pixel-art;
+  border-radius: 4px;
+  flex-shrink: 0;        /* Prevents the browser from squishing them */
+}
+
+/* Make sure these sections are hidden by default */
+#creatures,
+#recipes,
+#collections {
+  display: none;
+}
+
+.tab-btn {
+  position: relative;
+  padding: 12px 24px;
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;            
+  font-weight: normal;
+  letter-spacing: 0.5px;         
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.4);
+  background: linear-gradient(135deg, #43B3D2, #9be7ff);
+  color: #000;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 4px 0 #000, inset 0 1px 2px rgba(255,255,255,0.3);
+  text-shadow: none;             
+}
+
+.tab-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 0 #000, inset 0 1px 3px rgba(255,255,255,0.4);
+  background: linear-gradient(135deg, #5cc9e6, #a0eaff);
+}
+
+.tab-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 #000;
+}
+
+/* SELECTED state */
+.tab-btn.active {
+  background: #000;
+  color: var(--accent); 
+  border: 3px solid var(--accent);
+  box-shadow: 0 4px 0 #000, inset 0 -2px 6px rgba(0,0,0,0.6);
+  transform: translateY(2px);
+  font-weight: bold;
+}
+
+.tab-btn.active:hover {
+  transform: translateY(1px) scale(1.02);
+  box-shadow: 0 5px 0 #000, inset 0 -2px 8px rgba(0,0,0,0.7);
+}
+#collections h2:nth-of-type(2) {   /* targets the second h2 inside #collections (stamps) */
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--accent);   /* optional retro separator */
+}
+  </style>
+</head>
+<body>
+<div class="site">
+  <aside class="sidebar">
+  <h2>Navigation</h2>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="about.html" class="current">About</a>
+    
+    <div class="nav-group" id="art-group">
+      <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+        Art <span class="arrow">▶</span>
+      </a>
+      <div class="dropdown-content">
+        <a href="art.html">Overview</a>
+        <a href="digital.html">Digital</a>
+        <a href="mspaint.html">MS Paint</a>
+        <a href="2dart.html">2D Art</a>
+        <a href="3dart.html">3D Art</a>
+        <a href="studies.html">Skill Lab</a>
+      </div>
+    </div>
+
+    <a href="commissions.html">Commissions</a>
+    <a href="journal.html">Journal</a>
+    <a href="stories.html">Stories</a>
+    <a href="characters.html">Characters</a>
+    <a href="sharks.html">Sharks</a>
+    <a href="cats.html">Cats</a>
+    <a href="resources.html">Resources</a>
+    <a href="sitemap.html">Sitemap</a>
+  </nav>
+</aside>
+
+<main class="content">
+    <header>
+      <h1 id="about-title" style="cursor:pointer; user-select:none;">ABOUT ME</h1>
+      <div class="header-me-container">
+        <img src="images/art/digital/me-icon.png" alt="Me" class="header-me-icon" id="me-trigger">
+        <span class="hover-text">Hi! Click me!</span>
+      </div>
+    </header>
+
+<section>
+  <div style="display:flex; gap:12px; flex-wrap:wrap;">
+    <div style="flex:2; min-width:260px;">
+      <h2>Introduction</h2>
+      <p>
+        Hello! I'm smallcarnivorousmammal (aka smallcarnivore or cat).
+        I've been an avid artist since I could comprehend it.
+        I mostly do digital and physical art, and I like the internet.
+        Sometimes I do creative writing, practice my research skills,
+        and make some really good food. I love cats as you could probably tell by my name, and they've been my special interest for pretty much my entire life. I go by he/him pronouns. Thanks for visiting my website!
+      </p>
+    </div>
+
+<div style="flex: 1; min-width: 220px; margin: 15px 0;">
+  <div class="fun-fact-container" style="background: linear-gradient(180deg, #9be7ff, #43B3D2); color: #000; padding: 15px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.3);">
+    <h2 style="color: #000; margin: 0 0 10px 0; text-align: center;">Fun Facts</h2>
+    <div id="funfact-box" style="background: rgba(255, 255, 255, 0.7); padding: 15px; border-radius: 6px; text-align: center; overflow-y: auto; border: 1px solid rgba(0,0,0,0.1); font-size: 1.1rem;">
+      Click the button ↓
+    </div>
+    <button onclick="newFact()" style="width: 100%; padding: 10px; font-family: 'VT323', monospace; font-size: 1.2rem; border-radius: 999px; border: none; background: #000; color: #fff; cursor: pointer; box-shadow: 0 3px 0 rgba(0,0,0,0.3);">
+      New fact
+    </button>
+  </div>
+</div>
+</section>
+
+<!-- Social buttons -->
+<section>
+  <div class="social-buttons-container">
+    <a class="social-btn" href="https://www.deviantart.com/smallcarnivore" target="_blank">DeviantArt</a>
+    <a class="social-btn" href="https://www.pinterest.com/smallcarnivorousmammal/_profile/" target="_blank">Pinterest</a>
+    <a class="social-btn" href="https://www.youtube.com/@smallcarnivorousmammal" target="_blank">YouTube</a>
+    <a class="social-btn" href="https://bsky.app/profile/smallcarnivore.bsky.social" target="_blank">Bluesky</a>
+  </div>
+</section>
+
+<section>
+  <h2>Interests</h2>
+  <ul>
+        <li>I really enjoy researching and reading about various subjects like deep sea life, hydrothermal vents, radiological disasters, and felinology.</li>
+        <li>I have two main long-term worldbuilding/writing projects. One is a sci-fi world and the other is a more character-focused world.</li>
+        <li>I'm also attempting to make my way into the world of RPG game development. Recently, I've been making a lot of progress.</li>
+        <li>Cat behavior and genetics is my passion, but I'm still a complete amateur.</li>
+        <li>I enjoy cooking, baking, and going on walks.</li>
+      </ul>
+</section>
+
+<section class="contact-section" style="min-height: auto;">
+    <h2>Contact</h2>
+   
+    <div class="contact-me-container">
+        <img src="images/art/digital/me-contact.png" class="contact-me-gif" alt="Contact me">
+        <span class="hover-text">I usually reply quickly.</span>
+    </div>
+   
+    <p>You can reach me directly via email at smallcarnivorousmammal@gmail.com. I'm usually pretty quick to respond if I'm not too busy. Feel free to reach out!</p>
+    
+</section>
+
+<!-- BLINKIES COLLECTION -->
+<section>
+  <h2 style="text-align:center;">My Blinkies</h2>
+  <div class="blinkie-gallery">
+    <img src="images/blinkies/born2beondaputerblinkie.gif" alt="Born to be on da puter blinkie">
+    <img src="images/blinkies/zzzblinkie.gif" alt="ZZZ blinkie">
+    <img src="images/blinkies/100%25originalblinkie.gif" alt="100% original blinkie">
+    <img src="images/blinkies/dont-like-it.gif" alt="Don't like it?! >>> X">
+    <img src="images/blinkies/selfdiagnosedgamerblinkie.gif" alt="Self diagnosed gamer blinkie">
+    <img src="images/blinkies/friendtodogsblinkie.gif" alt="Friend to dogs blinkie">
+    <img src="images/blinkies/saveouroceansblinkie.png" alt="Save our oceans blinkie"> 
+    <img src="images/blinkies/crustaceanfanblinkie.gif" alt="Crustacean fan blinkie">
+    <img src="images/blinkies/partyatmyiggyblinkie.gif" alt="Party at my iggy blinkie">
+    <img src="images/blinkies/ihavesocialanxietyblinkie.gif" alt="I have social anxiety blinkie">
+    <img src="images/blinkies/iblinkthereforeiamblinkie.png" alt="I blink therefore I am blinkie">
+    <img src="images/blinkies/ilovetheseashoreblinkie.gif" alt="I love the seashore blinkie">
+    <img src="images/blinkies/ilovecatsblinkie.gif" alt="I love cats blinkie">
+    <img src="images/blinkies/hydrateordiedrateblinkie.gif" alt="Hydrate or diedrate blinkie">
+    <img src="images/blinkies/nintendogsblinkie.gif" alt="Nintendogs blinkie">
+    <img src="images/blinkies/dinonuggetsblinkie.gif" alt="Dinonuggets blinkie">
+    <img src="images/blinkies/wikipediablinkie.gif" alt="Wikipedia blinkie">
+    <img src="images/blinkies/mytummyhurtsblinkie.gif" alt="My tummy hurts blinkie">
+    <img src="images/blinkies/INEEDSLEEPblinkie.gif" alt="I need sleep blinkie">
+    <img src="images/blinkies/suckletblinkie.gif" alt="Sucklet blinkie">
+    <img src="images/blinkies/fishyfishyblinkie.gif" alt="Fishy fishy blinkie">
+    <img src="images/blinkies/oreoblinkie.gif" alt="Oreo blinkie">
+    <img src="images/blinkies/hookedonblinkies.gif" alt="Hooked on blinkies blinkie">
+    <img src="images/blinkies/artistblinkie.gif" alt="Artist blinkie">
+    <img src="images/blinkies/animalcrossingblinkie.gif" alt="Animal crossing blinkie">
+    <img src="images/blinkies/likethelegendofthepenisblinkie.gif" alt="Like the legend of the penis blinkie">
+    <img src="images/blinkies/nerdsblinkie.gif" alt="Nerds blinkie">
+    <img src="images/blinkies/mspaintcolorbarblinkie.gif" alt="MSPaint color bar blinkie">
+    <img src="images/blinkies/borntobesillyblinkie.gif" alt="Born to be silly blinkie">
+    <img src="images/blinkies/cringebutfreeblinkie.webp" alt="Cringe but free blinkie">
+    <img src="images/blinkies/imissmywifetailsblinkie.gif" alt="I miss my wife tails blinkie">
+    <img src="images/blinkies/demoncoreapologistblinkie.gif" alt="Demoncore apologist blinkie">
+    <img src="images/blinkies/addictedtographicsblinkie.gif" alt="Addicted to graphics blinkie">
+    <img src="images/blinkies/onlineandicantgetoffblinkie.gif" alt="Online and I can't get off blinkie">
+    <img src="images/blinkies/iheartblinkies.gif" alt="I ♥ blinkies">
+    <img src="images/blinkies/idreaminpixels.gif" alt="I dream in pixels blinkie">   
+    <img src="images/blinkies/ponderingmyorbblinkie.gif" alt="Pondering my orb blinkie"> 
+    <img src="images/blinkies/aquariumjunkieblinkie.gif " alt="Aquarium junkie blinkie"> 
+    <img src="images/blinkies/artislifeisartblinkie.gif" alt="Art is life is art blinkie"> 
+    <img src="images/blinkies/fishiefishieblinkie.gif" alt="Fishie fishie blinkie"> 
+    <img src="images/blinkies/sillyblinkie.gif" alt="Silly blinkie">
+    <img src="images/blinkies/oldwebexplorerblinkie.gif" alt="Old web explorer blinkie">
+    <img src="images/blinkies/ilovecommentsblinkie.gif" alt="I love comments blinkie"> 
+    <img src="images/blinkies/iheartbakingblinkie.gif" alt="I heart baking blinkie">
+    <img src="images/blinkies/homeiswhereyouhangyourblinkie.gif" alt="Home is where you hang your @ blinkie">
+    <img src="images/blinkies/friendpilledvisitmaxxerblinkie.gif" alt="Friendpilled visitmaxxer blinkie">
+    <img src="images/blinkies/fishloverblinkie.gif" alt="Fish lover blinkie">
+    <img src="images/blinkies/eeveeryoneblinkie.gif" alt="Eeveryone loves eevee blinkie">
+    <img src="images/blinkies/darkmodeuserblinkie.gif" alt="Dark mode user blinkie">
+    <img src="images/blinkies/breadconnoisseurblinkie.gif" alt="Bread connoisseur blinkie">
+    <img src="images/blinkies/chiikawablinkie.gif" alt="Chiikawa blinkie">
+    <img src="images/blinkies/catboyblinkie.gif" alt="Cat boy blinkie">
+    <img src="images/blinkies/basedonwhatblinkie.gif" alt="Based? Based on what? blinkie">
+    <img src="images/blinkies/bluecrayonblinkie.gif" alt="Blue crayon blinkie">
+  </div>
+
+<!-- STAMPS COLLECTION -->
+<h2 style="text-align:center; margin-top: 40px;">My Stamps</h2>
+  <div class="stamp-gallery">
+    <img src="images/blinkies/ripwindowsxpstamp.png" alt="RIP Windows XP stamp">
+    <img src="images/blinkies/ilovebotholdandnewconsolesstamp.gif" alt="I love both old and new consoles stamp">
+    <img src="images/blinkies/iwishsquidswererealstamp.png" alt="I wish squids were real stamp">
+    <img src="images/blinkies/iloveoldweb.png" alt="I love old web">
+    <a href="https://read-nekojiru.neocities.org/" target="_blank"><img src="images/blinkies/nekojiruspinstamp.gif" alt="Nekojiru spin stamp"></a>
+    <img src="images/blinkies/omg!!stamp.gif" alt="OMG!! stamp">
+    <img src="images/blinkies/evilstamp.png" alt="Evil stamp">
+    <img src="images/blinkies/averageartiststamp.gif" alt="Average artist stamp">
+    <img src="images/blinkies/iplayminecraftstamp.png" alt="I play Minecraft stamp">
+    <img src="images/blinkies/nekojirustamp.gif" alt="Nekojiru stamp">
+    <img src="images/blinkies/internetaddictstamp.gif" alt="Internet addict stamp">
+    <img src="images/blinkies/alwaysbetterinmyimaginationstamp.gif" alt="Always better in my imagination stamp">
+    <img src="images/blinkies/ilovestickersstamp.png" alt="I love stickers stamp">
+    <img src="images/blinkies/nyancat.gif" alt="Nyan cat stamp">
+    <img src="images/blinkies/theinternetiscoolbecausestamp.png" alt="The internet is cool because stamp">
+    <img src="images/blinkies/screwaroundmspaint.jpg" alt="I support randomly screwing around in MS Paint">
+    <img src="images/blinkies/ilovecatsstamp.png" alt="I love cats stamp">
+    <img src="images/blinkies/ilovemusicstamp.gif" alt="I love music stamp">
+    <img src="images/blinkies/lookedbetterinmyheadstamp.gif" alt="Looked better in my head stamp">
+    <img src="images/blinkies/instantlineartstamp.png" alt="Instant lineart stamp">
+    <img src="images/blinkies/blissbackgroundstamp.png" alt="Bliss background stamp">
+    <img src="images/blinkies/digitalartiststamp.png" alt="Digital artist stamp">
+    <img src="images/blinkies/whatstamp.png" alt="What stamp">
+    <img src="images/blinkies/realisopodhoursstamp.png" alt="Real isopod hours stamp">
+    <img src="images/blinkies/isopodstamp.png" alt="Isopod stamp">
+    <img src="images/blinkies/breakcorestamp.png" alt="Breakcore stamp">
+    <img src="images/blinkies/gnarpgnarpstamp.png" alt="Gnarp gnarp stamp">
+    <img src="images/blinkies/lainstamp.gif" alt="Lain stamp">
+    <img src="images/blinkies/isupportminecraftstamp.png" alt="I support Minecraft stamp">
+    <img src="images/blinkies/littlebigplanetstamp.png" alt="Little Big Planet stamp">
+    <img src="images/blinkies/autismcreaturestamp.png" alt="Autism creature stamp">
+    <img src="images/blinkies/tomodachilifestamp.png" alt="Tomodachi Life stamp">
+    <img src="images/blinkies/animalcrossingstamp.gif" alt="Animal Crossing stamp">
+    <img src="images/blinkies/iheartsuitsstamp.png" alt="I heart suits stamp">
+    <img src="images/blinkies/endofevangelionstamp.gif" alt="End of Evangelion stamp">
+    <img src="images/blinkies/wigglystamp.png" alt="Wiggly stamp">
+    <img src="images/blinkies/comicsareanartformstamp.png" alt="Comics are an art form stamp">
+    <img src="images/blinkies/iwishlifehadctrlzstamp.png" alt="I wish life had ctrl z stamp">
+    <img src="images/blinkies/stardewvalleystamp.png" alt="Stardew Valley stamp">
+    <img src="images/blinkies/sealofapprovalstamp.png" alt="Seal of approval stamp">
+    <img src="images/blinkies/theeeperstamp.gif" alt="The eeper stamp">
+    <img src="images/blinkies/ihatemonologuestamp.gif" alt="AM hate monologue stamp">
+    <img src="images/blinkies/sharksswimmingstamp.gif " alt="Sharks swimming stamp">
+    <img src="images/blinkies/housetheautismspectrumstamp.png" alt="The autism spectrum stamp">
+    <img src="images/blinkies/glupstamp.png" alt="Glup stamp">
+    <img src="images/blinkies/holdupfirewritingstamp.png " alt="Hold up!! His writing is this fire??? stamp">
+  </div>
+</section>
+
+  </main>
+</div>
+
+
+<div class="floating-btns">
+  <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+  <a href="index.html" class="back-button">← HOME</a>
+</div>
+
+<style>
+.social-btn{
+  display:inline-block;
+  padding:12px 20px;
+  background:linear-gradient(135deg,#43B3D2,#9be7ff);
+  color:#000;
+  text-decoration:none;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,0.3);
+  transition:transform 0.12s;
+}
+
+.social-btn:hover{
+  transform:scale(1.08);
+}
+</style>
+
+<script>
+const facts = [
+  "I like my eggs soft boiled or sunny-side-up",
+  "the only way I'll eat pork is in bacon or shoyu tonkotsu ramen",
+  "countdowns make me nervous",
+  "I listen to music pretty much 24/7 but I can't make it",
+  "I love blinkies",
+  "I usually have exactly twenty stickers on my water bottle",
+  "I collect Sylvanian Families :)",
+  "I ate too many mangoes as a kid, now I can't eat them",
+  "I've never broken a bone",
+  "I speak three languages",
+  "my favorite shark is the Greenland shark",
+  "my favorite playstation game is little big planet 2",
+  "I love Bee and Puppycat",
+  "The Disastrous Life of Saiki K makes me laugh",
+  "I always keep a copy of I Have No Mouth, and I Must Scream on my PC",
+  "a guinea pig bit a hole in my cheek when I was little",
+  "I crochet for fun and I've made a fish-shaped bag",
+  "I try to make art every day",
+  "I won an award for most likely to have his art displayed in a museum",
+  "I adore the font comic sans",
+  "I hate the feeling of velvet",
+  "my favorite season is spring",
+  "my birthday is April 27!",
+  "I love fun facts",
+  "I'm never playing Fear and Hunger but I'm a big fan",
+  "I love the game Flesh, Blood, & Concrete by io",
+  "I have a shell collection",
+  "I own a brown Olympia typewriter",
+  "my smoke detector always has batteries in it"
+];
+
+let lastFactIndex = -1;
+  function newFact() {
+    let index;
+    do { index = Math.floor(Math.random() * facts.length); } while (index === lastFactIndex);
+    lastFactIndex = index;
+    document.getElementById("funfact-box").textContent = facts[index];
+  }
+
+  const meTrigger = document.getElementById('me-trigger');
+  const textTrigger = document.getElementById('about-title');
+  let floatingMeContainer = null;
+
+  function createFloatingMe() {
+    if (floatingMeContainer) return floatingMeContainer;
+    floatingMeContainer = document.createElement('div');
+    floatingMeContainer.id = 'floating-me-container';
+    const img = document.createElement('img');
+    img.src = 'images/art/digital/me-standing.png';
+    img.className = 'little-me-gif';
+    const text = document.createElement('span');
+    text.id = 'floating-me-message';
+    text.textContent = "It's me, the webmaster!";
+    floatingMeContainer.appendChild(img);
+    floatingMeContainer.appendChild(text);
+    document.body.appendChild(floatingMeContainer);
+    floatingMeContainer.addEventListener('click', (e) => {
+      e.stopPropagation();
+      floatingMeContainer.classList.remove('visible');
+      setTimeout(() => { if (floatingMeContainer) { floatingMeContainer.remove(); floatingMeContainer = null; } }, 400);
+    });
+    return floatingMeContainer;
+  }
+
+  function toggleMe(e) {
+    e.preventDefault(); e.stopPropagation();
+    const container = createFloatingMe();
+    if (container.classList.contains('visible')) { container.classList.remove('visible'); } 
+    else { container.classList.add('visible'); }
+  }
+  meTrigger.addEventListener('click', toggleMe);
+  textTrigger.addEventListener('click', toggleMe);
+  
+</script>
+</body>
+</html>

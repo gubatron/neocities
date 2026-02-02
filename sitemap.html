@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf SITEMAP</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #43B3D2;
+    --bg: #000;
+    --text: #fff;
+    --border-light: rgba(255,255,255,0.35);
+    --border-dark: rgba(0,0,0,0.85);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    font-family: 'VT323', monospace;
+    color: var(--text); font-size: 19px; line-height: 1.25;
+  }
+
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+  /* Layout Container - Exactly like Home */
+  .site {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    align-items: start;
+  }
+
+  /* Sidebar Tab - Exactly like Home */
+  .sidebar {
+    margin: 14px 0 14px 14px;
+    padding: 12px;
+    background: rgba(0,0,0,0.88);
+    border: 1px solid var(--border-light);
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    position: sticky;
+    top: 14px;
+  }
+
+  .sidebar h2 { margin: 0 0 8px; color: var(--accent); }
+
+  .nav a {
+    display: block; color: var(--text); text-decoration: none;
+    padding: 4px 8px; border-radius: 4px; transition: 0.2s;
+  }
+
+  .nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+  
+.nav a.current { 
+    background: rgba(67, 179, 210, 0.35) !important; 
+    color: #43B3D2 !important; 
+    border-left: 4px solid #43B3D2 !important;
+    display: block !important;
+  }
+  
+  .floating-btns { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+  .back-button { 
+    background: linear-gradient(135deg, var(--accent), #9be5f4);
+    color: #000; padding: 10px 16px; text-decoration: none; border-radius: 8px; 
+    border: 1px solid var(--border-light); font-family: 'VT323', monospace; text-align: center;
+    display: block;
+  }
+
+  /* Dropdown Styles */
+  .dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+  .show-art .dropdown-content { display: block; }
+  .arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+  .show-art .arrow { transform: rotate(90deg); }
+
+  /* Content Box - Exactly like Home */
+  .content {
+    margin: 14px 14px 14px 0;
+    padding: 14px;
+    background: rgba(0,0,0,0.88);
+    border: 1px solid var(--border-light);
+    border-radius: 0 10px 10px 10px;
+    display: grid;
+    gap: 12px;
+  }
+
+  header {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%, #000 80%);
+  }
+
+  header h1 {
+    margin: 0; font-size: 2.7rem;
+    background: linear-gradient(to bottom, #9be5f4, var(--accent));
+    -webkit-background-clip: text; color: transparent;
+  }
+
+  /* Sitemap-specific Animated Section */
+  section { 
+    background: #000; border-radius: 8px; padding: 20px; 
+    border: 1px solid var(--border-light); position: relative; overflow: hidden;
+  }
+
+  section::before {
+    content: ""; position: absolute;
+    top: -100px; left: -100px; right: -100px; bottom: -100px;
+    background: repeating-linear-gradient(
+      -45deg, rgba(67, 179, 210, 0.12), rgba(67, 179, 210, 0.12) 15px, 
+      transparent 15px, transparent 30px
+    );
+    animation: moveStripes 3s linear infinite;
+    pointer-events: none; z-index: 0;
+  }
+
+  @keyframes moveStripes {
+    from { transform: translate(0, 0); }
+    to { transform: translate(42.42px, 0); } 
+  }
+
+  section > * { position: relative; z-index: 1; }
+
+  .directory-box {
+    background: linear-gradient(to bottom, #9be5f4, var(--accent));
+    color: #000; padding: 12px 15px; border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.3); margin-bottom: 20px;
+    text-align: center; font-weight: bold;
+  }
+
+  .sitemap-list { list-style: none; padding-left: 10px; }
+  .sitemap-list li { margin: 8px 0; }
+  .sitemap-list li::before { content: "⭑"; color: var(--accent); margin-right: 10px; }
+  .sitemap-list a { color: #fff; text-decoration: none; }
+  .sitemap-list a:hover { color: var(--accent); text-decoration: underline; }
+
+  .sitemap-list ul {
+    list-style: none; padding-left: 25px;
+    border-left: 2px dashed var(--accent); 
+    margin: 5px 0 0 5px;
+  }
+
+  .category-title {
+    color: var(--accent); font-size: 1.5rem; margin-top: 25px;
+    display: block; border-bottom: 2px dashed rgba(255,255,255,0.2);
+    padding-bottom: 5px;
+  }
+
+  .back-button { 
+    position: fixed; bottom: 20px; right: 20px; 
+    background: linear-gradient(135deg, var(--accent), #9be7ff);
+    color: #000; padding: 12px 18px; font-family:'VT323',monospace; 
+    text-decoration:none; border-radius:8px; border:1px solid var(--border-light); 
+    z-index: 100;
+  }
+
+  /* Custom Scrollbars */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+  @media (max-width: 850px) {
+    .site { grid-template-columns: 1fr; }
+    .sidebar { margin: 14px auto; width: 95%; border-right: 1px solid var(--border-light); border-radius: 10px; position: relative; top: 0; }
+    .content { margin: 14px; border-radius: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="site">
+  <aside class="sidebar">
+    <h2>Navigation</h2>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      
+      <div class="nav-group" id="art-group">
+        <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+          Art <span class="arrow">▶</span>
+        </a>
+        <div class="dropdown-content">
+          <a href="art.html">Overview</a>
+          <a href="digital.html">Digital</a>
+          <a href="mspaint.html">MS Paint</a>
+          <a href="2dart.html">2D Art</a>
+          <a href="3dart.html">3D Art</a>
+          <a href="studies.html">Skill Lab</a>
+        </div>
+      </div>
+
+      <a href="commissions.html">Commissions</a>
+      <a href="journal.html">Journal</a>
+      <a href="stories.html">Stories</a>
+      <a href="characters.html">Characters</a>
+      <a href="sharks.html">Sharks</a>
+      <a href="cats.html">Cats</a>
+      <a href="resources.html">Resources</a>
+      <a href="sitemap.html" class="current">Sitemap</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <header><h1>SITEMAP</h1></header>
+
+    <section>
+      <div class="directory-box">A complete directory of every page on the Wharf.</div>
+      
+      <ul class="sitemap-list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Me</a></li>
+        
+        <span class="category-title">Art & Work</span>
+        <li><a href="art.html">Art Gallery Overview</a>
+            <ul>
+                <li><a href="digital.html">Digital Gallery</a></li>
+                <li><a href="mspaint.html">MS Paint Archive + Kid Pix!</a></li>
+                <li><a href="2dart.html">2D Art</a></li>
+                <li><a href="3dart.html">3D Art</a></li>
+                <li><a href="studies.html">Skill Lab</a></li>
+            </ul>
+        </li>
+        <li><a href="commissions.html">Commissions</a></li>
+
+        <span class="category-title">Writing</span>
+        <li><a href="stories.html">Stories</a></li>
+        <li><a href="journal.html">Journal / Devlog</a></li>
+        <li><a href="characters.html">Characters (not very good)</a></li>
+        <li><a href="secondwinter/secondwinter.html">Second Winter (WIP)</a></li>
+        <li><a href="spices/spices.html">Spices (WIP)</a></li>
+
+        <span class="category-title">Interests & Misc</span>
+        <li><a href="sharks.html">Sharks!</a></li>
+        <li><a href="cats.html">Cats!</a></li>
+        <li><a href="resources.html">Resource Portal</a></li>
+        <li><a href="sitemap.html">Sitemap (you are here)</a></li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<div class="floating-btns">
+    <a href="index.html" class="back-button">← HOME</a>
+</div>
+
+<script>
+  const currentPath = window.location.pathname.split("/").pop() || "index.html";
+  document.querySelectorAll('.nav a').forEach(link => {
+      if (link.getAttribute('href') === currentPath) {
+          link.classList.add('current');
+          if (link.closest('.dropdown-content')) {
+              document.getElementById('art-group').classList.add('show-art');
+          }
+      }
+  });
+</script>
+
+</body>
+</html>

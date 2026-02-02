@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spices</title>
+  <link rel="icon" type="image/png" href="https://smallcarnivore.neocities.org/spices/spicesassets/clover.png">
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #6a9ab0; --green: #8aa978; --yellow: #e9c46a;
+      --border-main: #d8c3a5; --bg-content: #fdfaf3;
+      --footer-text: #000; --radius: 20px; --scrollbar-thumb: #d8c3a5;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0; height: 100vh;
+      font-family: 'Gaegu', cursive; font-size: 1.4rem;
+      background: url('https://smallcarnivore.neocities.org/spices/spicesassets/spicesbackground.png') center/cover no-repeat;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+    }
+
+    .container {
+      width: 95%; max-width: 1200px; height: 95vh;
+      background: rgba(253, 250, 243, 0.98);
+      border: 5px solid var(--border-main); border-radius: var(--radius);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    header {
+      height: 120px; border-bottom: 5px solid var(--border-main);
+      background: url('https://smallcarnivore.neocities.org/spices/spicesassets/spicesheader.png') center/cover no-repeat;
+      display: flex; align-items: center; padding-left: 30px; flex-shrink: 0;
+    }
+
+    header h1 {
+      margin: 0; font-size: 2.7rem; color: #000;
+      text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff, 0px -2px 0 #fff, 0px 2px 0 #fff, -2px 0px 0 #fff, 2px 0px 0 #fff;
+    }
+
+    main { display: grid; grid-template-columns: 260px 1fr; flex: 1; overflow: hidden; }
+
+    /* Custom Scrollbar and Layout Stability */
+    ::-webkit-scrollbar { width: 12px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border: 2px solid var(--bg-content); border-radius: 10px; }
+
+    nav { 
+      padding: 15px; border-right: 5px solid var(--border-main); 
+      display: flex; flex-direction: column; gap: 8px; overflow-y: auto;
+      scrollbar-gutter: stable; /* Prevents shifting when scrollbar appears */
+    }
+    
+    nav button, nav summary {
+      width: 100%; height: 40px; padding: 0 10px; font-family: 'Gaegu', cursive; font-size: 1.4rem;
+      font-weight: bold; color: white; border: 4px solid transparent; border-radius: 12px;
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between; list-style: none;
+      flex-shrink: 0;
+    }
+
+    .tab-home, .tab-story, .tab-about { background: var(--blue); }
+    .tab-world, .tab-game { background: var(--green); }
+    .tab-chars, .tab-art { background: var(--yellow); }
+
+    .active-tab { border-color: #000 !important; color: #000 !important; }
+    
+    nav a.sub {
+      display: block; padding: 5px 10px; margin: 2px 0 2px 10px; text-decoration: none; color: #333;
+      font-size: 1.4rem; border: 4px solid; border-radius: 10px; background: #fff;
+    }
+    nav a.sub.active-sub { border-color: #000 !important; }
+
+    .content-pane { padding: 20px; overflow-y: auto; height: 100%; display: flex; flex-direction: column; }
+    section { display: none; height: 100%; flex-direction: column; }
+    section.active { display: flex; }
+
+    .full-box {
+      width: 100%; background: var(--bg-content); border: 5px solid var(--border-main);
+      border-radius: var(--radius); padding: 20px; overflow-y: auto; flex: 1;
+    }
+
+    /* Home Buttons */
+    .home-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+    .home-btns button, .home-btns a {
+      padding: 8px 20px; border: none; border-radius: 12px;
+      background: var(--blue); color: white; font-family: 'Gaegu', cursive; 
+      font-size: 1.4rem; font-weight: bold; cursor: pointer; text-decoration: none;
+    }
+
+    /* Overlays */
+    #lightbox, .popup-modal { 
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6); 
+      display: none; align-items: center; justify-content: center; z-index: 9999; 
+    }
+    #lightbox.active { display: flex; }
+    #lightbox img { max-width: 80%; max-height: 80%; border: 5px solid #fff; pointer-events: none; }
+    .lb-close, .popup-close { 
+        position: absolute; top: 20px; right: 30px; color: white; 
+        font-size: 3rem; cursor: pointer; font-family: 'Gaegu', cursive; font-weight: bold;
+    }
+    .lb-nav { position: absolute; color: white; font-size: 4rem; cursor: pointer; background: none; border: none; padding: 20px; font-family: 'Gaegu', cursive; }
+    .lb-prev { left: 10px; } .lb-next { right: 10px; }
+
+    /* Theme Animation */
+/* Seamless Striped Background for Kahna */
+body.theme-kahna::before {
+  content: "";
+  position: fixed;
+  top: -100px; left: -100px; width: 200%; height: 200%;
+  background: repeating-linear-gradient(
+    -45deg, 
+    #ff4d4d, #ff4d4d 30px, 
+    #ffb3b3 30px, #ffb3b3 60px
+  );
+  animation: moveStripes 4s linear infinite;
+  z-index: -1;
+}
+
+@keyframes moveStripes {
+  from { transform: translate(0, 0); }
+  to { transform: translate(84.85px, 0); } /* Diagonal of 60px is approx 84.85px */
+}
+
+/* Restore other backgrounds */
+body.theme-haru { background: url('https://smallcarnivore.neocities.org/spices/spicesassets/harubackground.png') center/cover no-repeat; }
+body.theme-suzu { background: url('https://smallcarnivore.neocities.org/spices/spicesassets/suzubackground.png') center/cover no-repeat; }
+body.theme-mrmori { background: url('https://smallcarnivore.neocities.org/spices/spicesassets/mrmoribackground.png') center/cover no-repeat; }
+
+/* Mrs. Mori: Blueish Dots */
+body.theme-mrsmori::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-color: #eceff1;
+  /* Change dot color to black, size to 1px */
+  background-image: radial-gradient(#000 1px, transparent 1px);
+  /* background-size controls the spacing; smaller number = more plentiful */
+  background-size: 15px 15px; 
+  z-index: -1;
+}
+
+/* Nao: Clean Grid */
+body.theme-nao::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-color: #d0d0d0;
+  background-image: 
+    linear-gradient(#999 1px, transparent 1px),
+    linear-gradient(90deg, #999 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: -1;
+}
+
+/* Tighten Chibi Space */
+.chibi-side {
+  width: 160px; /* Reduced from 220px */
+  padding: 0;
+  margin-left: -10px; /* Pulls it closer to the text */
+}
+
+/* Decrease space to the sides of chibis */
+.chibi-side {
+  width: 160px; /* Reduced from 220px */
+  padding: 0 5px; /* Tightens the side padding */
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 1;
+}
+
+    /* Story UI */
+    .story-controls { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px; }
+    .story-controls button, .story-controls select { 
+        height: 45px; padding: 0 15px; border: 4px solid var(--border-main); 
+        background: #fff; font-family: 'Gaegu', cursive; font-size: 1.2rem; border-radius: 12px; cursor: pointer; 
+    }
+
+    /* Popup Modal */
+    .popup-content { 
+        width: 90%; height: 90%; background: #fff; border: 6px solid var(--border-main); 
+        border-radius: 30px; display: flex; flex-direction: column; padding: 25px; position: relative; 
+    }
+    .popup-close { color: var(--border-main); top: 10px; right: 20px; }
+
+    footer { height: 40px; background: var(--border-main); color: var(--footer-text); display: flex; align-items: center; justify-content: center; font-weight: bold; border-top: 5px solid var(--border-main); }
+
+/* 1. Rounded Art Preview Borders */
+.art-card {
+  border-radius: 20px; overflow: hidden;
+  border: 4px solid var(--border-main);
+  cursor: pointer;
+}
+
+/* 2. Character Bio & Chibi Bottom Alignment */
+.char-layout {
+  display: flex; flex-direction: row; gap: 20px;
+  height: 100%; align-items: flex-end; 
+  position: relative; overflow: hidden;
+}
+
+.full-box {
+  align-self: stretch; flex: 1;
+  background: var(--bg-content);
+  border: 5px solid var(--border-main);
+  border-radius: var(--radius);
+  padding: 20px; overflow-y: auto;
+  position: relative; z-index: 1; /* Keep text above background animations */
+}
+
+.chibi-side {
+  width: 220px; flex-shrink: 0;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative; z-index: 1;
+}
+
+/* Swapped title colors for Nao and Mrs. Mori */
+.theme-nao h1, .theme-mrsmori h1 {
+  color: #fff !important;
+text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0px -2px 0 #000, 0px 2px 0 #000, -2px 0px 0 #000, 2px 0px 0 #000; }
+
+/* Container Fix */
+.container {
+  width: 95%; max-width: 1200px; height: 95vh;
+  background: rgba(253, 250, 243, 0.98);
+  border: 5px solid var(--border-main); 
+  border-radius: var(--radius);
+  display: flex; flex-direction: column; 
+  overflow: hidden; /* Keeps header/footer locked */
+}
+
+/* Scrollbar Under Border Fix */
+section {
+  display: none; height: 100%; flex-direction: column;
+  border: 5px solid var(--border-main); /* Outer Border */
+  border-radius: var(--radius);
+  background: var(--bg-content);
+  overflow: hidden; /* Clips the inner scrollbar */
+  position: relative;
+}
+
+.full-box {
+  width: 100%; height: 100%;
+  padding: 20px;
+  overflow-y: auto; /* Internal scrolling only */
+  border: none !important; /* Remove the inner border */
+  position: relative;
+  z-index: 1;
+}
+
+.full-box .school-toc {
+  margin: 0 0 2rem 0;                    /* slightly less bottom margin */
+  padding: 1rem 1.2rem;                  /* tighter internal padding */
+  background: rgba(216, 195, 165, 0.08); /* same subtle bg as before */
+  border: 5px solid var(--border-main);  /* matches your main borders (5px) */
+  border-radius: var(--radius);          /* uses your global --radius (20px) */
+  max-height: 240px;                     /* slightly shorter to feel compact */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.full-box .school-toc h3 {
+  margin: 0 0 0rem 0;                  /* tighter heading spacing */
+  text-align: center;
+  font-size: 2rem;                     /* slightly smaller for better fit */
+  color: #000;
+}
+
+.full-box .school-toc ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.full-box .school-toc li {
+  margin: 0.25rem 0;                     /* much tighter vertical spacing between items */
+}
+
+.full-box .school-toc a {
+  display: block;
+  padding: 0.5rem 1rem;                  /* reduced padding inside each link */
+  color: #444;
+  text-decoration: none !important;
+  border-radius: 10px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.full-box .school-toc a:hover,
+.full-box .school-toc a:focus {
+  background: #fdfaf3 !important;
+  box-shadow: inset 0 0 0 3px var(--border-main) !important;
+}
+
+/* =========================
+   MOBILE LAYOUT FIX
+   ========================= */
+
+@media (max-width: 900px) {
+
+  /* ---------- Base scrolling sanity ---------- */
+  body {
+    height: auto;
+    overflow: auto;
+  }
+
+  .container {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- Top horizontal nav strip ---------- */
+  nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border-right: none;
+    border-bottom: 5px solid var(--border-main);
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+  }
+
+  nav::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  nav button,
+  nav summary {
+    width: auto;
+    min-width: 140px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  /* Give characters tab breathing room */
+  .tab-chars {
+    min-width: 170px;
+  }
+
+  /* ---------- DETAILS AS INLINE TAB EXPANDER ---------- */
+  nav details {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  nav details summary {
+    list-style: none;
+  }
+
+  /* Triangle points right */
+  nav details summary small {
+    display: inline-block;
+    transform: rotate(-90deg);
+    transition: transform 0.15s ease;
+  }
+
+  nav details[open] summary small {
+    transform: rotate(0deg);
+  }
+
+  /* ---------- Sub-tabs flow INLINE, not boxed ---------- */
+  nav details .dropdown-content {
+    display: inline-flex;
+    flex-direction: row;
+    gap: 6px;
+    margin-left: 6px;
+  }
+
+  nav details .dropdown-content a.sub {
+    margin: 0;
+    flex-shrink: 0;
+  }
+
+  /* ---------- Content area ---------- */
+  .content-pane {
+    padding: 15px;
+  }
+
+  /* ---------- Character pages ---------- */
+  .char-layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chibi-side {
+    display: none !important;
+  }
+}
+  </style>
+</head>
+<body class="theme-default">
+
+<div class="container">
+  <header id="main-header">
+    <h1 id="page-title">Spices!</h1>
+  </header>
+
+  <main>
+    <nav>
+      <button class="tab-home active-tab" onclick="show('home')">Home</button>
+      <details onclick="exclusiveMenu(this)">
+        <summary class="tab-world">World <small>▼</small></summary>
+        <div class="dropdown-content">
+          <a href="#" class="sub" style="border-color:var(--green)" onclick="show('world-info')">World Info</a>
+          <a href="#" class="sub" style="border-color:var(--green)" onclick="show('village')">Coastal Village</a>
+          <a href="#" class="sub" style="border-color:var(--green)" onclick="show('city')">Medium City</a>
+          <a href="#" class="sub" style="border-color:var(--green)" onclick="show('ak-agricultural')">A.K. Agricultural Exchange</a>
+        </div>
+      </details>
+      <details onclick="exclusiveMenu(this)">
+        <summary class="tab-chars">Characters <small>▼</small></summary>
+        <div class="dropdown-content">
+          <a href="#" class="sub" style="border-color:var(--yellow)" onclick="show('haru')">Haru</a>
+          <a href="#" class="sub" style="border-color:var(--yellow)" onclick="show('nao')">Nao</a>
+          <a href="#" class="sub" style="border-color:var(--yellow)" onclick="show('kahna')">Kahna</a>
+          <a href="#" class="sub" style="border-color:var(--yellow)" onclick="show('suzu')">Suzu</a>
+          <a href="#" class="sub" style="border-color:var(--yellow)" onclick="show('mrsmori')">Mrs. Mori</a>
+          <a href="#" class="sub" style="border-color:var(--yellow)" onclick="show('mrmori')">Mr. Mori</a>
+        </div>
+      </details>
+      <details onclick="exclusiveMenu(this)">
+        <summary class="tab-story">Story <small>▼</small></summary>
+        <div class="dropdown-content">
+          <a href="#" class="sub" style="border-color:var(--blue)" onclick="show('story-overview')">Story Overview</a>
+          <a href="#" class="sub" style="border-color:var(--blue)" onclick="show('school-days')">School Days</a>
+          <a href="#" class="sub" style="border-color:var(--blue)" onclick="show('short-stories')">Short Stories</a>
+        </div>
+      </details>
+      <button class="tab-game" onclick="show('game-dev')">Game Dev</button>
+      <button class="tab-art" onclick="show('art')">Art</button>
+      <button class="tab-about" onclick="show('about')">About</button>
+    </nav>
+
+    <div class="content-pane">
+<section id="home" class="active">
+  <div class="full-box">
+    <p>This is the hub for all things Spices. Navigate using the sidebar to find lore, art, and dev logs.</p>
+    
+    <!-- moved inside -->
+    <div class="home-btns">
+      <a href="https://smallcarnivore.neocities.org/">Go Back</a>
+      <button onclick="show('short-stories')">Short Stories</button>
+      <button onclick="show('world-info')">World Info</button>
+      <button onclick="show('haru')">Haru</button>
+      <button onclick="show('nao')">Nao</button>
+    </div>
+  </div>
+</section>
+
+<section id="art">
+  <div class="full-box">
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:15px;">
+      <div class="art-card" onclick="openLightbox(0)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/doyoulikecrayons.png" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(1)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/catonthesteps.png" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(2)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/smalltalk.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(3)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/brightgreenlightportrait.png" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(4)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/momsoldphoto.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(5)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/motherdaughtermoment.png" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(6)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/expressions.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(7)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/ramenupgraded.png" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(8)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/runningharu.gif" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(9)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/officeworking.gif" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(10)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/corporatelimbo.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(11)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/sisters.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(12)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/killedamanin94.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(13)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/officemood.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(14)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/summerfun.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(15)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/chattingonlineisprettychill.gif" style="width:100%; height:100%; object-fit:cover;"></div>
+      <div class="art-card" onclick="openLightbox(16)" style="border:4px solid var(--border-main); aspect-ratio:1; cursor:pointer;"><img src="https://smallcarnivore.neocities.org/images/art/digital/ramenat3am.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+    </div>
+  </div>
+</section>
+
+      <section id="about"><div class="full-box"><h2>About</h2><p>Spices' page is a personal project documenting the growth of a fictional universe. Made by smallcarnivorousmammal. You can go back to my main site using the button on the home page.</p></div></section>
+      <section id="game-dev"><div class="full-box"><h2>Game Dev</h2><p>Making so many maps. It's not very fun right now. At least I have a player character... >:( </p></div></section>
+      <section id="world-info"><div class="full-box"><h2>Society & Class</h2>
+<p>The society is ethnically and culturally diverse but integrated in a soft, unobtrusive manner. People identify more with their towns or regions than with national identities. There is no slavery or formal caste system, and citizenship is universal. While there is a wealth gap, it is not extreme, and social mobility is possible, though slow. Poverty is rare, and communities support those in need. Most people live in small towns or coastal settlements, with major cities being uncommon and often seen as spiritually disconnected from tradition.</p>
+
+<h2>Language</h2>
+<p>A single common language is spoken regionally, with minor dialectal variations. A trade-specific dialect is used in coastal trading ports. Most people are multilingual, speaking at least one language. Written language is uniform across most of the country, though older alphabets appear in religious or folkloric texts. Literacy is widespread and expected.</p>
+
+<h2>Architecture</h2>
+<p>Architecture is practical and functional, with sloped roofs, wood and stone construction, and effective rain gutters. Homes are built for warmth and drainage. In towns, houses are close together with shared gardens and greenery between roads. In cities, buildings are taller with sustainably modern designs that integrate nature.</p>
+
+<h2>Education</h2>
+<p>Education begins around age six and is provided to all children. It is modest but thorough and accessible, with small schools and shared teachers. Secondary education beyond high school is optional and often tied to trade apprenticeships, teaching, or regional academies. Children from different backgrounds study together, though private schools exist in wealthier cities. Most schools are modest buildings with open windows, gardens, and community involvement.</p>
+
+<h2>History</h2>
+<p>This world diverged from our own in the 20th century, avoiding the two World Wars. As a result, industrialization, urbanization, and technology spread at a steadier pace. There were no mass genocides like the Holocaust, so minority communities like Jewish populations remain globally distributed with strong cultural continuity. Nuclear power became the dominant energy source without the stigma of atomic fear, leading to clean electrification and slower climate change. The absence of war-driven technological booms meant slower development in areas like jet engines and space travel, but faster progress in medicine, agriculture, and engineering. The UN and international law evolved differently, with less emphasis on human rights oversight and more on technical cooperation and environmental policy. The absence of war also meant no Cold War arms race or nuclear disasters like Chernobyl or Fukushima. Fast food chains exist but are more regional than global, with street food, cafeterias, and canteen-style eating being more culturally central. The stock market exists but with weaker speculative bubbles, and currency value is determined through commodity-backed systems longer. Global trade blocs form regionally but lack the dominance of a WTO-style system.</p>
+
+<h2>Landscape & Nature</h2>
+<p>There is one sun and one moon, with celestial bodies similar to our own. The sky is usually a muted blue, hazy with inland fog. Nights are clear near water, often with silver mist. The mainland is solid but fractured by rivers and inlets, with islands clustering near the coast, partially forested and often uninhabited. The climate is temperate and consistent, with wet and dry seasons, occasional winds, fog, and light rain. Summers are warm and overcast, winters cool and damp, with snow only on mountaintops. Natural resources include timber, fish, clay, and minor mineral veins inland. Oil is scarce, with most alternative energy being hydro or wind-based. Forests are dense with moss, mushrooms, bamboo, and flowering shrubs. Insects are small and numerous, birds are common, and large animals include long-necked forest deer and heavy-backed mountain bears. Reptiles are small and harmless. Sea life is diverse, with eels, coral fish, and squid.</p>
+
+<h2>Economy, Agriculture & Trade</h2>
+<p>Common jobs include farming, teaching, repair work, delivery, fishing, small-scale trade, and administration. More advanced work—scientific research, policy, finance—is centralized in cities. Desirable jobs include archivists, lighthouse keepers, public radio staff, and train operators—roles associated with solitude, trust, and long-term service. Low-prestige jobs (by city standards) are agricultural or custodial, though they are respected in rural areas. Some industries (trade, craft) are organized into guilds or associations for support and credentialing. Agriculture is decentralized, with small family-run plots using non-monoculture, sustainable, and rotational farming. Domesticated animals include goats, cows, sheep, dogs, cats, and a local species of long-haired fowl known for its eggs. Aquaculture supports fish and shellfish production along the coasts and maintains aquatic ecosystem health. Markets trade food, small electronics, textiles, herbal medicine, and locally crafted goods. Trade is steady but local, with few people growing wealthy from it unless international or overseas. Currency is standardized across the region, though some isolated island towns still use older coinage or trade tokens. Barter is still used in remote areas.</p>
+
+<h2>Governance</h2>
+<p>The region is governed by an elected administrative council with rotating leadership, resembling a bureaucratic democracy without strong ideological presence. Most people vote out of habit rather than passion. Titles are minimal, with council members referred to by surname and rank (“Coordinator,” “Secretary,” etc.), and formality reserved for legal or ceremonial settings. There is a sense of collective modesty in government, with no kings, grand protectors, or strong military presence. The system has been in place for over a century, gradually replacing a more regional, feudal-like governance that faded without resistance. The government provides basic social assistance: housing vouchers, food stipends, and subsidized healthcare. A centralized medical system exists, but local clinics are more common and trusted. Public transport is patchy in rural areas, other than scheduled main lines (train), but more reliable in cities, consisting mostly of trains and buses. Communications (radio, mail, phones, some digital services) are a blend of public and semi-private systems. Most people mildly trust the government because it’s not particularly invasive or corrupt, just inefficient in some parts. Surveillance is rare and mostly limited to border activity or minor data collection. Taxation is simple, with an annual income tax scaled to earnings and small local fees. Trade and agriculture are lightly taxed to support infrastructure. Policing is light-touch and community-based, often run by elder councils and a few trained peace officers. There’s a formal justice system with local judges and traveling assessors. Trials focus on mediation and reparation more than punishment if not violent or intense. A formal military exists but is small and rarely visible. Most of the damage in recent history was caused by a regional border conflict several decades ago (not officially a war, but deeply unsettling). It was the result of territorial resource disputes and led to a quiet pullback from expansionism. Many towns near the area remember it but do not discuss it aloud. It’s done and over with by now.</p>
+
+<h2>Culture</h2>
+<p>Social expectations include a standard family unit of one or two parents, children, and sometimes elderly relatives. Chosen family and co-housing are also common in towns. Marriage is usually for love, but economic stability and emotional compatibility are also reasons. Genders are treated mostly equally, though subtle expectations linger (e.g., women may be more likely to inherit family homes, men expected to travel for work). Children are raised communally, with extended family and neighborhood adults involved. There is no overt patriarchy or matriarchy, mostly quiet systems of tradition. Respect is shown with slight bows, palm gestures, or soft-spoken phrases. Direct confrontation is avoided in polite society. Vulgarity is often body-based (e.g., references to rot, filth, etc.) or involves invoking corrupted or distorted spirits. Social faux pas include discussing wealth openly, speaking ill of the dead, or violating quiet hours in the evening. Compassion is more valued than strength; generosity over wealth.</p>
+<p>Food includes grilled fish, pickled vegetables, hot broths, rice dishes, and hand-held pies filled with root mash or sweet beans. Food is crop-forward, with seasonal fish. Other meat is occasional and usually local or cured. Flavors are gentle, fermented, pickled, or herbaceous. Meals are communal. Hearty and warmly spiced meals like hotpot, soup, etc., are also common and considered soul food. Street vendors sell steamed buns, fried root pancakes, herbal teas. Restaurants exist but are small and local (city chains are rare). Water is usually safe to drink, often flavored with citrus or herbs but enjoyed cool as well. Tables are low and square or circular; people sit on cushions. In bars and street stalls, tables are long, thin, rectangular, and tall, accompanied by comfortable stools.</p>
+<p>Religion is animistic-folkloric. People acknowledge unseen spirits in land, rain, and household objects. These spirits are not worshipped so much as respected, honored with small offerings, flowers, or quiet greetings. Temples are simple wooden buildings near water or large stones with intricate to simple carvings. They are open to all. The elite do not control religion; instead, caretakers (usually elder women or neutral clerics) manage them. Superstitions are small: don’t whistle at night, don’t cut your nails on foggy mornings, don’t eat certain mushrooms on dry days. These are woven into daily behavior, not treated as official doctrine. Spirits sometimes appear, especially near eroded cliffs, half-forgotten roads, or heavy rains. Monsoon season is the most common time for spottings. Most people don’t talk much about seeing them but leave space for them. Festivals are seasonal: a rain festival in spring, a harvest moonwalk in autumn, and sea offerings in early summer. Weddings are small, held near water or ancestral trees. Couples wear pale colors, exchange handmade gifts, and serve sweet rice wine. Funerals are quiet. A boat-shaped lantern is floated or a stone is left by the sea. The dead are remembered but not spoken of directly unless the topic comes up naturally. Small shrines or remembrance monuments are commonly seen in rural areas. Special celebratory foods include sticky rice cakes, flower-shaped fried dough, and plum/fruit tea.</p>
+
+<h2>Unsorted Thoughts</h2>
+<p>Without war, without paranoia, there is a greater incentive for collaboration and progress generally. No paranoia means no secrets withheld and more communications as well as available knowledge/materials. No war means less dead that could have invented wonderful things. There are many more opportunities in prosperity to create, for curiosity, to work together. I do agree that the space race wouldn’t make sense at all, though. In this world I do not think it is necessary for improvements. With more time to experiment and research, higher quality medical techniques and tools could be developed faster.</p>
+<p>I think that since this is a more reasonable world the ideologies that went hand in hand with colonialism and the genocides driven by it would be unlikely to happen. This can also relate to eugenics or racial superiority which I’d try to avoid because of the implications. The US would definitely be a weaker power, not the “global police”.</p>
+<p>I think for Russia, because of the system of management and the monarchy/serfdom it was inevitable that a revolution would happen. Perhaps instead of theorizing intellectuals who did not interact with lower classes taking power for communism/socialism, those with better leading abilities and experience with management and other classes could have coordinated better. This would also be helped by the favorable relationships between countries proving an incentive for better communications technology, which would allow the system to monitor things more smoothly and continue on for a longer time (so the USSR could have been a longer existing country). Perhaps the revolution could have started even earlier.</p>
+<p>Without wars and paranoia, there is a much greater capacity for connection and favorable relationships between countries would necessitate more communication, trade and exchange which calls for globalization. I also strongly disagree with you on energy. The absence of world wars would mean no nuclear bombings, no Cold War arms race, and no nuclear disasters like Chernobyl or Fukushima. As a result, nuclear power never gained its “dangerous” stigma, instead, it became the dominant, trusted energy source globally. This accelerated clean electrification and slowed climate change by several decades. There is no “atomic fear” in popular culture, no Cold War paranoia. Instead, nuclear is viewed with the same mundane familiarity as electricity or plumbing. Nuclear power and reactor would have most likely been invented via a multi-national collaboration. It would also have provided an incentive for computers/computing technology to be invented. This would then provide a solid basis for other things to be invented. Etc, etc.</p>
+<p>Perhaps with the continuation of culture, moral panic would not NEED to be as urgent because it’s not as big of a problem.</p>
+<p>The absence of war does not necessarily mean slower development.</p>
+<p>I think human-first city planning would be more abundant. Walkable, livable cities for the win.</p></div></section>
+      <section id="story-overview"><div class="full-box"><h2>Story Overview</h2><p>Yup. It's a story...</p></div></section>
+      
+<section id="school-days">
+  <div class="full-box">
+    <!-- Scrollable Table of Contents -->
+<div class="school-toc">
+  <h3>Quick Navigation</h3>
+  <ul>
+    <li><a href="#sd-nao" onclick="event.preventDefault(); document.getElementById('sd-nao').scrollIntoView({behavior:'smooth'})">Nao Mori</a></li>
+    <li><a href="#sd-haru" onclick="event.preventDefault(); document.getElementById('sd-haru').scrollIntoView({behavior:'smooth'})">Haru Mori</a></li>
+    <li><a href="#sd-kahna" onclick="event.preventDefault(); document.getElementById('sd-kahna').scrollIntoView({behavior:'smooth'})">Kahna Noma</a></li>
+    <li><a href="#sd-suzu" onclick="event.preventDefault(); document.getElementById('sd-suzu').scrollIntoView({behavior:'smooth'})">Suzu Kaho</a></li>
+    <li><a href="#sd-mrsmori" onclick="event.preventDefault(); document.getElementById('sd-mrsmori').scrollIntoView({behavior:'smooth'})">Mrs. Mori</a></li>
+    <li><a href="#sd-mrmori" onclick="event.preventDefault(); document.getElementById('sd-mrmori').scrollIntoView({behavior:'smooth'})">Mr. Mori</a></li>
+  </ul>
+</div>
+    <!-- Character sections with IDs for jumping -->
+    <div id="sd-nao"><h2>Nao Mori</h2>
+<p><strong>Early Childhood & Elementary School</strong><br> Nao spent most of her early schooling quietly excelling in academic work, though her teachers rarely saw her participate beyond what was required. She disliked group projects, preferring to shoulder all the work herself so she wouldn’t have to deal with coordination. At recess, she often lingered on her family’s property or walked alone, showing more interest in studying natural patterns than in games. Unlike her sister Haru, she didn’t join any clubs or school activities, despite encouragement. Teachers found her attentive and diligent, though they often worried about her hesitance to speak in class or join group activities. While other children played noisy games at recess, Nao could often be found tucked away in the library, paging through field guides or storybooks. She was rarely disruptive, but her distance sometimes invited teasing from classmates who mistook her introversion for arrogance. </p>
+<p>Socially, she developed slowly. She made one or two tentative friends in class, usually children who were themselves quiet or overlooked. Nao never caused trouble, but she also never sought praise. Teachers sometimes noted her antisocial tendencies but didn’t see them as concerning enough to address. Her classmates viewed her as a little odd. She was overlooked at class events and had no real interest in changing that dynamic. She was overlooked at class events and had no real interest in changing that dynamic. Nao was content in her own space but began to sense a growing gap between her and her more outgoing peers.</p>
+<p><strong>Junior High School</strong><br> Teachers described her as "meticulous," praising the precision of her notes and her careful approach to experiments. Her social difficulties persisted, however, as she continued to avoid speaking in front of the class and dreaded oral presentations. While other students became more socially active, she grew more withdrawn, spending hours with textbooks and research rather than with peers. She disliked science fairs and group presentations, though she could deliver solo lectures or reports without issue. </p>
+<p>In junior high, Nao deepened her independent study habits. While other students became more socially active, she grew more withdrawn, spending hours with textbooks and research rather than with peers. Her parents’ involvement remained passive. Mrs. Mori expected Nao to perform well academically but never pushed her into competitions or extra-curriculars. Mr. Mori gently offered support but didn’t encourage new interests. While Haru branched into clubs and contests, Nao avoided them altogether. She was content in her isolation, though her teachers sometimes worried she was missing developmental experiences.</p>
+<p><strong>High School</strong><br> In high school, Nao chose the academic track, focusing on advanced biology, chemistry, and agricultural studies. She performed well academically, but socially remained isolated. Teachers appreciated her reliability but sometimes worried about her lack of assertiveness. She avoided leadership positions, preferring to contribute quietly in the background. Despite this, her skill in gathering and organizing information made her invaluable in group projects, even if she never volunteered to present. She found them frustrating, often taking full control and finishing quickly before going off to do her own work.</p>
+<p>During this time, she met Suzu through shared classes. Suzu reached out first, offering to share notes. Slowly, the two became friends. They leaned on each other through school stress, though both buried their deeper feelings once school ended. She graduated with high marks, but with little sense of belonging to her peers or community.</p>
+<p><strong>Higher Education / Career Preparation</strong><br> Nao attended a mid-sized university in the city, majoring in ecology with a concentration in agricultural economics and sustainable development. She found coursework intellectually fulfilling but emotionally taxing. Her lack of confidence kept her from speaking up in lectures, but she excelled in independent research projects and lab work. To support herself, she worked part-time in campus offices and later as a research assistant, balancing work and study over six years instead of the typical four.</p>
+<p>Her specialization was narrow but rigorous (soil analysis, statistical modeling, GIS mapping). Though her professors praised her work ethic, they also noted she withdrew from collaboration. She considered pursuing a master’s degree but decided not to, because she wanted stability and a secure career path quickly. The stress of uncertainty motivated her, not ambition for prestige. After graduation, she found employment in clerical and technical support roles rather than research leadership, reinforcing her sense that she was capable but not cut out for recognition.</p>
+<p><strong>Extracurriculars & Social Life</strong><br> Nao largely avoided traditional extracurricular clubs, preferring time alone or quiet study groups. Occasionally, she found herself sharing late-night lab sessions with peers, and brief connections formed from these moments, though few endured after projects ended. She occasionally joined ecology field trips, but her participation remained observational rather than social. These patterns reinforced her image as capable but cold, a perception she never actively tried to disprove.</p>
+<p>Socially, her most meaningful connection was with a mentor professor who encouraged her academic development and gave her chances to contribute to research drafts. She developed a mentorship with a quiet but brilliant professor who specialized in applied botany. Their connection began after Nao consistently stayed after class to ask about lecture details she didn’t fully understand but didn’t want to ask in front of others. The professor appreciated her thoroughness and offered guidance, which evolved into an unofficial mentorship that helped Nao navigate her studies and professional choices. Even this relationship remained professional. Outside of academics, she rarely engaged in leisure activities or events.</p>
+<p><strong>Credentials & Achievements</strong><br> Nao holds a Bachelor’s degree in Ecology with a specialization in Agricultural Development. She is certified in GIS and statistical software for ecological modeling. She has several unpublished manuscripts and detailed field journals, demonstrating technical expertise but also her reluctance to share work publicly.</p>
+<p><strong>Interactions & Relationships</strong><br> Nao’s relationship with Haru remained distant during school years. She maintained a formal, distant relationship with her mother, communicating mostly through intermediaries once she entered higher education. Her father remained a source of quiet encouragement. Her bond with Suzu, though strong at the time, effectively ended after graduation. She has only heard of Kahna through Haru but has no direct relationship with her.</p>
+<p><strong>Reflections Looking Back</strong><br> Looking back, Nao views her education as a bittersweet achievement. She is proud of her knowledge and technical skills, but her memories of school are mundane and unfavorable. She sometimes wonders what might have been different had she opened herself more to others, but not much. </p></div>
+
+<div id="sd-haru"><h2>Haru Mori</h2>
+<p><strong>Early Childhood & Elementary School</strong><br> Haru was outgoing and active from an early age. In elementary school, she gravitated toward practical, hands-on activities like tinkering with radios and assembling simple mechanical toys. Her charm and humor made her popular among peers, though sometimes at the cost of discipline. She joined a recycling club that collected broken technology and discarded items, occasionally tinkering with repairs. This started the practical, repair-focused skills that would later shape her career.</p>
+<p>She wasn’t the absolute top student in her class but consistently performed above average. Assignments were sometimes turned in late despite being completed, demonstrating her early difficulty with deadlines. Teachers nonetheless saw her as bright, friendly, and engaged. Her outgoing nature earned her spots in contests and recognition that less social students didn’t receive.</p>
+<p>Though her father, Mr. Mori, was an artist, he didn’t pass on many art skills directly, so Haru experimented with creativity in her own way.  Mrs. Mori was less impressed, preferring academic excellence, which Haru never consistently provided. Despite this, Haru showed signs of resilience and adaptability, skills that would later define her path.</p>
+<p><strong>Junior High School</strong><br> In junior high, Haru began gravitating toward technical subjects. She also began exploring athletics more, particularly swimming and cross-country running for fun. These outlets gave her confidence and a strong sense of discipline. She also maintained her interest in fixing electronics, casually repairing items for classmates or neighbors. </p>
+<p>Her teachers viewed her as reliable and intelligent, though sometimes scattered. While not a top student academically, she earned respect for her practical skills and eagerness to help. Her social life was active and she was the kind of student who could make friends across cliques, maintaining a casual but wide social network.</p>
+<p>She also began experimenting with small entrepreneurial projects, such as repairing classmates’ gadgets for pocket money. These experiences gave her a sense of independence and built her reputation as reliable for practical problems. Her mother, Mrs. Mori, showed interest in her grades and certifications but wasn’t actively engaged with her activities. Her father supported her hobbies more directly, offering gentle encouragement even if he didn’t share her interests.</p>
+<p>Haru and Kahna met in front of the class assignment board at their school. They saw that they were in the same class and both had a friendly introduction to the other. Soon after, they became friends. Their friendship formed naturally and deepened steadily.</p>
+<p><strong>High School</strong><br> By high school, Haru had developed a reputation as dependable and smart, if sometimes messy with deadlines. She continued her recycling and repair interests, occasionally entering technology-related fairs or community projects. Her teachers praised her resourcefulness. She maintained a wide social circle thanks to her friendliness and was a regular participant in cultural festivals, often taking responsibility for setting up equipment or repairing broken tools.</p>
+<p>High school gave Haru the chance to refine her technical skills. She took elective courses in applied mechanics, woodworking, and electrical repair, quickly distinguishing herself in vocational tracks. While her grades in mathematics and literature were average, she consistently excelled in technical workshops. Her easygoing personality made her popular, though she was not deeply invested in academic prestige. She preferred camaraderie and practical accomplishments over recognition from teachers.</p>
+<p>Her relationship with Nao was particularly strained during this time. While Haru thrived in a social and active environment, Nao withdrew, and the sisters rarely interacted except at home.</p>
+<p><strong>Higher Education / Career Preparation</strong><br> Haru pursued vocational training after high school rather than a traditional four-year university. She enrolled in a technical college specializing in repair and construction, completing certifications in electronics, carpentry, and small appliance repair. This path was pragmatic; she wanted to work quickly rather than spend years in academia.</p>
+<p>Haru studied electrical engineering or a related applied field. She excelled in practical applications and earned her credentials.</p>
+<p>After graduating, she returned to her coastal village and opened a small repair workshop. Her technical expertise gave her steady employment, though she supplemented her income with part-time construction jobs and freelance projects. She enjoyed her work, valuing its tangible results and community connections more than any prestige.</p>
+<p><strong>Extracurriculars & Social Life</strong><br> Haru was socially vibrant, participating in sports casually and joining technical clubs. Her friendships were numerous, if not always deep. She was the type of person others came to for help setting up events or solving practical problems. Festivals and group activities were central to her social identity, and she enjoyed being part of the village’s communal rhythms.</p>
+<p>Romantically, Haru’s relationships were light and mostly short-lived during her school years. She wasn’t deeply interested in long-term commitments growing closer to Kahna.</p>
+<p><strong>Credentials & Achievements</strong><br> Haru holds official certifications in electronics repair, carpentry, and construction safety. She is licensed to run a repair business in her village. </p>
+<p><strong>Interactions & Relationships</strong><br> Haru’s wide social circle contrasted with Nao’s isolation, deepening the divide between them. She bonded with her father over practical projects and occasionally clashed with her mother, who had higher academic expectations. Her eventual connection to Kana began in early adulthood when Kahna moved to the village; their shared community values fostered a lasting relationship.</p>
+<p><strong>Reflections Looking Back</strong><br> Haru looks back on her schooling as a time of experimentation and growth. While she recognizes she wasn’t a perfect academic student, she takes pride in her independence, skills, and the friendships she built. She believes her decision to pursue vocational training was the right one for her.</p></div>
+
+<div id="sd-kahna"><h2>Kahna Noma</h2>
+<p><strong>Early Childhood & Elementary School</strong><br> In elementary school, she was both nurturing and studious, often serving as a a strong supporter and organizer in group activities. Teachers praised her empathy and organizational skills, noting she often helped struggling classmates. She was warm and approachable at school, making friends easily and balancing her responsibilities with social life.</p>
+<p>Kahna grew up in a different city, raised by a single father after her mother either passed away or left when she was very young. With a younger brother to care for, Kahna often took on responsibilities around the home. Though not a hobby, she took pride in helping her father, easing his workload. Her father encouraged her not to take on too much, wanting her to experience a normal childhood, but Kahna genuinely enjoyed supporting her family. </p>
+<p><strong>Junior High School</strong><br> In junior high, Kahna became more socially active, joining the student council and participating in peer mentoring programs. She excelled academically, particularly in literature and social sciences. Teachers saw her as dependable and responsible. She was emotionally intelligent enough to recognize when she needed breaks, and she remained socially active, participating in clubs like book groups rather than more competitive or performance-heavy activities. Others saw her as kind and approachable.</p>
+<p>She experimented with creative hobbies, like drawing and writing, but ultimately gravitated back toward roles that involved guiding or helping others. She began to seriously consider careers in education or counseling during this period, inspired by teachers who had supported her family situation.</p>
+<p>Haru and Kahna met in front of the class assignment board at their school. They saw that they were in the same class and both had a friendly introduction to the other. Soon after, they became friends. Their friendship formed naturally and deepened steadily.</p>
+<p><strong>High School</strong><br> In high school, Kahna pursued the academic track with an emphasis on psychology, child development, and education. She joined tutoring programs and volunteered to assist teachers in managing younger students. Her grades were consistently strong, though her perfectionism sometimes caused her stress. By high school, Kahna was well-liked for her kindness and reliability. Socially, she was known as kind and approachable, often mediating conflicts between classmates.</p>
+<p>Kahna wasn’t drawn to stage management or activism, preferring smaller, community-oriented activities.  She didn’t dominate as a leader but was invaluable as an organizer and strong supporter. At home, she continued caring for her younger brother, balancing family duties with her studies.</p>
+<p><strong>Higher Education / Career Preparation</strong><br> Kahna attended a local university, pursuing a degree in Education with a concentration in behavioral science and child psychology. Her coursework emphasized developmental psychology, classroom management, and special education methods. She also worked part-time jobs, including as a teaching assistant and a daycare aide, which gave her practical experience.</p>
+<p>After graduation, she chose to move with Haru to the coastal village, despite having no roots there herself. In the village, she works for an older woman as a dog groomer, balancing this with her role as an extracurricular activities manager and substitute teacher at the elementary school. Her background in psychology informs her teaching style, making her particularly patient and understanding. Though busy, she remains socially active and keeps connections with her old friends. </p>
+<p><strong>Extracurriculars & Social Life</strong><br> Kahna was consistently involved in peer mentorship, student council, and tutoring. She formed deep, lasting friendships, though she was selective in whom she trusted. Socially, she was warm but careful, aware of the weight of responsibility she carried. During university, she became involved in advocacy groups focused on educational reform and child welfare, though she never sought leadership roles.</p>
+<p>Romantically, Kahna was cautious and private. She did not date seriously until she met Haru in adulthood. Their relationship grew slowly, grounded in mutual respect and shared community values.</p>
+<p><strong>Credentials & Achievements</strong><br> Kahna holds a Bachelor’s degree in Education with a concentration in Behavioral Science. She is certified to teach and has additional training in special education. She also developed practical skills in pet grooming, which she formalized into a small business.</p>
+<p><strong>Interactions & Relationships</strong><br> Kahna’s early caretaker role made her particularly empathetic toward others. Haru and Kahna met in front of the class assignment board at their school. They saw that they were in the same class and both had a friendly introduction to the other. Soon after, they became friends. Their friendship formed naturally and deepened steadily. They later became romantically involved. Kahna has only seen Nao a few times and knows of her mostly through Haru and her father. She does not know Suzu at all. Her closest bonds are with Haru and her younger brother, and she maintains fondness for her father, who continues to live in her home city.</p>
+<p><strong>Reflections Looking Back</strong><br> Kahna views her education as both empowering and burdened by responsibility. She is proud of her achievements and the resilience she developed but sometimes regrets not having more freedom to explore frivolous or personal interests. Still, she sees her path as worthwhile, leading to the work and relationships that define her adult life.</p></div>
+
+<div id="sd-suzu"><h2>Suzu Kaho</h2>
+<p><strong>Early Childhood & Elementary School</strong><br> Suzu grew up in the city in a middle-class family. She occasionally spent summers with relatives who managed farmland, where she developed curiosity about soil, crops, and the human labor behind food production. From an early age, she displayed a lively personality, often at the center of attention. In elementary school, her childhood education was shaped by her family’s emphasis on culture. She received piano lessons from a young age and showed a natural inclination for rhythm and performance, though she was less drawn to drama or acting. Music became her outlet, and she enjoyed both practicing and small recitals. </p>
+<p>Teachers described her as charismatic but sometimes inattentive, as she preferred socializing over quiet study. They noted her strong communication skills and leadership in group settings. Her academic performance was average, but she excelled at communication and presentation.</p>
+<p>Her parents encouraged her outgoing personality, often praising her charm. Suzu began to associate success with likability and presence, a perspective that shaped her future interests in business and social dynamics. She was social and outgoing, often making friends easily.</p>
+<p><strong>Junior High School</strong><br> In junior high, Suzu leaned further into her social nature. She joined the school events committee, becoming known as a capable organizer who could rally people around a project.  She still balanced academics with piano and dancing, preferring structured lessons to competitive activities. Her family encouraged her to pursue professional goals while maintaining cultural polish.</p>
+<p>Her grades remained average, but she developed skills in persuasion, leadership, and negotiation. She broadened her social circle and began taking her studies more seriously. Teachers identified her as someone who could excel in fields that required strong interpersonal skills rather than raw technical expertise. </p>
+<p>Socially, she was popular, forming wide circles of friends and dabbling in early teenage romances. While she sometimes struggled to maintain focus in her studies, she compensated with her people skills, often persuading classmates to collaborate with her on assignments.</p>
+<p><strong>High School</strong><br> High school marked Suzu’s growing interest in business. She joined the commerce club, participating in school-run shops and entrepreneurial activities. Of course, she gravitated toward business-oriented courses, but she also enrolled in agricultural economics electives when available. Her grades improved slightly in subjects related to economics and social studies, while she continued to underperform in mathematics and sciences. Teachers identified her as someone who could excel in fields that required strong interpersonal skills rather than raw technical expertise.</p>
+<p>Her charisma and energy made her a central figure in school events, particularly festivals, where she often took charge of planning. She was admired by peers, though some saw her as superficial. Suzu accepted this perception, preferring to be effective and visible rather than academically exceptional.</p>
+<p>High school is also when Suzu met Nao. They were in similar courses and began by sharing notes, which grew into a quiet but intense companionship. Suzu initiated most of their interactions, gently breaking through Nao’s reserve. Their bond became codependent, with undertones of mutual attraction, though neither acted fully on it.</p>
+<p><strong>Higher Education / Career Preparation</strong><br> Suzu pursued a degree in agricultural economics with a business concentration, tying her dual interests together. She thrived in courses involving marketing, management, and organizational behavior. Though she continued to struggle with technical finance and statistics, she excelled in group projects where leadership and coordination were key. During this time, she interned at a major agricultural cooperative, where she learned the inner workings of trade, subsidies, and crop distribution. </p>
+<p>After graduation, she She interned with a large agricultural cooperative before being offered a position at the A.K. Agricultural Exchange.  Her entrepreneurial spirit led her to pursue local projects, preferring the autonomy of small business to the rigid hierarchy of larger companies. She has been with the A.K. Agricultural Exchange for a few years, only recently moving to the same department as Nao. Her work is professional and pragmatic, and though she once thought she would never see Nao again, their reunion complicates her otherwise stable career.</p>
+<p><strong>Extracurriculars & Social Life</strong><br> Suzu was always socially active, both in school and university. She attended mixers, joined clubs, and cultivated a wide network. Her relationships were numerous but sometimes shallow; she was more interested in connections than intimacy. Still, her social adaptability made her a valuable bridge between groups.</p>
+<p>Romantically, Suzu had several short relationships during school and university, but she never prioritized long-term commitment until later in adulthood. She valued independence and the thrill of novelty.</p>
+<p><strong>Credentials & Achievements</strong><br> Suzu holds a Bachelor’s degree in Business Administration. She is experienced in management, marketing, and organizational planning. Though she lacks certifications in technical areas, her practical leadership and entrepreneurial skills make her an effective manager.</p>
+<p><strong>Interactions & Relationships</strong><br> Suzu does not know Haru or Kahna at all. Her only significant bond within this circle is her past relationship with Nao. Though it ended with graduation, their history left a strong impression on both. Her relationship with Nao was initially more distant, as Nao’s reserved nature contrasted with Suzu’s extroversion.</p>
+<p><strong>Reflections Looking Back</strong><br> Suzu looks back on her schooling as a time of fun and exploration. She recognizes she wasn’t academically strong, but she values the social and organizational skills she developed. For her, education was less about credentials and more about learning how to navigate people and opportunities.</p></div>
+
+<div id="sd-mrsmori"><h2>Mrs. Mori</h2>
+<p><strong>Early Childhood & Elementary School</strong><br> Mrs. Mori grew up in a disciplined household where academic achievement was prioritized. In elementary school, she quickly distinguished herself as a high achiever, particularly in mathematics and science. Teachers praised her diligence and precision, often holding her up as an example to classmates.</p>
+<p>From an early age, she internalized the importance of success and recognition. She often took on leadership roles, directing group projects and striving for perfection in every assignment. These traits, while earning her respect, also set her apart socially, as she was sometimes seen as demanding or unapproachable.</p>
+<p>Mrs. Mori’s aptitude for science showed itself from elementary school onward. She wasn’t the type to raise her hand or volunteer answers in class, but her notebooks were always immaculate, full of careful diagrams and precise explanations copied or expanded from lectures.</p>
+<p><strong>Junior High School</strong><br> By junior high, she had already earned top marks in mathematics and physics, and her teachers quietly pushed her toward engineering or applied sciences. Mrs. Mori’s academic excellence intensified. Teachers began grooming her for competitive academic tracks, and she welcomed the challenge. Socially, she remained somewhat distant, though she developed a small group of ambitious friends who shared her drive.</p>
+<p>She also began to develop leadership skills, often serving as class representative or event coordinator. While respected, she was not universally liked, as some peers resented her intensity. Nevertheless, she thrived in environments that rewarded discipline and performance.</p>
+<p><strong>High School</strong><br> In high school, she joined a physics research group under the supervision of a teacher who recognized her talent. Though she disliked the social element, she thrived in structured projects where individual contributions were clear. Her aversion to group theatrics pushed her into more technical clubs, and she spent long hours preparing independent entries for national-level science competitions. It was less about beating others and more about satisfying her own high standards. She graduated near the top of her class, securing a place at a top-tier university in the capital.</p>
+<p>She participated in science competitions and frequently won awards for her precision and problem-solving abilities. Teachers viewed her as destined for a prestigious career, encouraging her to pursue elite universities.</p>
+<p>Her social life was secondary to her academic ambitions. While she occasionally attended school events, she was more often found studying late into the night. Her family supported her ambitions, though they sometimes worried she was too rigid.</p>
+<p><strong>Higher Education / Career Preparation</strong><br> Mrs. Mori entered university as a nuclear engineering student, a discipline still emerging in the country at the time. She spent four years on her undergraduate degree, focusing on reactor physics, energy systems, and safety protocols. Afterward, she completed a master’s degree (two years) in applied reactor design, which gave her opportunities to work closely with energy laboratories in the capital. Encouraged by her professors, she pursued a doctorate (five years), producing a dissertation on next-generation reactor safety that would later be cited internationally.</p>
+<p>She did not pursue business seriously because her attempts at it were poor, and she now relies on a PR manager to handle those aspects of her career.</p>
+<p>Her professors recognized her as exceptionally capable, and she graduated with top honors. She rose quickly through her field, eventually shifting into a role centered on teaching, seminars, and plant consultations. </p>
+<p>Her leadership is transactional and direct, where she assigns tasks, accepts minimal feedback, and expects results. Her career, however, requires long hours and frequent travel, reducing the time she spend at home significantly.</p>
+<p><strong>Extracurriculars & Social Life</strong><br> Mrs. Mori’s extracurricular activities were largely academic. They included science/engineering societies, research assistantships, and professional networking. She was pragmatic in her social choices, prioritizing relationships that aligned with her ambitions. While she was not antisocial, her friendships tended to be professional rather than personal.</p>
+<p>Her relationship with Mr. Mori began in university, where she admired his intellectual depth despite their differences. They met in a sketching class that she took to improve her engineering diagram skills.</p>
+<p><strong>Credentials & Achievements</strong><br> Her credentials include:</p>
+<ul>
+<li>B.S. in Nuclear Engineering (Capital University, 4 years)</li>
+<li>M.S. in Reactor Design and Applied Energy Systems (Capital University, 2 years)</li>
+<li>Ph.D. in Nuclear Engineering, dissertation on passive safety systems (Capital University, 5 years)</li>
+</ul>
+<p>Her most significant contribution came during her doctoral research. She developed a novel passive cooling mechanism for nuclear reactors that relied on natural convection rather than active pumping. While others had theorized similar designs, she created a practical application suited to smaller and mid-scale plants. This work earned her international recognition in engineering circles. Later in her career, she helped develop protocols for soil-safe nuclear waste storage, which directly intersected with agricultural land protection, a priority at the time.</p>
+<p>She also published a widely read book titled *The Steady Atom: Harnessing Nuclear Energy for a Sustainable Future*, blending technical explanation with accessible language. It became a standard reference in her country and was translated into several languages, strengthening her reputation not only as an engineer but as a communicator of science.</p>
+<p>She has led research teams, managed corporate projects, and published in scientific journals. Her career achievements are significant, though they came at the cost of family intimacy.</p>
+<p>At her career’s height, she was directly involved in the design and evaluation of mid-scale reactors across the region. In the last decade, however, she has shifted to a primarily academic and advisory role. She gives keynote talks, guest lectures, seminars, and interviews. Much of her time is spent traveling to plants across the country and abroad, assessing operations and providing feedback.</p>
+<p>Her leadership is transactional and direct, where she assigns tasks, accepts minimal feedback, and expects results. Her career, however, requires long hours and frequent travel, reducing the time she spend at home significantly.</p>
+<p><strong>Interactions & Relationships</strong><br> She never clashed with her husband or daughters but was emotionally distant, more focused on work than family involvement. Her expectations were passive. She checked on grades and credentials but rarely intervened. She is content with both daughters’ lives and education, and she respects Haru’s success without disappointment in her choices.</p>
+<p>Her marriage with Mr. Mori has grown more platonic with time. The fondness remains, but the intensity has faded.</p>
+<p><strong>Reflections Looking Back</strong><br> Mrs. Mori reflects on her education as the cornerstone of her success. She is proud of her achievements but occasionally feels regret over the distance it created within her family. Still, she believes the discipline and ambition she cultivated were necessary for the life she built.</p></div>
+
+<div id="sd-mrmori"><h2>Mr. Mori</h2>
+<p><strong>Early Childhood & Elementary School</strong><br> Mr. Mori grew up in the same coastal village where Haru and Kahna now live. As a child, he was quiet and bookish, spending much of his time in the small local library or tucked into the back of classrooms with a novel. He wasn’t a standout student (his teachers often overlooked him unless they were especially attentive) but his test scores revealed consistent strength in reading comprehension, history, and language. He was a quiet but attentive student, more focused on actual work than memorization.</p>
+<p>His early experiences instilled in him a deep appreciation for culture and storytelling. While his peers played outdoors, he often preferred sketching scenes or analyzing passages from favorite books. This quiet fascination guided him into the humanities, though at the time, his family encouraged a practical career in civil service.</p>
+<p><strong>Junior High School</strong><br> In junior high, Mr. Mori’s talents in art and literature blossomed. He participated in contests and literature clubs, often receiving recognition from teachers. Though not athletic or particularly social, he developed a small group of like-minded friends who shared his creative interests. His academic performance was solid, particularly in subjects like history and literature, though he was less interested in mathematics and sciences.</p>
+<p>During this time, he began to consider a future in the arts, though he was uncertain about its practicality. Encouragement from teachers reinforced his belief that creativity could have real value, even if not immediately lucrative.</p>
+<p><strong>High School</strong><br> High school gave Mr. Mori more opportunities to focus on literature. He joined the school newspaper and the literature club. Unlike Mrs. Mori, he never sought recognition or competition. His interest wasn’t in writing original work but in studying and analyzing literature. He admired the structure of stories, the rhythms of poetry, and the cultural history behind texts. His teachers regarded him as thoughtful and articulate, though sometimes overly idealistic. Socially, he remained quiet, forming deeper bonds with only a few close friends.</p>
+<p>He also began tutoring younger students in writing, an experience that deepened his appreciation for teaching and sharing knowledge. However, he struggled with confidence, often worrying about the feasibility of pursuing art or writing as a career.</p>
+<p><strong>Higher Education / Career Preparation</strong><br> Mr. Mori attended a university where he majored in Literature with a minor in Fine Arts. He excelled in critical analysis, though he remained soft-spoken in seminars. His professors valued his depth of thought, even if he wasn’t the loudest contributor. He also developed skills in illustration, experimenting with blending text and imagery.</p>
+<p>After graduation, he pursued work in publishing, taking on editing and illustration projects. While he considered freelance work early on, he disliked its instability and found more consistent work with a publishing company, where he edited and illustrated on demand. While not highly lucrative, this career path allowed him the flexibility to be present at home and contribute to raising his daughters.</p>
+<p><strong>Extracurriculars & Social Life</strong><br> Mr. Mori was never especially social, but he valued deep, meaningful connections. In university, he participated in literary circles and art exhibitions, where he met peers who shared his interests. These circles provided him with mentorship and collaboration opportunities, shaping his artistic voice.</p>
+<p>Romantically, he was reserved and slow to commit. His relationship with Mrs. Mori developed gradually, rooted in intellectual respect and shared values, though their contrasting ambitions would later cause tension.</p>
+<p><strong>Credentials & Achievements</strong><br> Mr. Mori holds a Bachelor’s degree in Literature with a minor in Fine Arts. He has published essays and illustrations in small literary magazines. While his name is not widely recognized, his contributions are respected in local circles.</p>
+<p><strong>Interactions & Relationships</strong><br> He was closer to Haru than to Nao, appreciating her openness and enthusiasm. His bond with Nao was less developed due to her solitude, though he respected her independence. His marriage’s tension come mainly from Mrs. Mori’s demanding schedule, but otherwise, they complement one another well.</p>
+<p>Mr. Mori has maintained a few steady friendships, most formed in his youth in the coastal village or through literary circles. These relationships were built on shared intellectual interests rather than social activity, and they have lasted through years of correspondence and occasional visits.</p>
+<p><strong>Reflections Looking Back</strong><br> Mr. Mori reflects on his education as fulfilling but modest in scope. He values the intellectual and creative foundations it gave him, even if it didn’t translate into high levels of financial success. He sometimes wonders if he could have pursued a professorship, but his career as it unfolded was stable and rewarding. He enjoyed the work’s reliability more than the uncertainty of academia.</p></div>
+</div></section>
+
+      <section id="short-stories">
+        <div class="story-controls">
+          <button onclick="moveStory(-1)">← Back</button>
+          <select class="story-sync" onchange="pickStory(this.value)">
+            <option value="0">GRASS</option>
+            <option value="1">BEETLE</option>
+          </select>
+          <button onclick="moveStory(1)">Forward →</button>
+          <button onclick="togglePopup(true)">Popup Mode</button>
+        </div>
+        <div class="full-box" id="story-content">Select a story to begin.</div>
+      </section>
+
+      <section id="haru"><div class="char-layout"><div class="full-box"><h2>Haru</h2><p><b>Full Name:</b> Haru Mori</p><p><b>Age:</b> Early to mid 20s</p><p><b>Occupation:</b> Electronics repair/IT technician (on call)</p><p><b>Personality:</b> Warm, social, easygoing, but also perceptive and loyal. Dedicated to her work but not obsessive. Social with locals and elderly clients. Less stubborn and more emotionally honest than her sister, Nao, but just as capable.</p><p><b>Appearance:</b> Shoulder-length hair (naturally brown), often messy and a bit longer in the back. She wears her hair up often, and has since childhood. Smiles easily. Tanned naturally and from working outdoors. Slightly shorter than average with a bit of a muscular build.</p><p><b>Voice / Speech Style:</b> Honest, informal, cheerful. Polite to elders, kind to others. Says what she means.</p><p><b>Clothing Style:</b> Comfortable, practical clothes. Hoodies, tank tops, zip-ups, t-shirts, cargo pants. Layered jackets. She loves wearing shorts in hotter weather. Always has a multitool or gloves nearby.</p><p><b>Habits / Quirks:</b> Fixes things even when no one asks. Leaves machine parts around the apartment when working. Fidgets with nearby objects when nervous. Loves to snack on citrus-flavored candies.</p><p><b>Relationship to Others:</b> Younger sister of Nao. Lives with her girlfriend Kahna. Has fond memories of her dad and doesn’t talk much about/with her mom. She’s tried to reconnect with Nao in the past but was shut down, and is currently trying to rebuild their relationship and figure out what went wrong.</p><p><b>Backstory / Notes:</b> Went to a technical school and met Kahna there. She decided to return to her hometown, where she was drawn to routine and the quiet life. She's close to many elderly locals and helps maintain their electronics. She's become more emotionally expressive and lighthearted over time and is generally very likable.</p></div><div class="chibi-side"><img src="https://smallcarnivore.neocities.org/spices/spicesassets/haruchibi.png"></div></div></section>
+      
+      <section id="nao"><div class="char-layout"><div class="full-box"><h2>Nao</h2><p><b>Full Name:</b> Nao Mori</p><p><b>Age:</b> Late 20s, early 30s</p><p><b>Occupation:</b> Logistics and internal edits officer at A.K. Agricultural Exchange. She handles editorial calendars, file systems, scheduling, formatting, and internal documentation.</p><p><b>Personality:</b> Guarded, polite, burnt out, emotionally avoidant. Hardworking, but withdrawn. Prone to bottling things up. Avoids small talk, but will oblige.</p><p><b>Appearance:</b> Shoulder-length black hair, usually left down with minimal styling. Dark under-eye circles. Tan, but pale compared to her sister. Looks tired. She puts her hair up at home.</p><p><b>Voice / Speech Style:</b> Quiet, neutral, formal when needed. Doesn’t waste words. Subtle sarcasm at times.</p><p><b>Clothing Style:</b> Wears muted colors (gray, navy, dark green). Always neat. Officewear with long sleeves or button-ups. Occasionally wears trousers with soft blazers or coats. Her usual style is a white button up, coat, and a long black skirt.</p><p><b>Habits / Quirks:</b> Collects nice stationery but doesn’t use most of it. Eats convenience store meals. Keeps her workspace tidy. Avoids unnecessary social interaction. Writes notes to herself occasionally.</p><p><b>Relationship to Others:</b> Older sister of Haru Mori, who she texts rarely (ex: holidays, birthday). Estranged. Coworker of Suzu Kaho, toward whom she’s emotionally distant but intrigued by. Keeps in contact with her father only through rare calls or written letters.</p><p><b>Backstory / Notes:</b> After a traumatic event during highschool or late childhood, Nao emotionally shut down and left her hometown. Her relationship with Haru fractured following that event, which was never directly discussed. She resembles aspects of their mother (work-focused, formal and unreachable) though she lacks her mother’s pride or ambition. She met Suzu in their school.</p><p>‎  ‎ ‎</p><p>‎‎ ‎  ‎ ‎ ‎ ‎</p><p>‎‎ ‎  ‎ ‎ ‎ ‎</p></div><div class="chibi-side"><img src="https://smallcarnivore.neocities.org/spices/spicesassets/naochibi.png"></div></div></section>
+      
+      <section id="kahna"><div class="char-layout"><div class="full-box"><h2>Kahna</h2><p><b>Full Name:</b> Kahna Noma</p><p><b>Age:</b> Early to mid 20s (same as Haru)</p><p><b>Occupation:</b> Pet groomer, part-time child education assistant</p><p><b>Personality:</b> Calm, nurturing, emotionally intelligent. Sometimes misses subtle social cues but is a wonderful person to have a conversation with. It's been said she has a calming presence.</p><p><b>Appearance:</b> Curly, medium-length dark brown hair. Wears light makeup. Soft features, warm smile. She has darker skin than Haru and has a patch of lighter skin on her upper left arm.</p><p><b>Voice / Speech Style:</b> Gentle and quiet. Uses affirming language. Chooses words carefully. Sometimes the type of speech she uses with children and pets carries over, and she's a bit embarrassed by this.</p><p><b>Clothing Style:</b> Simple and soft. Creams, pastels, sweaters, skirts or long pants. Aprons when working. She likes to tie up her longer wear for ease of movement when she needs to, but enjoys the style and loose fits.</p><p><b>Habits / Quirks:</b> Hums when she cooks. She calls her brother regularly on weekends and sits with their landlady to sip herbal tea.</p><p><b>Relationship to Others:</b> Haru’s partner and roommate. They met in class at the same school. She’s aware of Haru’s family situation but doesn’t pry if it's not a current topic, and likes to offer advice. Cares deeply for the neighborhood’s children and older residents.</p><p><b>Backstory / Notes:</b> Helped raise her younger brother with their father after their mother passed away. Values peace and emotional security. She's observant and great conversationally. While in school with Haru, she was in a teaching program and working part-time at a veterinary office.</p></div><div class="chibi-side"><img src="https://smallcarnivore.neocities.org/spices/spicesassets/kahnachibi.png"></div></div></section>
+      
+      <section id="suzu"><div class="char-layout"><div class="full-box"><h2>Suzu</h2><p><b>Full Name:</b> Suzu Kaho</p> <p><b>Age:</b> Late 20s, early 30s</p> <p><b>Occupation:</b> Office worker at A.K. Agricultural Exchange. Handles client communications and final reviews.</p> <p><b>Personality:</b> Outgoing, patient, kind. Observant but respectful. A natural mediator.</p> <p><b>Appearance:</b> Long brown hair, kept in a sleek ponytail with tidy bangs. Neat and well-groomed. Freckled face, a bit paler than Nao. She's taller than average but not intimidatingly so.</p> <p><b>Voice / Speech Style:</b> Clear, kind, well-articulated. Friendly tone even when professional.</p> <p><b>Clothing Style:</b> Modest skirts, cardigans, collared blouses. Neutral tones with the occasional pastel. Sometimes wears simple accessories.</p> <p><b>Habits / Quirks:</b> Brings extra coffee. Keeps a desk plant. Writes birthday cards for all her coworkers. Keeps an eye on people who seem down.</p> <p><b>Relationship to Others:</b> Friendly with everyone in the office. Tries to include Nao in casual talk. Had a complex past with her during school that Nao misunderstood or misremembered.</p> <p><b>Backstory / Notes:</b> Attended the same school as Nao, and met her in their homeroom class. Was outgoing and talkative even back then. Has no idea she played such a big role in Nao's life.</p></div><div class="chibi-side"><img src="https://smallcarnivore.neocities.org/spices/spicesassets/suzuchibi.png"></div></div></section>
+      
+      <section id="mrsmori"><div class="char-layout"><div class="full-box"><h2>Mrs. Mori</h2><p><b>Full Name:</b> Tomoko Mori</p> <p><b>Age:</b> Early 60s</p> <p><b>Occupation:</b> Nuclear engineer, author, speaker, educator.</p> <p><b>Personality:</b> Rational, quiet, commanding presence. Not cruel, but emotionally distant and career-focused.</p> <p><b>Appearance:</b> Shoulder-length black bob cut. Slight eye-bags. Wears dark or neutral businesswear. No skirts or dresses. Minimal jewelry and makeup.</p> <p><b>Voice / Speech Style:</b> She has an authoritative and commanding voice, but her natural level of speaking is pretty quiet. Speaks in brief, efficient sentences when not lecturing or giving talks.</p> <p><b>Clothing Style:</b> Business formal. She wears turtlenecks, trousers, and long coats. She never wears skirts, shorts, or dresses and only wears pants/trousers. She dislikes ties. She only wears minimal jewelry: small stud diamond earrings and two sets (one light, one dark) of long, thin elegant necklaces with small pendants. Pajamas are plain flannel pants and a white tank top. She's not too "stylish".</p> <p><b>Habits / Quirks:</b> She's a smoker. Regularly traveling or speaking at conferences. Has a PR manager who's the primary form of communication between her and her children. Reads studies and journals in her free time.</p> <p><b>Relationship to Others:</b> Equally distant from both daughters. She was not too involved in raising them and mostly just signed documents, managed school stuff, and helped with homework. Is still married to her husband, but they don't see each other often.</p> <p><b>Backstory / Notes:</b> Met her husband in college in a sketching class. Prioritized career over domestic life. Invented/discovered something significant in the field of nuclear energy, and has written a book. Her schedule is nearly always fully booked. Does not have a favorite child and doesn't think of them often.</p></div><div class="chibi-side"><img src="https://smallcarnivore.neocities.org/spices/spicesassets/mrsmorichibi.png"></div></div></section>
+      
+      <section id="mrmori"><div class="char-layout"><div class="full-box"><h2>Mr. Mori</h2><p><b>Full Name:</b> Hiro Mori</p> <p><b>Age:</b> Early 60s</p> <p><b>Occupation:</b> Retired artist</p> <p><b>Personality:</b> Gentle, kind, and mellow. Emotionally sensitive, perhaps a little withdrawn in old age.</p> <p><b>Appearance:</b> Brown hair turning gray. Average height and build. Scruffy stubble. Wears comfortable outdoor clothes.</p> <p><b>Voice / Speech Style:</b> Soft-spoken and slow. Rarely interrupts people when they are speaking.</p> <p><b>Clothing Style:</b> He usually wears a flannel shirt, t-shirts, sporty pants, always wears tennis shoes, and has an analog watch inherited from his grandfather.</p> <p><b>Habits / Quirks:</b> Draws birds in greyscale in small grids. Enjoys birdwatching. Has a shed for sketching on his property in the woods. Makes meals for himself and likes to cook. Keeps things clean and rarely decorates. He is also colorblind (deuteranopia/red-green).</p> <p><b>Relationship to Others:</b> Raised Haru and Nao with a little help from their mother. Is Mrs. Mori's husband. Still lives alone at the base of one of the low mountains on the outskirts of their village.</p> <p><b>Backstory / Notes:</b> Met his wife in a sketching class in college. Was more emotionally involved with the kids than she was, but not confrontational. Tries to stay involved with them now, but he's got some personal issues preventing him from being fully present and a truly "good" dad.</p></div><div class="chibi-side" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-end;">
+            <img src="https://smallcarnivore.neocities.org/spices/spicesassets/mrmoriplant.png" 
+           style="width: 230px; margin-bottom: 35px;" alt="Mr. Mori's plants">
+  <img src="https://smallcarnivore.neocities.org/spices/spicesassets/mrmorichibi.png" 
+       alt="Mr. Mori Chibi" 
+       style="width: 100%; margin-left: -8px; position: relative; z-index: 2;"> 
+</div></div></section>
+      
+
+      <section id="village"><div class="full-box"><img src="https://smallcarnivore.neocities.org/placeholder.png" style="float:right; border:4px solid var(--border-main); margin-left:15px; height:100px; width:200px"><h2>General Description</h2>
+<p>A quiet seaside town with rocky shores and a mix of pine and deciduous forests. Traditional wooden homes with stone foundations line narrow streets, some modernized with tin roofs and solar panels. Most neighbors have known each other for decades and the demographics skew towards the elderly. Locals fish, tend rooftop or riverside gardens, run small shops, or commute to larger towns/the city for work.</p>
+
+<h2>History</h2>
+<p>The village’s origins go back centuries as a fishing hamlet. It expanded slightly during the late 19th century as railway connections brought outside goods and visitors. It never industrialized, remaining focused on subsistence-level fishing, farming, and later, small-scale tourism. Because this alternate world avoided large-scale wars, the village never faced destruction or military occupation. This allowed its traditions and oral history to pass down intact. Though quiet, it has accumulated folklore around the sea and surrounding mountains. These stories remain a small but significant part of community identity. Unlike industrialized port towns, it never grew large, as deeper harbors elsewhere dominated shipping. Instead, it remained insular, its main road looping back into farmland and foothills.</p>
+
+<h2>Surroundings & Architecture</h2>
+<p>Nestled against the estuary mouth; hills to the north, sea to the south. Fog rolls in from the water most mornings, and dense reeds line the riverbanks. Salt flats and tide-pools appear at low tide. Terraced fields are common and farmland is seen often. The village sits along a sheltered bay, surrounded by rocky cliffs and low forested hills. Fishing docks stretch out into the water, though they are modest in size, suited for small boats rather than industrial fleets. Houses are wooden or stucco, painted in muted earth tones, with clay-tiled or corrugated metal roofs. Many are old but carefully maintained. Winding streets climb toward the hills, where shrines and family cemeteries overlook the sea. Public buildings include a modest school, a market square, and a community hall. The architecture shows a blend of rural Japanese and European coastal village sensibilities: simple, functional, and close-knit. Because the population is small, most structures are multipurpose where a house can double as a shop or a shed as both workspace and storage. The overall impression is of compact efficiency, with the sea always visible in the background.</p>
+
+<h2>Layout</h2>
+<p>A few main streets, with older houses. One general shop with a post counter (run by the landlady), a convenience store near the main entrance to the village, and a local grocery. There is a tea and sweets shop, a bathhouse, a shrine near the estuary stones, a pet groomer’s, a school, and a community repair shed behind a row of townhouses. The three-unit building Haru and Kahna live in sits above the general store, with a shared back staircase, side garden, and terrace. At the northernmost point of the central road, there is a train station. The tracks go east to west and the city is a few stops away.</p>
+
+<h2>Economy</h2>
+<p>The local economy revolves around fishing, seasonal agriculture, and a growing retirement community. Younger residents will usually commute to the nearest city for work, but many also find livelihoods in tourism-related businesses like inns, guesthouses, and craft shops. The economy is modest but sustainable, with little ambition for expansion. Some small workshops handle repairs, crafts, and electronics, filling in practical needs that larger towns would normally cover. The economy is fragile but cushioned by the village’s reputation as a peaceful seaside retirement haven.</p>
+
+<h2>Culture</h2>
+<p>The village culture is communal and conservative. Everyone knows each other by name, and gossip spreads quickly. Privacy is limited, but so is isolation. Neighbors look after one another, particularly the elderly. There is pride in maintaining old traditions such as annual festivals, fishing rituals, and family shrines, but also a growing sense of generational divide as young people leave. Visitors often remark on the quiet pace of life. Outsiders are accepted politely but slowly, as trust is built. The people emphasize patience, self-reliance, and endurance.</p></section>
+      <section id="city"><div class="full-box"><img src="https://smallcarnivore.neocities.org/placeholder.png" style="float:right; border:4px solid var(--border-main); margin-left:15px; height:100px; width:200px"><h2>General Description</h2>
+<p>A medium-sized city built along a river delta. The center is dense but never overwhelming, with mid-rise blocks and administrative towers rather than high skyscrapers. Residential districts sprawl outward in rings. Older alleys are located close to the center of the city, and newer concrete apartments are at the edges. It feels like a city always on the verge of modernity but never quite considered sleek.</p>
+
+<h2>History</h2>
+<p>The city grew originally as a trade hub in the 18th–19th centuries, connecting rural farmers with coastal merchants. It was not a strategic site for industry until the mid-20th century, when the government encouraged urban migration to support postwar economic expansion. Instead of heavy manufacturing, it became known for agricultural research, textiles, and light assembly work. Because this alternate world did not undergo the same world wars, the city never faced destruction from bombings or foreign occupation. As a result, more pre-industrial architecture has survived, though modernization projects in the 1960s and 70s erased many older neighborhoods. It has remained politically quiet, with a reputation for diligence, modest innovation, and practical development rather than dramatic upheaval.</p>
+
+<h2>Surroundings & Architecture</h2>
+<p>The city is located inland, slightly uphill from a delta-fed plain, bordered by lowland rice fields dotted with a variety of crops, low mountains and fertile river valleys. The city sits at a convergence of two rail lines and a slow river that used to flood more before levees were built and riparian barriers were reinforced and expanded. Its layout is a revised patchwork of old districts with narrow alleyways and newer developments that expanded in the late 20th century. The older neighborhoods feature compact wooden row houses with tiled roofs, while the downtown has mid-rise concrete and glass office blocks from the economic growth decades. Tree-lined canals cut through the inner city, providing small greenspaces and a reminder of its agricultural past. Public transportation is efficient but modest, consisting mostly of buses and a single rail line that connects to the coast. Civic spaces emphasize function over grandeur. The architecture leans utilitarian, reflecting a history of working-class development rather than aristocratic planning. Small shrines and quiet community gardens survive among the denser zones, giving locals pockets of tradition amid modern life. Apartment towers dominate the skyline, but many residents still live in compact single-family homes in tightly clustered residential districts.</p>
+
+<h2>Demographics</h2>
+<p>The population is mid-sized, with a balance between aging residents and a younger wave of professionals drawn to affordable housing and regional universities. There is limited international immigration compared to capital cities, but a notable population of overseas students and a few expatriate academics, due to the universities’ agricultural and ecological programs. Families here tend to be long-rooted, with grandparents, parents, and children often within the same city or region. The young people, however, increasingly leave for major metropolitan centers if they seek high-profile careers, leading to some brain drain. The overall atmosphere is modest, insular, and steady, without the flash of a metropolis but with a strong sense of continuity.</p>
+
+<h2>Economy</h2>
+<p>The backbone of the city is administration and education. Civil offices, cooperative exchanges, and research institutions employ the majority of residents. Publishing remains strong and printing houses, editorial offices, and distribution centers run on steady schedules. Secondary sectors include light manufacturing, textiles, and small-scale technology repair. Service jobs are practical and include canteens, cafeterias, and transit work. Tourism is minimal because visitors come mostly for university conferences or regional fairs. The economy rewards stability rather than ambition and careers progress slowly. Most people hold the same job for decades.</p>
+
+<h2>Culture</h2>
+<p>The cultural life of the city is understated but enduring. Seasonal festivals still mark the calendar, with parades, food markets, and shrine events. Residents are reserved, not unfriendly but focused on their daily obligations. Civic pride leans toward pragmatism, with community clean-up days, neighborhood watch patrols, and modest but well-kept public parks. The universities have created pockets of liveliness. Cafés, secondhand bookstores, and research institutions bring together students, faculty, and visiting scholars. Despite the quiet surface, the city cultivates curiosity and forward-looking attitudes in ecology, botany, and energy. This mix of practical conservatism and intellectual niches makes it a place where most people have a chance to carve out a quiet but meaningful life.</p></div></section>
+
+<section id="ak-agricultural">
+  <div class="full-box">
+<h2>General Description</h2>
+<p><strong>Type:</strong> Semi-public cooperative (state-supported but operates independently)<br><strong>Core Focus:</strong> Soil stewardship, crop resilience, and land-use education through publications, workshops, and policy guidance.<br><strong>Mission Statement:</strong> “To cultivate a deeper respect for land through accessible education, honest research, and cooperative stewardship.”</p>
+<p><strong>Departments:</strong></p>
+<ul>
+<li><strong>Research & Publications:</strong> Edits and prints bimonthly journals, field guides, soil maps, and seasonal bulletins.</li>
+<li><strong>Outreach & Education:</strong> Coordinates workshops, radio broadcasts, symposiums, and school visits.</li>
+<li><strong>Communications & Client Relations</strong> (where my characters work): Edits final copy, interfaces with regional councils, manages internal and public-facing correspondence.</li>
+<li><strong>Records & Data Handling:</strong> Department for agricultural census materials, survey data, and archiving older publications.</li>
+<li><strong>Administrative & Legal:</strong> Budgeting, policy writing, compliance.</li>
+</ul>
+<p>Workday starts at 8:45 AM, ends 6:00 PM</p>
+
+<h2>History</h2>
+<p>A.K. Agricultural Exchange was established roughly three decades ago during a government-led agricultural decentralization initiative. The goal was to increase regional autonomy in land stewardship and reduce dependency on centralized bureaucracies by creating hybrid institutions, half-public, half-cooperative.</p>
+<p>The “A.K.” is taken from the surnames of two founding agriculturalists, one a soil biologist and the other a community organizer. Their joint proposal emphasized:</p>
+<ul>
+<li>Reintegrating traditional growing practices into modern education</li>
+<li>Reducing crop failures due to preventable soil erosion</li>
+<li>Creating community-accessible agricultural publishing arms</li>
+<li>Avoiding full state control while benefiting from state subsidies</li>
+</ul>
+<p>Initially small, the A.K. Agricultural Exchange grew due to rising ecological instability and increased demand for accurate, non-corporate agricultural data.</p>
+
+<h2>Funding and Revenue Model</h2>
+<p><strong>Government Support (≈60%)</strong><br>The organization operates under a public-interest designation, receiving funding through the Ministry of Rural Development. This includes:</p>
+<ul>
+<li>Baseline operational grants (renewed every five years after audit)</li>
+<li>Subsidies for symposium hosting and travel to underserved districts</li>
+<li>Tax exemptions on printing and agricultural educational materials</li>
+<li>Occasional emergency funds during crop crises, droughts, or pest outbreaks</li>
+</ul>
+<p>Governmental support is not guaranteed, rather it is conditional on annual reports, performance reviews, and compliance with “civic neutrality,” meaning they must not appear politically aligned.</p>
+<p><strong>Sales of Publications (≈25%)</strong><br>Monthly and seasonal journals sold to farming cooperatives, agricultural schools, and local governance offices. Special issues on pest control, invasive species, or drought cycles are licensed to local councils. Printed soil charts and rotation calendars sold at small profit margins. Occasionally bundles reports for non-profits or NGOs for overseas comparative research.</p>
+<p>Most publications are designed to be plain-language, graphically minimal, with regional printing centers to reduce cost.</p>
+<p><strong>Workshops & Symposiums (≈10%)</strong><br>Ticketed seasonal symposiums (some subsidized) with paid guest speakers. Paid workshop attendance for advanced soil testing techniques, land zoning reform, or youth education strategies. Participants often receive booklets or flash drives with lecture summaries and crop zone data.</p>
+<p><strong>Private Donations & Partner Projects (≈5%)</strong><br>Occasional partnerships with sustainable seed banks, conservation farms, or universities. These are usually one-off or small grants tied to field studies or educational pilots. A.K. avoids private sponsorships from agrochemical or biotech firms to maintain neutrality.</p>
+
+<h2>Range of Operations</h2>
+<p><strong>Primary Range</strong><br>A.K. operates primarily within rural and semi-rural districts, focusing on underserved growers (small-scale farmers, land stewards, local community farms).</p>
+<p>Their goal is not food production but land health and knowledge transmission.</p>
+<p>They specialize in:</p>
+<ul>
+<li>High-altitude and coastal soil management</li>
+<li>Region-specific invasive species (not that big of a problem!!! yay!!!!!)</li>
+<li>Rain calendar synchronization</li>
+<li>Rotation planning with traditional crops</li>
+<li>Wetland edge conservation</li>
+<li>Public signage for land use guidance (e.g., footpaths, non-pesticide zones)</li>
+</ul>
+<p><strong>Secondary Range</strong><br>- Urban edge zones, particularly garden programs and school plot systems.<br>- Educational publications are distributed to vocational schools and teacher centers.<br>- Many urban universities rely on their publications for internship programs or entry-level curricula.</p>
+<p>They do not have any formal overseas branches, but they do work with publishers in other countries to translate and release select materials.</p>
+  </div>
+</section>
+    </div>
+  </main>
+
+  <footer id="main-footer">© smallcarnivorousmammal</footer>
+</div>
+
+<div id="lightbox" onclick="closeLightbox()">
+  <span class="lb-close" onclick="closeLightbox()">X</span>
+  <button class="lb-nav lb-prev" onclick="event.stopPropagation(); changeArt(-1)">◀</button>
+  <img id="lb-img" src="">
+  <button class="lb-nav lb-next" onclick="event.stopPropagation(); changeArt(1)">▶</button>
+</div>
+
+<div id="story-popup" class="popup-modal">
+  <div class="popup-content">
+    <span class="popup-close" onclick="togglePopup(false)">X</span>
+    <div class="story-controls">
+      <button onclick="moveStory(-1)">← Back</button>
+      <select class="story-sync" onchange="pickStory(this.value)">
+        <option value="0">GRASS</option>
+        <option value="1">BEETLE</option>
+      </select>
+      <button onclick="moveStory(1)">Forward →</button>
+    </div>
+    <div class="full-box" id="popup-body"></div>
+  </div>
+</div>
+
+<script>
+const themes = {
+  haru: { border: '#4d6e3d', bg: '#eef5e9', header: 'haruheader.png', scroll: '#b8d8a8' },
+  nao: { border: '#333', bg: '#d0d0d0', header: 'naoheader.png', scroll: '#999', swapped: true, square: true },
+  kahna: { border: '#cc0044', bg: '#fff0f5', header: 'kahnaheader.png', scroll: '#ff99bb' },
+  suzu: { border: '#8b4513', bg: '#fff9e6', header: 'suzuheader.png', scroll: '#d2b48c' },
+  mrsmori: { border: '#4682b4', bg: '#eceff1', header: 'mrsmoriheader.png', scroll: '#a0c4de', swapped: true, square: true },
+  mrmori: { border: '#004d00', bg: '#dfe7bf', header: 'mrmoriheader.png', scroll: '#7fbf7f' }
+};
+
+const displayNames = {
+  haru: "Haru Mori",
+  nao: "Nao Mori",
+  kahna: "Kahna Noma",
+  suzu: "Suzu Kaho",
+  mrsmori: "Mrs. Mori",
+  mrmori: "Mr. Mori"
+};
+
+const storyData = [
+  "<h3>GRASS</h3><p>When I walked into the office that first day in my new department, I could only think of one memory upon seeing her.</p><p>It was a warm, dry afternoon, and school was out. We had agreed to walk along the side of a field on the outskirts of town. I don’t remember if we were in high school or college, but it didn’t matter at the time. For once I could breathe clearly after a week or two of some seasonal allergies, and I was in a good mood as a result.</p><p>She ran her hand along the tops of the grasses as she walked ahead, and I watched her from behind. We stayed like that for a while until she slowed down and came to walk beside me.</p><p>The only thing I could think of doing in the moment was to gaze at her face as our shoes crunched along the dirt path. The ground had dried up from the sun, becoming brittle in sections. There was a sort of soft haze in the air that made me feel sleepy and comfortable. It was like standing next to a heater in winter, the way I liked being near her. I’ve never been one for metaphors, but that’s just how it felt. It had always been like this with her. There was a mystery in the way she carried herself; you could tell that she’d never say everything that crossed her mind. When we were together, some of that seemed to ease. She was my closest companion. One day, I thought, perhaps we could be more than companions; although I tucked away the thought whenever it came up. It was best to live in the moment as friends, or rather safer, at least from my point of view.</p><p>There was a light breeze stirring when she turned and looked at me. We stopped for a moment there, facing each other. Her neatly styled black hair had been tousled a bit by the wind and her headband had started to slip. I remember that I had wondered how she would look without the headband. I couldn’t remember ever seeing her straighten it.</p><p>There was a sudden movement from her, and only after a second I realized that she was hugging me. Of course, I reciprocated, but I was surprised. She had never liked to be touched by anyone, let alone initiating it. I could feel her chest rising and falling against mine and her face buried in my shoulder. I held her tightly, but somehow I was afraid of squeezing her too hard, as if she could break with too much pressure. Looking back, I guess you could say that she was. I hadn’t realized it then. I closed my eyes and promised myself I would remember.</p><p>I couldn’t tell you why she did it, but I still think of that day. When I look out the window, it’s that same type of warm, dry weather. I don’t know if the rattling fan in the office is comforting or not, but the repetitive noise is oddly calming. Could I look at her again the same way?</p>",
+  "<h3>BEETLE</h3><p>I met her on the second day of class. She’d been absent the first because of something like a mild summer cold.</p><p>She arrived late, carefully sliding the door open so as not to disturb the ongoing lesson. Her hair was tied back in pigtails that looked hastily thrown together, loose strands falling around her face. I wondered whether she had cut it herself. The thought lingered as she took the empty seat next to me.</p><p>Despite her rushed entrance, her desk was neatly organized, and she paid careful attention to the lesson. There was something quietly charming in the way she carried herself, an energy that felt both spontaneous and thoughtful. I was drawn to it without fully understanding why.</p><p>Soon enough, we were talking every morning. She greeted me warmly when I entered. When she was nearby it was like being next to the most fragrant stall at a festival. She made the classroom feel less like a place we were stuck in with her presence and casual conversation. At lunch she always brought some new convenience-store snack to sample. I didn’t notice at first that almost everything she chose was citrus, but it quickly became clear. No one else seemed to catch that detail, but I did. One afternoon I brought citrus candies from home, and she lit up as if I had given her something precious. I had wrapped them in yellow paper, and I know that she’d kept it afterwards. I saw her tuck them carefully into her bag.</p><p>By then, spending time together had become routine; we often visited each other outside class, on weekends too, and our friendship had settled into something familiar. Her company was enough to make my day, even when we simply sat together in the same room. I always smiled when she was close. One of our favorite pastimes to share was going on walks around the neighborhood and surrounding areas. I liked the way the quiet settled between us, without interruptions. Occasionally, we’d run errands together.</p><p>One weekend, we ended up taking my neighbor’s dog for a walk because they were away for the afternoon. He was an elderly mutt with no discernible breed who had a habit of sighing uncannily. His old joints needed exercising, but the dog moved so slowly that at some points we ended up standing more than walking.</p><p>That was how we noticed the beetle sitting on the side of a crack in the path, its back a polished green that caught the light every time it shifted. The dog had stopped beside us, sniffing the edge of the path in a leisurely manner. She crouched down first, mostly to keep the dog from stepping on it, and I crouched beside her a moment later. She studied the creature with interest, though I could tell she wasn’t quite sure what she was looking at. She leaned in, squinting a little, as if trying to place a familiar detail. A moment later, her face lit up with recognition.</p><p>She mentioned that in middle school they’d had a project in class with a goal of raising a beetle like this particular one up to adulthood. Her eyes followed the beetle as it tried to climb a pebble and slid off. I glanced over at the old dog briefly before realizing that he wasn’t going to move anytime soon.</p><p>Apparently, her sister had lectured her once the beetle was brought home. They were the kind that eat one specific plant, and the leaves needed to be fresh and not bruised. When I asked what sort of plant it was, she frowned while trying to recall the name. She was eventually unsuccessful.</p><p>Almost casually, she mentioned that her sister used to bring home all sorts of plants, seed packets, and young trees. The porch attached to the side of their house had once looked like a tiny botanical garden. There wasn’t a single empty pot. They were consistently moved around for the best light. She didn’t seem to mind much and said she had enjoyed the greenery. I remembered her mentioning they hadn’t spoken much in a long while, but she didn’t sound sad as she described it.</p><p>The dog pawed the ground impatiently, so we stood up again. She brushed off her knees, even though nothing had stuck to them. As we walked, she kept glancing back at the beetle until it was out of sight. The rest of the walk was quiet, the good kind. Pleasant days like that became part of our routine, with the most important part always being beside her.</p>"
+];
+
+function show(id) {
+  // Normalize ID to lowercase right away (in case something passes it capitalized)
+  id = (id || '').toLowerCase().trim();
+
+  // Hide all sections
+  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  const targetSection = document.getElementById(id);
+  if (targetSection) {
+    targetSection.classList.add('active');
+  }
+
+  const header = document.getElementById('main-header');
+  const titleElement = document.getElementById('page-title');
+  const body = document.body;
+
+  // Reset everything first
+  body.className = '';
+  header.classList.remove('theme-swapped');
+  titleElement.textContent = "Spices!";
+
+  // Clear active styles from nav
+  document.querySelectorAll('nav button, nav summary, nav a').forEach(el => {
+    el.classList.remove('active-tab', 'active-sub');
+  });
+
+  // Highlight the clicked nav item
+  const activeBtn = document.querySelector(`[onclick="show('${id}')"]`) ||
+                    document.querySelector(`[onclick="show('${id.charAt(0).toUpperCase() + id.slice(1)}')"]`);
+  if (activeBtn) {
+    if (activeBtn.tagName === 'A') {
+      activeBtn.classList.add('active-sub');
+      const summary = activeBtn.closest('details')?.querySelector('summary');
+      if (summary) summary.classList.add('active-tab');
+    } else {
+      activeBtn.classList.add('active-tab');
+    }
+  }
+
+  // Character page handling
+  if (themes[id]) {
+    const t = themes[id];
+
+    // Apply theme class
+    body.classList.add('theme-' + id);
+
+    // Swapped header if needed
+    if (t.swapped) {
+      header.classList.add('theme-swapped');
+    }
+
+    // CSS variables
+    document.documentElement.style.setProperty('--border-main', t.border);
+    document.documentElement.style.setProperty('--bg-content', t.bg);
+    document.documentElement.style.setProperty('--scrollbar-thumb', t.scroll);
+    document.documentElement.style.setProperty('--radius', t.square ? '0px' : '20px');
+
+    // Header background image
+    header.style.backgroundImage = `url('https://smallcarnivore.neocities.org/spices/spicesassets/${t.header}')`;
+
+    // Footer text color based on contrast
+    const r = parseInt(t.border.slice(1,3), 16);
+    const g = parseInt(t.border.slice(3,5), 16);
+    const b = parseInt(t.border.slice(5,7), 16);
+    const brightness = r*0.299 + g*0.587 + b*0.114;
+    document.documentElement.style.setProperty('--footer-text', brightness > 150 ? '#000' : '#fff');
+
+    // Set the display name — this line should now win
+    titleElement.textContent = displayNames[id] || capitalize(id);
+  }
+  else {
+    // Default theme reset
+    document.documentElement.style.setProperty('--border-main', '#d8c3a5');
+    document.documentElement.style.setProperty('--bg-content', '#fdfaf3');
+    document.documentElement.style.setProperty('--scrollbar-thumb', '#d8c3a5');
+    document.documentElement.style.setProperty('--radius', '20px');
+    header.style.backgroundImage = "url('https://smallcarnivore.neocities.org/spices/spicesassets/spicesheader.png')";
+    titleElement.textContent = "Spices!";
+  }
+
+  // Final safety net: force correct title after a tiny delay
+  // (in case any other script or event tries to change it afterward)
+  setTimeout(() => {
+    if (displayNames[id]) {
+      titleElement.textContent = displayNames[id];
+    }
+  }, 0);
+}
+
+// Tiny helper if displayNames is missing (fallback)
+function capitalize(str) {
+  if (!str) return "Spices!";
+  return str
+    .replace('mrsmori', 'Mrs. Mori')
+    .replace('mrmori', 'Mr. Mori')
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function exclusiveMenu(current) {
+  document.querySelectorAll('details').forEach(d => { if(d !== current) d.removeAttribute('open'); });
+}
+
+// Art Logic
+let artList = ["https://smallcarnivore.neocities.org/images/art/digital/doyoulikecrayons.png", "https://smallcarnivore.neocities.org/images/art/digital/catonthesteps.png", "https://smallcarnivore.neocities.org/images/art/digital/smalltalk.jpg", "https://smallcarnivore.neocities.org/images/art/digital/brightgreenlightportrait.png", "https://smallcarnivore.neocities.org/images/art/digital/momsoldphoto.jpg", "https://smallcarnivore.neocities.org/images/art/digital/motherdaughtermoment.png", "https://smallcarnivore.neocities.org/images/art/digital/expressions.jpg", "https://smallcarnivore.neocities.org/images/art/digital/ramenupgraded.png", "https://smallcarnivore.neocities.org/images/art/digital/runningharu.gif", "https://smallcarnivore.neocities.org/images/art/digital/officeworking.gif", "https://smallcarnivore.neocities.org/images/art/digital/corporatelimbo.jpg", "https://smallcarnivore.neocities.org/images/art/digital/sisters.jpg", "https://smallcarnivore.neocities.org/images/art/digital/killedamanin94.jpg", "https://smallcarnivore.neocities.org/images/art/digital/officemood.jpg", "https://smallcarnivore.neocities.org/images/art/digital/summerfun.jpg", "https://smallcarnivore.neocities.org/images/art/digital/chattingonlineisprettychill.gif","https://smallcarnivore.neocities.org/images/art/digital/ramenat3am.jpg"];
+let curArt = 0;
+
+function openLightbox(i) {
+  curArt = i;
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lb-img').src = artList[curArt];
+  
+  // We use both methods to ensure the script "sees" it is open
+  lb.classList.add('active');
+  lb.style.display = 'flex'; 
+}
+
+function closeLightbox() {
+  const lb = document.getElementById('lightbox');
+  lb.classList.remove('active');
+  lb.style.display = 'none';
+}
+
+function changeArt(d) {
+  curArt = (curArt + d + artList.length) % artList.length;
+  document.getElementById('lb-img').src = artList[curArt];
+}
+
+// Story Logic
+let curStory = 0;
+
+function pickStory(i) {
+  curStory = parseInt(i);
+  const content = storyData[curStory] || "Story content missing.";
+  document.getElementById('story-content').innerHTML = content;
+  document.getElementById('popup-body').innerHTML = content;
+  document.querySelectorAll('.story-sync').forEach(s => s.value = i);
+}
+
+function moveStory(d) {
+  curStory = (curStory + d + storyData.length) % storyData.length;
+  pickStory(curStory);
+}
+
+function togglePopup(s) {
+  const popup = document.getElementById('story-popup');
+  popup.style.display = s ? 'flex' : 'none';
+}
+
+// THE UNIFIED KEYBOARD COMMANDER
+document.onkeydown = function(e) {
+  const lightbox = document.getElementById('lightbox');
+  const storyPopup = document.getElementById('story-popup');
+  const storySection = document.getElementById('short-stories');
+
+  // 1. ART LIGHTBOX - Priority #1
+  // We check if the element is actually visible on screen
+  if (lightbox.classList.contains('active') || window.getComputedStyle(lightbox).display !== 'none') {
+    if (e.key === "ArrowLeft") { 
+      changeArt(-1); 
+      e.preventDefault(); 
+      return false; 
+    }
+    if (e.key === "ArrowRight") { 
+      changeArt(1); 
+      e.preventDefault(); 
+      return false; 
+    }
+    if (e.key === "Escape") {
+      closeLightbox();
+      return false;
+    }
+    return; // Stop here if lightbox is active
+  }
+
+  // 2. STORY POPUP - Priority #2
+  if (window.getComputedStyle(storyPopup).display !== 'none') {
+    if (e.key === "ArrowLeft") { moveStory(-1); e.preventDefault(); }
+    if (e.key === "ArrowRight") { moveStory(1); e.preventDefault(); }
+    if (e.key === "Escape") togglePopup(false);
+    return;
+  }
+
+  // 3. MAIN STORY PAGE - Priority #3
+  if (storySection.classList.contains('active')) {
+    if (e.key === "ArrowLeft") moveStory(-1);
+    if (e.key === "ArrowRight") moveStory(1);
+  }
+};
+</script>
+</body>
+</html>

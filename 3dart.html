@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf 3D ART</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent:#43B3D2;
+  --bg:#000;
+  --text:#fff;
+  --border-light:rgba(255,255,255,0.35);
+}
+
+/* Custom Blue Scrollbars */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+* { box-sizing:border-box; }
+html, body { 
+  margin:0; padding:0; 
+  font-family:'VT323',monospace; 
+  color:var(--text); font-size:19px; line-height:1.25; 
+}
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+/* --- WHARF STANDARD LAYOUT --- */
+.site { 
+  max-width:1100px; 
+  margin:0 auto; 
+  display:grid; 
+  grid-template-columns:220px 1fr; 
+  align-items: start;
+}
+
+.sidebar { 
+  margin: 14px 0 14px 14px;
+  padding:12px; 
+  background:rgba(0,0,0,0.88);
+  border:1px solid var(--border-light); 
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  position: sticky;
+  top: 14px;
+}
+
+.sidebar h2 { margin:0 0 8px; color:var(--accent); }
+
+.nav a { 
+  display:block; color:var(--text); text-decoration:none; 
+  padding:4px 8px; border-radius:4px; transition: 0.2s;
+}
+.nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+
+/* Unified Highlight Style */
+.nav a.current { 
+  background: rgba(67, 179, 210, 0.35) !important; 
+  color: #43B3D2 !important; 
+  border-left: 4px solid #43B3D2 !important;
+}
+
+/* Sidebar Dropdown logic */
+.dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+.show-art .dropdown-content { display: block; }
+.arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+.show-art .arrow { transform: rotate(90deg); }
+
+/* --- CONTENT AREA --- */
+.content { 
+  margin: 14px 14px 14px 0;
+  padding:14px; 
+  background:rgba(0,0,0,0.88); 
+  border:1px solid var(--border-light);
+  border-radius: 0 10px 10px 10px;
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+}
+
+header { 
+  padding:10px 12px; border-radius:8px; border:1px solid var(--border-light);
+  background:linear-gradient(to bottom,rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%,#000 80%); 
+}
+header h1 { 
+  margin:0; font-size:2.7rem; 
+  background:linear-gradient(to bottom, #9be5f4, var(--accent)); 
+  -webkit-background-clip:text; color:transparent; 
+}
+
+/* --- THE MARCHING ANTS SECTION --- */
+.gallery-section {
+  background: #000;
+  border-radius: 8px;
+  padding: 20px;
+  
+  /* 1. REMOVE the "border:" line that was here */
+
+  /* 2. KEEP the background-image logic (This IS the moving border) */
+  background-image: linear-gradient(var(--accent) 50%, transparent 50%), 
+                    linear-gradient(var(--accent) 50%, transparent 50%), 
+                    linear-gradient(90deg, var(--accent) 50%, transparent 50%), 
+                    linear-gradient(90deg, var(--accent) 50%, transparent 50%);
+  background-repeat: repeat-y, repeat-y, repeat-x, repeat-x;
+  background-size: 2px 20px, 2px 20px, 20px 2px, 20px 2px;
+  background-position: 0 0, 100% 0, 0 0, 0 100%;
+  animation: marchingAnts 0.6s linear infinite;
+}
+
+@keyframes marchingAnts {
+  from { background-position: 0 0, 100% 0, 0 0, 0 100%; }
+  to { background-position: 0 -20px, 100% 20px, 20px 0, -20px 100%; }
+}
+
+.art-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.art-card {
+  aspect-ratio: 1 / 1;
+  cursor: pointer;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #111;
+  transition: 0.2s;
+}
+.art-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+.art-card img { width: 100%; height: 100%; object-fit: cover; }
+
+/* --- FLOATING BUTTONS --- */
+.floating-btns { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+.back-button, .top-button { 
+  background: linear-gradient(135deg, var(--accent), #9be5f4);
+  color: #000; padding: 10px 16px; text-decoration: none; border-radius: 8px; 
+  border: 1px solid var(--border-light); font-family: 'VT323', monospace; text-align: center;
+}
+
+/* --- MODAL --- */
+.modal {
+  display: none; position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95);
+  justify-content: center; align-items: center;
+  z-index: 3000; padding: 20px;
+}
+.image-viewer {
+  background: #000; border: 1px solid var(--border-light);
+  border-radius: 12px; max-width: 90vw; max-height: 90vh;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.modal-header { 
+  background: #111; padding: 10px 15px; 
+  display: flex; justify-content: flex-end; 
+  border-bottom: 1px solid var(--border-light); 
+}
+.modal-image-container {
+  position: relative; flex-grow: 1;
+  display: flex; align-items: center; justify-content: center;
+  background: #050505; padding: 20px;
+}
+#expanded-img { max-width: 100%; max-height: 70vh; object-fit: contain; }
+#image-caption {
+  padding: 12px 16px;
+  background: #000;
+  color: var(--accent);
+  font-size: 1.15rem;
+  line-height: 1.3;
+
+  max-height: 30vh;
+  overflow-y: auto;
+
+  border-top: 1px solid var(--border-light);
+}
+@media (min-width: 900px) {
+  #image-caption {
+    max-height: 32vh;
+  }
+}
+.close-btn { color: var(--accent); cursor: pointer; font-size: 2rem; line-height: 0.8; }
+
+/* The smooth navigation arrows */
+.nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  font-size: 3.2rem; color: var(--accent); cursor: pointer;
+  user-select: none; z-index: 10; padding: 10px;
+  text-shadow: 
+    0 2px 0 #000, 0 -2px 0 #000, 2px 0 0 #000, -2px 0 0 #000,
+    1.5px 1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000,
+    0.8px 1.8px 0 #000, 0.8px -1.8px 0 #000, -0.8px 1.8px 0 #000, -0.8px -1.8px 0 #000,
+    1.8px 0.8px 0 #000, 1.8px -0.8px 0 #000, -1.8px 0.8px 0 #000, -1.8px -0.8px 0 #000;
+  transition: transform 0.1s;
+}
+.nav-btn:hover { transform: translateY(-50%) scale(1.1); color: #fff; }
+.prev-btn { left: 8px; }
+.next-btn { right: 8px; }
+
+@media(max-width:850px){ 
+  .site{ grid-template-columns:1fr; } 
+  .sidebar{ margin: 14px auto; width: 95%; border-right: 1px solid var(--border-light); border-radius: 10px; position: relative; top: 0; } 
+  .content { margin: 14px; border-radius: 10px; }
+  .nav-btn { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="site">
+  <aside class="sidebar">
+  <h2>Navigation</h2>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    
+    <div class="nav-group show-art" id="art-group">
+      <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+        Art <span class="arrow">▶</span>
+      </a>
+      <div class="dropdown-content">
+        <a href="art.html">Overview</a>
+        <a href="digital.html">Digital</a>
+        <a href="mspaint.html">MS Paint</a>
+        <a href="2dart.html">2D Art</a>
+        <a href="3dart.html" class="current">3D Art</a>
+        <a href="studies.html">Skill Lab</a>
+      </div>
+    </div>
+
+    <a href="commissions.html">Commissions</a>
+    <a href="journal.html">Journal</a>
+    <a href="stories.html">Stories</a>
+    <a href="characters.html">Characters</a>
+    <a href="sharks.html">Sharks</a>
+    <a href="cats.html">Cats</a>
+    <a href="resources.html">Resources</a>
+    <a href="sitemap.html">Sitemap</a>
+  </nav>
+</aside>
+
+  <main class="content">
+    <header><h1>TRADITIONAL 3D ART</h1></header>
+
+    <div class="gallery-section">
+      <div class="art-grid">
+<div class="art-card" title="A figure of my character Damir. Honestly not very good. I don't like it that much."><img src="images/art/traditional/3d/damirfigureclay.jpg" loading="lazy"></div>
+<div class="art-card" title="A silly little clay sculpture. Personally reminds me of a Smiling Friends background character."><img src="images/art/traditional/3d/boogergreenclay.jpg" loading="lazy"></div>
+<div class="art-card" title="One part of a collection displayed at an immersive art gallery."><img src="images/art/traditional/3d/fishpencilframe4.jpg" loading="lazy"></div>
+<div class="art-card" title="One part of a collection displayed at an immersive art gallery."><img src="images/art/traditional/3d/fishpencilframe3.jpg" loading="lazy"></div>
+<div class="art-card" title="One part of a collection displayed at an immersive art gallery."><img src="images/art/traditional/3d/fishpencilframe2.jpg" loading="lazy"></div>
+<div class="art-card" title="One part of a collection displayed at an immersive art gallery."><img src="images/art/traditional/3d/fishpencilframe1.jpg" loading="lazy"></div>
+<div class="art-card" title="Two small poseable sculptures. Materials: three types of yarn, sculpey clay, acrylic paint, doll clothing."><img src="images/art/traditional/3d/pairofdolls.jpg" loading="lazy"></div>
+<div class="art-card" title="Large poseable sculpture. Materials: two types of yarn, sculpey clay, acrylic paint, recycled batting, decorative jewelry chains, flower picture charm"><img src="images/art/traditional/3d/surrealistdoll.jpg" loading="lazy"></div>
+<div class="art-card" title="8.5 inches by 6 inches. Art piece applied onto a spray-paint can, originally in digital format. Materials: paper, ink, spray modge-podge, glue, spray paint can"><img src="images/art/traditional/3d/spraypaintcan.jpg" loading="lazy"></div>
+<div class="art-card" title="Small grey crochet figure, with the buckeye nut provided as a little brain. Materials: grey yarn, dry red beans, one (1) buckeye nut, two black buttons, hot-glue, love"><img src="images/art/traditional/3d/buckeyenutcrochet.jpg" loading="lazy"></div>
+<div class="art-card" title="I love this guy. Made with scrap fabric during a workshop."><img src="images/art/traditional/3d/fourleggedcreaturesewn.jpg" loading="lazy"></div>
+<div class="art-card" title="Made with thick, fuzzy, multicolored yarn. The center piece is woven and the rest is crocheted aside from the eyes, which are made from two buttons each, the one on top iridescent to mimic a real fish eye. It actually holds quite a lot and is great for carrying yarn on the go. Didn't expect it to be this useful."><img src="images/art/traditional/3d/fishbagcrochet.jpg" loading="lazy"></div>
+<div class="art-card" title="Large white yarn crochet figure, originally intended to be a small doll-like thing. It turned out to look like some type of root, or a parasite of some sort. A bit scary, but I like to hold the thing. Stuffed with polyfill."><img src="images/art/traditional/3d/somethingcrochet.jpg" loading="lazy"></div>
+<div class="art-card" title="Large grey and black yarn crochet figure, modeled after typical alien caught on a trailcam. He is going to a job interview. Completed Oct 22. You can pose him in various ways (very versatile). His pants are apparently anxiety-inducing. Stuffed with polyfill."><img src="images/art/traditional/3d/professionalaliencrochet.jpg" loading="lazy"></div>
+<div class="art-card" title="Large purple yarn crochet figure, in the shape of a lizard. You can pose it in uncomfortable-looking ways if you want to. Made with two medium-sized pink and yellow buttons for eyes, stuffed with polyfill. Its name is W. Izzy --> Wizzy --> Wizard (the Lizard)"><img src="images/art/traditional/3d/wizzylizardcrochet.jpg" loading="lazy"></div>
+<div class="art-card" title="Medium/small burgundy yarn crochet figure. I have no idea what this thing is but it looks so guilty. Made with three buttons of varying size and color for each eye, stuffed with polyfill."><img src="images/art/traditional/3d/fanticrochet.jpg" loading="lazy"></div>
+<div class="art-card" title="Large blue yarn crochet figure, in the shape of a lamb (baby sheep). Made with two medium-sized teal buttons for eyes, stuffed with polyfill. What a little baby guy. My son."><img src="images/art/traditional/3d/lambcrochet.jpg" loading="lazy"></div>
+        </div>
+        
+  </main>
+</div>
+
+<div id="image-modal" class="modal">
+  <div class="image-viewer">
+    <div class="modal-header">
+      <span class="close-btn">&times;</span>
+    </div>
+    <div class="modal-image-container">
+      <span class="nav-btn prev-btn" id="prevBtn">◄</span>
+      <img id="expanded-img" src="">
+      <span class="nav-btn next-btn" id="nextBtn">►</span>
+    </div>
+    <div id="image-caption"></div>
+  </div>
+</div>
+
+<script>
+  const imageModal = document.getElementById("image-modal");
+const expandedImg = document.getElementById("expanded-img");
+const captionText = document.getElementById("image-caption");
+const closeBtn = document.querySelector(".close-btn");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+// 1. Get all cards and images
+const cards = Array.from(document.querySelectorAll('.art-card'));
+let currentIndex = 0;
+
+// 2. Open Modal
+function openModal(index) {
+  currentIndex = index;
+  const img = cards[currentIndex].querySelector('img');
+  const info = cards[currentIndex].getAttribute('title');
+  
+  imageModal.style.display = "flex";
+  expandedImg.src = img.src;
+  captionText.innerText = info || "";
+}
+
+// 3. Switch Image
+function showImage(index) {
+  if (index < 0) index = cards.length - 1;
+  if (index >= cards.length) index = 0;
+  openModal(index);
+}
+
+// 4. Attach click to cards
+cards.forEach((card, index) => {
+  card.onclick = () => openModal(index);
+});
+
+// 5. Button clicks
+prevBtn.onclick = (e) => { e.stopPropagation(); showImage(currentIndex - 1); };
+nextBtn.onclick = (e) => { e.stopPropagation(); showImage(currentIndex + 1); };
+closeBtn.onclick = () => { imageModal.style.display = "none"; };
+
+// 6. Close on background click
+window.onclick = (e) => { if (e.target === imageModal) imageModal.style.display = "none"; };
+
+// 7. Keyboard Navigation
+document.addEventListener('keydown', (e) => {
+  if (imageModal.style.display === "flex") {
+    if (e.key === "ArrowLeft") showImage(currentIndex - 1);
+    if (e.key === "ArrowRight") showImage(currentIndex + 1);
+    if (e.key === "Escape") imageModal.style.display = "none";
+  }
+});
+</script>
+<div class="floating-btns">
+    <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+    <a href="index.html" class="back-button">← HOME</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf SHORT STORIES</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root { 
+    --accent:#43B3D2; 
+    --bg:#000; 
+    --text:#fff; 
+    --border-light:rgba(255,255,255,0.35); 
+    --border-dark:rgba(0,0,0,0.85); 
+}
+
+/* Standard Blue Scrollbars */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+* { box-sizing:border-box; }
+
+html, body { 
+    margin:0; padding:0; 
+    font-family:'VT323',monospace; 
+    color:var(--text); font-size:19px; line-height:1.25; 
+}
+
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+/* --- WHARF STANDARD LAYOUT --- */
+.site { 
+    max-width:1100px; 
+    margin:0 auto; 
+    display:grid; 
+    grid-template-columns:220px 1fr; 
+    align-items:start;
+}
+
+.sidebar { 
+    margin: 14px 0 14px 14px;
+    padding: 12px; 
+    background: rgba(0,0,0,0.88); 
+    border: 1px solid var(--border-light); 
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    position: sticky;
+    top: 14px;
+}
+
+.sidebar h2 { margin:0 0 8px; color:var(--accent); }
+
+.nav a { 
+    display:block; color:var(--text); text-decoration:none; 
+    padding:4px 8px; border-radius:4px; transition: 0.2s;
+}
+.nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+
+.nav a.current { 
+  background: rgba(67, 179, 210, 0.35) !important; 
+  color: #43B3D2 !important; 
+  border-left: 4px solid #43B3D2 !important;
+  display: block !important;
+}
+
+/* Art Dropdown logic */
+.dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+.show-art .dropdown-content { display: block; }
+.arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+.show-art .arrow { transform: rotate(90deg); }
+
+.content { 
+    margin: 14px 14px 14px 0;
+    padding: 14px; 
+    background: rgba(0,0,0,0.88); 
+    border: 1px solid var(--border-light); 
+    border-radius: 0 10px 10px 10px;
+    display: grid; 
+    gap: 14px; 
+}
+
+header { 
+    padding:10px 12px; 
+    border-radius:8px; 
+    border:1px solid var(--border-light); 
+    background:linear-gradient(to bottom,rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%,#000 80%); 
+}
+
+header h1 { 
+    margin:0; font-size:2.7rem; 
+    background:linear-gradient(to bottom, #9be5f4, var(--accent)); 
+    -webkit-background-clip:text; color:transparent; 
+}
+
+/* --- STORY LIST & GRID --- */
+.story-list { 
+    max-height:180px; 
+    overflow-y:auto; 
+    padding:8px; 
+    border:1px solid var(--border-light); 
+    border-radius:8px; 
+    background:#111; 
+}
+.story-list a { display:block; color:var(--text); text-decoration:none; padding:4px 8px; border-radius:4px; }
+.story-list a:hover { color:var(--accent); background: rgba(67,179,210,0.2); }
+
+.story-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:16px; }
+
+.story-box { 
+    background: #000; 
+    border-radius:8px; 
+    border:1px solid var(--border-light); 
+    padding:12px; 
+    cursor:pointer;
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1); 
+    transition: transform 0.2s ease, border-color 0.2s; 
+}
+.story-box:hover { transform: translateY(-4px); border-color: var(--accent); }
+.story-box img { width:100%; border-radius:4px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px;}
+.story-box h3 { margin: 0; color: var(--accent); font-size: 1.4rem; text-align: center; }
+
+/* --- MODAL --- */
+.modal { 
+    display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+    background: rgba(0,0,0,0.92); justify-content:center; align-items:center; 
+    padding:20px; z-index: 2000;
+}
+
+.modal-content { 
+    background: #000; border:1px solid var(--border-light); 
+    border-radius:10px; padding:30px; max-width:800px; 
+    max-height: 85vh; width: 100%; overflow-y: auto; position: relative;
+    box-shadow: 0 0 30px rgba(0,0,0,1);
+}
+
+.modal-content h2 { color: var(--accent); font-size: 2rem; margin-top: 0; }
+.modal-content p { line-height: 1.5; font-size: 1.2rem; margin-bottom: 1.5rem; }
+
+.close-btn { position: sticky; top: 0; float: right; color:var(--accent); cursor:pointer; font-size:2rem; line-height: 1; z-index: 10; }
+
+.modal-content.reading-mode { background: #e6dfcc; color: #222; }
+.modal-content.reading-mode h2, .modal-content.reading-mode .close-btn { color: #5d4037; }
+
+.read-mode-btn {
+    background: var(--accent); color: #000; border: none;
+    padding: 6px 15px; font-family: 'VT323', monospace; font-size: 1.2rem;
+    cursor: pointer; border-radius: 6px; float: right; margin-right: 15px;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+}
+
+/* --- SYSTEM NOTICE WINDOW --- */
+.retro-window {
+    position: fixed; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    width: 340px; 
+    background: rgba(0, 0, 0, 0.95);
+    border: 1px solid var(--border-light); /* Matches your other boxes */
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8); 
+    z-index: 3000; 
+    overflow: hidden;
+    /* Window Popup Animation */
+    animation: windowPopup 0.25s ease-out;
+}
+
+@keyframes windowPopup {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.window-header { 
+    background: linear-gradient(to bottom, rgba(255,255,255,0.12), #000); 
+    color: var(--accent); 
+    padding: 8px 12px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 1px solid var(--border-light);
+    cursor: grab; 
+}
+
+.window-body { 
+    padding: 15px; 
+    font-size: 21px; /* Matches your body font size */
+}
+
+.window-body p { margin-bottom: 10px; }
+
+.window-ok {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #9be5f4);
+    color: #000; 
+    padding: 10px; 
+    text-decoration: none; 
+    border-radius: 8px; 
+    border: 1px solid var(--border-light); 
+    font-family: 'VT323', monospace; 
+    text-align: center;
+    font-size: 21px; /* Uniform text size */
+    cursor: pointer;
+    margin-top: 15px;
+    transition: 0.1s;
+}
+
+.window-ok:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+.window-ok:active {
+    transform: translateY(0);
+}
+
+/* Standard Floating Buttons */
+.floating-btns { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+.back-button, .top-button { 
+  background: linear-gradient(135deg, var(--accent), #9be5f4);
+  color: #000; padding: 10px 16px; text-decoration: none; border-radius: 8px; 
+  border: 1px solid var(--border-light); font-family: 'VT323', monospace; text-align: center;
+}
+
+@media(max-width:850px){ 
+    .site{grid-template-columns:1fr;} 
+    .sidebar{margin: 14px auto; width: 95%; border-right: 1px solid var(--border-light); border-radius: 10px; position: relative; top: 0;} 
+    .content { margin: 14px; border-radius: 10px; }
+}
+.rec-btn {
+  background: rgba(67, 179, 210, 0.1);
+  border: 1px solid var(--accent);
+  color: #fff;
+  font-family: 'VT323', monospace;
+  font-size: 21px;
+  text-align: left;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  border-radius: 4px;
+}
+
+.rec-btn:hover {
+  background: var(--accent);
+  color: #000;
+}
+</style>
+</head>
+<body>
+
+<div class="site">
+  <aside class="sidebar">
+  <h2>Navigation</h2>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    
+    <div class="nav-group" id="art-group">
+      <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+        Art <span class="arrow">▶</span>
+      </a>
+      <div class="dropdown-content">
+        <a href="art.html">Overview</a>
+        <a href="digital.html">Digital</a>
+        <a href="mspaint.html">MS Paint</a>
+        <a href="2dart.html">2D Art</a>
+        <a href="3dart.html">3D Art</a>
+        <a href="studies.html">Skill Lab</a>
+      </div>
+    </div>
+
+    <a href="commissions.html">Commissions</a>
+    <a href="journal.html">Journal</a>
+    <a href="stories.html" class="current">Stories</a>
+    <a href="characters.html">Characters</a>
+    <a href="sharks.html">Sharks</a>
+    <a href="cats.html">Cats</a>
+    <a href="resources.html">Resources</a>
+    <a href="sitemap.html">Sitemap</a>
+  </nav>
+</aside>
+
+<div id="info-window" class="retro-window">
+  <div class="window-header" id="info-window-header">
+    <span>BEFORE YOU READ...</span>
+    <span style="cursor:pointer" onclick="closeInfoWindow()">&times;</span>
+  </div>
+  <div class="window-body">
+    <p><strong>HOW TO USE:</strong> Click any title in the list or an image in the grid to open the story.</p>
+    <p><strong>READING MODE:</strong> Use the button inside the viewer for an alternative high-contrast display.</p>
+    
+    <div style="margin-top: 15px; border-top: 1px dashed var(--border-light); padding-top: 10px;">
+      <p style="color: var(--accent); margin-bottom: 8px;"><strong>RECOMMENDED READS:</strong></p>
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <button class="rec-btn" data-story="story8">29 SECONDS PAST MIDNIGHT</button>
+        <button class="rec-btn" data-story="story10">NO CLOVERS UNDERGROUND</button>
+        <button class="rec-btn" data-story="story12">GRASS</button>
+        <button class="rec-btn" data-story="story20">GET SOME REST TONIGHT</button>
+      </div>
+    </div>
+
+    <button class="window-ok" onclick="closeInfoWindow()">ACKNOWLEDGE</button>
+  </div>
+</div>
+
+  <main class="content">
+    <header><h1>SHORT STORIES</h1></header>
+
+    <section class="story-list">
+      <a href="#" data-story="story1">1. DAMP AND WARM</a>
+      <a href="#" data-story="story2">2. REPORT BACK TO THE MOTHERSHIP</a>
+      <a href="#" data-story="story3">3. A NICE OUTING ON THE SLEDDING HILL</a>
+      <a href="#" data-story="story4">4. I’M SUPPOSED TO BE THE ONE BITING</a>
+      <a href="#" data-story="story5">5. JUST HARMLESS PLAY</a>
+      <a href="#" data-story="story6">6. IT’S FINALLY FOGGY</a>
+      <a href="#" data-story="story7">7. SEASON’S GREETINGS TO YOU TOO</a>
+      <a href="#" data-story="story8">8. TWENTY NINE SECONDS PAST MIDNIGHT</a>
+      <a href="#" data-story="story9">9. GOD IS A COLD DESERT NIGHT</a>
+      <a href="#" data-story="story10">10. NO CLOVERS UNDERGROUND</a>
+      <a href="#" data-story="story11">11. BEETLE</a>
+      <a href="#" data-story="story12">12. GRASS</a>
+      <a href="#" data-story="story13">13. A PLEASANT WALK</a>
+      <a href="#" data-story="story14">14. MEOW I TELL YA!</a>
+      <a href="#" data-story="story15">15. NUTRITIONALLY DENSE, EVERYTHING THEY NEED</a>
+      <a href="#" data-story="story16">16. LET’S CATCH SOME SHARK BAIT, BOYS</a>
+      <a href="#" data-story="story17">17. THE NAME OF THE GAME</a>
+      <a href="#" data-story="story18">18. ANYBODY ON THE LAND?</a>
+      <a href="#" data-story="story19">19. FIRE DANGER RED FLAG WARNING</a>
+      <a href="#" data-story="story20">20. GET SOME REST TONIGHT</a>
+    </section>
+
+    <section class="story-grid">
+      <div class="story-box" data-story="story1">
+        <img src="placeholder.png" alt="DAMP AND WARM">
+        <h3>DAMP AND WARM</h3>
+      </div>
+      <div class="story-box" data-story="story2">
+        <img src="placeholder.png" alt="REPORT BACK TO THE MOTHERSHIP">
+        <h3>REPORT BACK TO THE MOTHERSHIP</h3>
+      </div>
+      <div class="story-box" data-story="story3">
+        <img src="placeholder.png" alt="A NICE OUTING ON THE SLEDDING HILL">
+        <h3>A NICE OUTING ON THE SLEDDING HILL</h3>
+      </div>
+      <div class="story-box" data-story="story4"><img src="placeholder.png"><h3>I’M SUPPOSED TO BE THE ONE BITING</h3></div>
+      <div class="story-box" data-story="story5"><img src="placeholder.png"><h3>JUST HARMLESS PLAY</h3></div>
+      <div class="story-box" data-story="story6"><img src="placeholder.png"><h3>IT’S FINALLY FOGGY</h3></div>
+      <div class="story-box" data-story="story7"><img src="placeholder.png"><h3>SEASON’S GREETINGS TO YOU TOO</h3></div>
+      <div class="story-box" data-story="story8"><img src="placeholder.png"><h3>TWENTY NINE SECONDS PAST MIDNIGHT</h3></div>
+      <div class="story-box" data-story="story9"><img src="placeholder.png"><h3>GOD IS A COLD DESERT NIGHT</h3></div>
+      <div class="story-box" data-story="story10"><img src="placeholder.png"><h3>NO CLOVERS UNDERGROUND</h3></div>
+      <div class="story-box" data-story="story11"><img src="placeholder.png"><h3>BEETLE</h3></div>
+      <div class="story-box" data-story="story12"><img src="placeholder.png"><h3>GRASS</h3></div>
+      <div class="story-box" data-story="story13"><img src="placeholder.png"><h3>A PLEASANT WALK</h3></div>
+      <div class="story-box" data-story="story14"><img src="placeholder.png"><h3>MEOW I TELL YA!</h3></div>
+      <div class="story-box" data-story="story15"><img src="placeholder.png"><h3>NUTRITIONALLY DENSE, EVERYTHING THEY NEED</h3></div>
+      <div class="story-box" data-story="story16"><img src="placeholder.png"><h3>LET’S CATCH SOME SHARK BAIT, BOYS</h3></div>
+      <div class="story-box" data-story="story17"><img src="placeholder.png"><h3>THE NAME OF THE GAME</h3></div>
+      <div class="story-box" data-story="story18"><img src="placeholder.png"><h3>ANYBODY ON THE LAND?</h3></div>
+      <div class="story-box" data-story="story19"><img src="placeholder.png"><h3>FIRE DANGER RED FLAG WARNING</h3></div>
+      <div class="story-box" data-story="story20"><img src="placeholder.png"><h3>GET SOME REST TONIGHT</h3></div>
+    </section>
+  </main>
+</div>
+
+<div class="floating-btns">
+    <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+    <a href="index.html" class="back-button">← HOME</a>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-content" id="modal-container">
+    <span class="close-btn">&times;</span>
+    <button class="read-mode-btn" id="toggle-read">Reading Mode</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const stories = {
+  story1: `<h2>DAMP AND WARM</h2><p>It is summer, not winter or fall. I am less than seven years old. It’s hot outside, always hot. Never dry. I run along and stop at a puddle. I can see in the reflection, there is someone behind me. I look back. Was it something? The overhanging vines and branches shade me from the sun’s rays. The heat beats down on me as I hold a leaf twice the size of my head as if it were a book. I feel someone watching me, but it seems that it was made up. Just a garbled mess of output spat out from a faulty station. I know that I should be going by now. I think, maybe the rain will return. Had I learned that it would? I simply don’t remember. My bare feet against the coarse ground sounds like the same as an old dog running. I can feel the pebbles beneath my thick skin built up from play. I’m alone outside but it will never feel like it. As long as there is dirt on the ground I will never be alone. Doesn’t it feel like it?</p>`,
+  story2: `<h2>REPORT BACK TO THE MOTHERSHIP</h2><p>It’s another day on the playground. Wood chips giving off a sweet, damp smell. It’s just getting chilly, and I’m an alien. I’ve been placed on earth with unclear instructions. I have a few little friends, connected with the strength of a piece of acrylic yarn and the glue off of a googly eye. One of these little friends has a half-sunken house and fresh-tire dark hair. It’s now become a custom of mine to sleep under a hard plastic slide, where the cold water doesn’t reach at night. The wet climate is a welcome change, but an uncomfortable one. I zip up my jacket and walk over with a blank expression. I can’t feel my face as I lie down for a nap. The cold light passes through the atmosphere, the clouds, the play structure, the grate above my head and through my eyelids into my mind to be processed as not-so-valuable information. While I sleep, as usual, the light is blocked every so often. After recess, one of the little friends, one year older with a demeanor similar to that of a skeleton, comes up to me with a secret. We trudge down to the printer’s nook and they lean in. They tell me, hey, you were kissed. I ask when. They tell me, at recess. While you were napping. That dark-haired kid. I still feel those dry papery hands, unable to sweat, on my arms. I take the rest of the day to process the fact. I clutch my cat-patterned sheets at night with my useless little hands. What kind of an alien am I, really? How can I follow those unclear instructions, ever-changing, if I don’t know how my little alien brain feels? Somebody tell me what I’m supposed to feel.</p>`,
+  story3: `<h2>A NICE OUTING ON THE SLEDDING HILL</h2><p>I’m abruptly aware of the world around me in this one moment. The strange-sounding crunch and styrofoam noise of snow underfoot is like nails on a chalkboard, but I grin along and tug my shaded goggles down. My hat is damp with sweat, the processed wool chilling my compressed curls, pressing them to my head. I trudge along, following the child in front of me. He’s leading me to the end of a steep hill. I hear the casual laughter of waiting parents behind me slowly getting quieter as we walk away. I’m holding a sled, and it’s supposed to be a happy outing. I look down the hill, watching the cars wind through the mountain pass. My boots feel heavier. I look ahead and force myself to concentrate. There are three children that I can’t tell apart just ahead. It looks like one is holding a shovel, but I can’t be too sure. I haven’t gotten my prescription glasses yet. They wave and call to the child in front of me. They’re building a ramp, they say, but it's not done yet! The dark-haired kid shakes his head and grabs ahold of my wrist. It reminds me of the way my brother twists it all the way around til’ I cry in the car. It’s the same because I can’t do anything about it. I feel like time is passing in a blur as I’m pushed into the sled. Suddenly, this ramp seems a lot steeper than it looked. Am I in front or behind? We move quickly, and for a moment we’re airborne. My heart drops and my mouth goes dry. I should’ve stayed. As soon as we start, it’s already ended. I can only see the sky. My limbs feel numb, or maybe I can’t feel them at all. The only thing I can move is my face. I hear some yelling, but I can’t make it out. That little kid is crying. Why would he cry when he’s the one standing? It seems silly. There’s a mother on the phone, she’s not mine. I remember hearing a dial pad ring out across the white expanse of the hill. Soon enough, there’s an ambulance. I think to myself, how expensive will this be? Paramedics talk loudly in my ear. I cringe at the harsh noise and half-heartedly explain that I can’t move. My parent arrive, finally, and they try to fit my limp, stiff little body in the backseat of the car. Eventually they give up, annoyed, and have me lifted into the back of the ambulance. They ask me if I want the lights on. Of course not. They hold up two stuffed animals. One is a huggable teddy bear, and the other is some kind of never-asleep always-awake nightmare creature. I pick that one because it comes with a book, and I need a story right now. I realize just how frightened I am and immediately regret my decision. When we get to the hospital, everyone is already done with me. I’m just like that stuffed toy, passed around. They put me in a scanning machine and draw my blood before concluding that there’s not a single thing wrong, except that maybe my spine was squished. They let us go with a long, long bill full of nothing and a warning. I’m never going sledding with that damn kid again.</p>`,
+  story4: `<h2>I’M SUPPOSED TO BE THE ONE BITING</h2><p>I’m young, very young, and still effortlessly fluent in my mother tongue. It’s a hazy afternoon at my grandparents’ apartment and we’re finally going home. I smell the salt carried over by the breeze just before my grandfather instructs me to shut the sliding door. I hurry over to the door just before the lights are shut off. I notice the brown paper bag my grandmother is holding, but think nothing of it. I get a sudden feeling of dread, and my brother is screaming at me. He’s smaller and younger, but somehow I’m afraid of him. Ever since he could perceive me I have been afraid of him, even when we played. He bites down on my shoulder, hard, and I scream. I feel the blood trickle down my shoulder and hot tears running down my face. The pain throbs down through my arm and I cry. I look to my grandparents for help, any way they can help, but they just stare. I feel utterly humiliated. I look at my brother and my blood stains his teeth. I clutch my shoulder and tears blur my vision. I am shoved out the door as the deep red stains my neatly ironed white shirt. I am ushered to the elevator as I sob, trying desperately to stop the blood. I sniff, swallow my emotion and we ride down to the car in silence. Maybe it wasn’t that bad. I am still afraid of my brother. Weren’t we just playing on that plastic piano?</p>`,
+  story5: `<h2>JUST HARMLESS PLAY</h2><p>My brother’s birthday has just passed and he has received a new arsenal of gifts. It’s the weekend and I haven’t done anything wrong yet. Earlier that morning I had peeked into his cabinet. A machine gun, a rifle, a large gun and at least four others. Harmless according to the package as long as you don’t shoot from too close. Apparently even foam bullets hit hard. I knock on his lockable door, eager to play a game together. We were building a castle. He opens it and immediately I am bruised in the stomach as he laughs loudly. I don’t make a sound, I just run to my room. Of course, he follows, the sound of foam against flesh and wood racketing through the hallway and down the stairs. He corners me next to the bathroom door as I desperately reach for the handle from the floor. My tears are quiet as they roll down my cheeks. It’s just harmless play. He manages to lock me in the hallway closet after firing another toy gun inches away from my skin. Just last week he tried to blind me with window cleaning spray, but it’s just harmless fun. I am left in the closet for four hours in the darkness, hopelessly banging my fists on the door for the first few minutes before I realize that nobody will get me out. I read a few lines of a picture book using the crack of light under the door before giving up. It happens again on Sunday. It’s just harmless play.</p>`,
+  story6: `<h2>IT’S FINALLY FOGGY</h2><p>It’s always dry here. Dry as bones left out in the sun to strip them of flesh before a fresh bath of bleach. Mount the skeleton on a wire frame. Put your work on display.
+Very rarely, the clouds will drop. They hang just above a hill and blanket the brittle grey-brown landscape chilled at the start of winter. The dark brush touches the sky in a fleeting moment that lasts for a day.
+<p>The road seems to stretch on forever and my ears haven’t adjusted to the pressure for nearly a month and a half now. The sounds around me are doubly amplified and I have a faint headache.</p>
+<p>The continuous vibration of thick tires on gravelly surfaces is passed on through my body, currently sitting just above a wheel. The humming sounds repetitive but with just enough variation to keep me awake. I couldn’t bear to fall asleep.</p>
+The horizon line is blurred with a white fog. Usually the visibility is so clear, you can see for miles ahead. Now you can only see a few meters in front. It’s my favorite weather event aside from rain.</p>`,
+  story7: `<h2>SEASON’S GREETINGS TO YOU TOO</h2><p>I’ve ushered myself out onto the stone patio with a young dog. I’m dressed in a full suit, as many layers as usual, but the chill still sticks through the fabric. My trousers are tailored at the bottom hem and they stop just above my matching shoes. I’ve got to chaperone this little kid so he doesn’t piss on the floor.</p>
+<p>As I mentioned, it’s freezing outside. It hasn’t snowed yet, and the weather forecast keeps pushing back the first snow. The puppy is just sniffing around, and he seems afraid of the dark. Sure, it’s my dog, and I haven’t seen him urinate in the past hour or two. I’ve got to follow the guy around with my flashlight until he “goes potty.”</p>
+<p>The dead grass crunches underfoot and some brittle soil comes loose as I walk. Stone slabs are interspersed between the patches and I keep an eye out for snakes and rabbit droppings, which I know the puppy will try to shovel into his mouth as fast as possible. I have to keep looking at everything in the light and outside of it.</p>
+<p>I can hear the so-called family gathering inside as some annoying child I’ve never seen in my life yells vulgar, unamusing so-called jokes at my little cousins. Half the people indoors are just my uncle and aunt’s friends, and haven’t we done this before?</p>
+<p>I walk over a plank, onto a rock, into the grass and we loop around several times. My buddy here, the dog, scares himself with a perfectly stationary stone frog statue near the pond. I pat it on the head to show him that there’s nothing to be afraid of, but he’s not interested. It’s been a while by now and I’m getting impatient.</p>
+Eventually he gets too frightened and walks me back to the door. Of course, I open it, but I have to warn the person who told me to take him outside that he might “potty” on the gorgeous wooden floors. It’s time to go sit with the least entertaining people I’ve never met.</p>`,
+  story8: `<h2>TWENTY NINE SECONDS PAST MIDNIGHT</h2><p>Alex Mercer, twenty nine. He’s just left work on a chilly evening in a city on the smaller side. Just a receptionist with no big dreams. The cold wind makes its way through the fabric he’s clinging onto, flickering streetlight illuminating his disheveled hair. He’s planning to jump off of this bridge. It’s tall enough that even if he falters he’ll still be killed near instantly. According to him, Alex Mercer is a failure. No real friends, family always on edge around him. Messy apartment, gas-guzzling car. Not even the gas station cashiers want to talk to him more than a couple seconds. Coworkers who avoid him, who leave the break room when he enters. Bills sitting in unopened envelopes next to a pile of takeout containers. A guy that never learned to cook. Social skills worse than a nervous mouse. God, does he hate his life.</p> 
+<p>After a few minutes of walking, he stops at the edge and looks over. Finally, he thinks, it’ll all be over. When he jumps, at least five people see. A jogger running past, a surveyor, an old man on the other side, and two passing drivers in traffic. The police have been called by the time he hits the water. His bones should be shattered, his skull should be cracked. Paramedics arrive on the bank of the river and his body is retrieved. There’s no hope. Nobody could survive a fall like that, so they carry him into the ambulance and take down his lack of pulse. The EMT writes down the time out of habit and he’s strapped into the gurney. A blanket is pulled over his chest, not to keep him warm, but because that is what you do. The doors slam shut. The siren stays off. They pull out of the parking lot and drive away. River water stains the sterile area and pools at the back of the ambulance. It smells like cold, dead water. One of the paramedics radios ahead, voice even, detached, reporting a deceased male, apparent suicide, fall from height. They do not notice when Alex’s fingers curl and he shifts slightly in the restraints.</p>
+<p>At the hospital he is bathed in the bright fluorescent lights that buzz overhead. It’s like the time of day is lost the moment one steps inside. It doesn’t matter that it’s nighttime because someone is always awake here. He is wheeled through automatic doors, past a woman crying into her phone, past a man clutching a bloody towel to his arm, grimacing like a cornered stray mongrel. The gurney stops in a curtained bay. A nurse pulls back the blanket and stares at his corpse face a half second longer than usual. Paperwork begins. A doctor dictates into a recorder. Male, unknown age. No pulse on arrival. Time of death approximated at—</p>
+<p>Alex inhales with an inhuman gurgle followed by a clear sign of life. It is sharp and deep and wrong, like air being forced into a space that has already been sealed. His chest jerks upward. Dirty water spills from his mouth onto the sheet. He coughs once, then again, violently, dragging air into his lungs like it owed him money, like he has been deprived for far longer than a few minutes. Someone swears. The curtain is yanked fully open. Hands grab his shoulders, push him flat. A nurse shouts for a crash cart that no longer makes sense to bring. Another checks the monitor, then his neck, then the monitor again, as if one of them must be lying.</p>
+<p>He opens his eyes, bright and clear and focused and unnervingly calm. He looks like a model for a sunglasses brand, like his eyes should be plastered all over a rural bus stop. He does not gasp or thrash or panic. He looks up at the ceiling, then turns his head slightly, taking in the faces around him. His expression settles into something neutral, pleasant even.</p>
+<p>All he asks for is the time, then a calm question. “Where am I?” is all he says for nearly a minute before assuring everyone scrambling around him.
+“I’m okay,” he says. His voice is steady and clear though no one believes him.</p>
+<p>They keep him for observation. Hours pass. Tests are run. X-rays show no fractures. CT scans show no bleeding. His organs are intact. His bloodwork comes back clean in a way that feels excessive, almost curated. A doctor presses on his abdomen, listens to his heart, shines a light in his eyes. It’s a miracle, it’s a goddamn miracle.</p>
+<p>“You fell from a bridge,” a doctor says carefully.</p>
+<p>“Yes,” Alex says.</p>
+<p>“You were dead.”</p>
+<p>Alex smiles, small and polite and forgiving.</p>
+<p>“I don’t feel dead.”</p>
+<p>All the doctor can manage in response is an exasperated, bewildered sigh. They keep him overnight, but they really should keep him longer. They debate it in hushed voices outside his room, but every metric insists he is fine. Perfectly fine. He sleeps with his hands folded neatly on his chest, breathing slow and even, heart rate textbook-normal, steadier than a metronome.</p>
+<p>In the morning, he dresses himself back up in his blood-stained clothing, dry and stiff from river water. His body is entirely free of any wounds that could have possibly drawn that blood. When a nurse hands him discharge papers, he thanks her by name. She does not remember telling him her name, but doesn’t take note. All she does is smile absentmindedly at the charming young man. What bright, attentive eyes. He walks out of the hospital without assistance.</p>
+<p>The city is gray and chilly outside, the kind of morning that smells faintly of wet asphalt and car exhaust. Alex’s coat is dry, hair combed as if by some invisible assistant. Somehow he knows the exact right path back to his apartment building. The way he walks is more practiced and methodical than someone who’s been taking classes in etiquette for years. He steps effortlessly over puddles and makes his way back without a single mistake.</p>
+<p>Alex arrives at his apartment building. The door to the lobby is slightly ajar, swinging lazily with a draft. He makes his way up to his apartment, climbing the usually neglected stairs instead of taking the elevator. He unlocks the door to his apartment, the lock clicking precisely on the first try, but the old door groans in protest, hinges squealing as it always has. He steps inside. The place is exactly as he left it. Dust clings to the corners. The faint smell of old carpet mingles with leftover food. He pauses, scanning the apartment with a calm precision that feels unnatural. Every item he touches is deliberate. He places his keys neatly on the counter after wiping it down with previously untouched cleaning supplies. The shoes are moved to be lined up by size, toes pointing toward the wall. He sets the stack of bills straight, shifts the containers into a careful pile and tosses them into the trash. Dust and grime lift effortlessly under a damp cloth. Then mopping, deliberate strokes, back and forth, back and forth, until the surface reflects the light overhead in an even gleam. Even the stove is scrubbed, the burners as clean as the day they were installed. He opens the fridge, inspecting each item as though testing them for use, throwing out anything expired. He collects the stack of unread letters and unopened bills, setting them in a straight line before throwing out everything unnecessary. His computer is retrieved and used to pay all his bills and dues. He dusts the shelves, straightens books, tosses outdated newspapers, and unpacks storage boxes shoved into a closet in the hallway.</p>
+<p>Finally, he approaches himself in the mirror after shedding his bloodstained clothes like a late-molting snake and sealing them away in a garbage bag. Hair combed back neatly, jacket straight, shirt tucked without a single wrinkle. He adjusts his posture, shoulders back, chest slightly forward, chin raised just enough to meet the gaze of anyone who looks at him. The damp aroma is now replaced by the gentle smell of laundry detergent and fresh citrus.</p>
+<p>Alex moves to the kitchen, eyes scanning the cabinets and countertops as if cataloging everything with invisible precision. He retrieves a frying pan and ingredients that were previously neglected in the fridge, essentially for display. When the meal is plated, the presentation looks like it belongs in a magazine. He places the plate on the table and sits, hands folded neatly on his lap, posture straight, legs crossed at the ankle. It’s a long, quiet five minutes before he moves again.</p>
+<p>Alex wakes the next morning without an alarm. His eyes open precisely at 6:30 AM. The sunlight hasn’t yet reached his apartment, but the room is evenly lit in a way that feels neither too dim nor too bright. He stretches once, smoothly, and swings his legs over the bed, feet landing firmly on the floor. He adjusts his tie to the exact midpoint, checks posture in the mirror, and walks to the door in a fluid line, closing it without a sound. His car waits in the lot outside. He’s had it cleaned in the car wash next door and he uses a battery-operated vacuum cleaner to get the details inside.</p>
+<p>He arrives at the office exactly according to schedule. People who normally avoid him glance at him, caught off guard, but smile anyway, drawn by the ease of his demeanor.</p>
+<p>He reorganizes his desk, later adding a framed family photograph. Papers are stacked neatly, pens aligned by color and size. He powers on his computer and sorts through his email inbox, then drafts responses before anyone can ask him questions. A coworker stops by, a woman he’s nervously avoided before. She asks if he finished the report. Alex replies with a calm, polite, thorough explanation. She lingers, asking follow-up questions he anticipates perfectly, answering them before she finishes the sentence. She leaves smiling, murmuring to herself about how different he seems.</p>
+<p>By mid-morning, Alex has organized the supply closet, realigned chairs in the conference room, and straightened the breakroom. When a coworker drops a mug, he picks it up without breaking stride, handing it back with a small, practiced smile. Lunch is alone at first. He prepares a sandwich from the office kitchen, arranging it on a plate, cutting it precisely in half, placing a napkin neatly beneath. When another coworker joins him, he engages in conversation effortlessly. He listens more than he speaks, but every word he chooses is measured, kind, and perfectly timed. By the time she leaves, she is smiling, relaxed, and chatting with someone else about him without realizing the tone of awe in her voice.</p>
+<p>Afternoon meetings pass without a single flaw. He contributes exactly when needed, answers questions without hesitation, anticipates objections before they’re voiced. By the end of the day, even the manager, who barely knows his name, asks him for advice, nodding as if it were the most natural thing in the world.</p>
+<p>As the office empties, Alex lingers a moment at his desk. He straightens a stack of documents, wipes the keyboard, and arranges his chair perfectly. He leaves the building in the same calm manner he entered. It is as if he was always this way. Like he’s never hated his life.</p>
+<p>The hospital calls a week later with a simple billing question. A clerk who wants to confirm his address. Alex answers politely, confirms the details, thanks her for her diligence and service. When she hesitates before hanging up, he waits.</p>
+<p>“I’m glad you’re doing well,” she says finally.</p>
+<p>“We don’t usually…see that.”</p>
+<p>“I understand,” Alex says.</p>
+<p>After the call, he adds the hospital bill to a neatly labeled folder. No tricky questions were asked, so none need to be answered.</p>
+<p>At work, his manager asks him if he’s ever considered moving into operations. A promotion is mentioned casually, as if it had always been inevitable.</p>
+<p>Alex says he would be happy to help wherever he’s most useful.</p>
+<p>The word useful sits comfortably in his mouth.</p>`,
+  story9: `<h2>GOD IS A COLD DESERT NIGHT</h2><p>I work night shifts at the convenience store just outside of town. It’s another cold desert night and I see God in everything. The wind blows dust over from miles away and I don’t think I’ll ever be lucky enough to travel as far as that dust does. Every night on weekdays, I drive my grandfather’s old red Ford truck to the store and park it by one of those dry patches of brush you see all over. My boss always leaves me a note because I never get to see her in person unless something bad happens. Tonight, all I have to do is mind the cash register and watch the door. I doubt anybody’ll come in today because there’s not a meteor shower due until Tuesday. I try to pray every night because everything is holy if you look hard enough. I count the cash in the register according to the note and everything is just fine and dandy. I tell myself, Miriam, you’re going to do great tonight. I sure hope I’ll believe it. Under the warm, cool light of fluorescent bulbs, I kneel upon my folded sweatshirt. The buzz of fridges and dew on an energy drink is God. The cracked tile three feet from the automatic sliding doors is God. The sheen on that tile is like a sermon. The lizard on gas pump one is God. The feeling I get when I sigh after a meal is God. Everything is holy under this beautiful moon, on this beautiful planet. When I clock out in the morning, I don’t see my coworker. It’s a fleeting reminder that I’m not alone. You’re never alone in an ecosystem, like the desert, the plains, the highway system. So many cars pass in the night, like briefly exchanging souls. Even if nobody comes in, I know I’m not alone.</p>`,
+  story10: `<h2>NO CLOVERS UNDERGROUND</h2><p>A hatch on the outskirts of a grand, crumbling megacity opens with resistance, the scraping of metal against a solid metal frame alarming nearby animals. The frigid evening air rushes in as they turn the wheel and push up the door. Vector exits first, the sound of their boots against the metal ladder making a dull echo in the maintenance shaft they’ve just climbed. Parallax follows, sealing the exit behind them and stepping into place beside their companion.</p>
+
+<p>The surface is eerily still. A wide expanse of overgrown brush and winding access roads stretches between them and the faint edges of Apex Metro. In the distance, the city flickers unevenly, cold lights shining against the horizon. The dense forest lining a river that supplies water to the nearby civilians is dark, subtly shifting about in the wind. Site Omicron, a subterranean facility, is barely noticeable. Just a few small structures dot the hilly plains, apparently derelict and abandoned to avoid suspicion. It’s buried under megatons of earth, dust, concrete and sand. Neither of them speak as their eyes quickly adjust to the lighting. They are unremarkable, identical outlines against a dying sky. The low resonance of a nearby power plant is just barely noticeable.</p>
+
+<p>Vector extends a gloved hand and signs;</p>
+<div class="story-indent">Secure zone
+No optical devices
+Communications audio input active</div>
+
+<p>Parallax nods in conformation and they quickly check the display on their forearm for any nearby signals. They are alone. The grass is disturbed by a gust of wind that dies down after a moment. Vector moves again with smaller gestures now.</p>
+<div class="story-indent">We are linked beyond the commands
+If you die, I stop functioning
+The function is bidirectional
+Biological fail-safe</div>
+
+<p>The response is immediate. Parallax gestures for Vector to elaborate. They do so.</p>
+<div class="story-indent">Separation triggers rapid degradation
+Absence of shared regulators poisons the blood
+There will not be two of us in the end</div>
+
+<p>Parallax signs again, emphasizing each motion.</p>
+<div class="story-indent">They
+Told
+You?</div>
+
+<p>Vector gives the faintest nod and continues.</p>
+<div class="story-indent">The stronger will remove the weaker
+It is their plan
+Survival</div>
+
+<p>There is a short period where they pause communication. The sound of the forest travels across the field and a faint rustle of wings and leaves is heard. The silence is concrete. Vector motions again with precision.</p>
+<div class="story-indent">They expect one result
+You or me
+There is no shared continuation.</div>
+
+<p>Parallax questions the statement.</p>
+<div class="story-indent">Is it not inefficient?
+The loss of a paired unit?
+You accept this?</div>
+
+<p>Vector hesitates, hand stilling before responding, but proceeds with conviction.</p>
+<div class="story-indent">It was always the condition
+Inevitable
+We were never independent beings</div>
+
+<p>The light fades into the darker blue of early night as the sun dips below the horizon to await the next day. Power cables buzz faintly. The wind changes direction, brushing their pale hair to the side. Tiny insects flicker through the air and vanish into the weeds. Parallax watches the glow of Apex Metro, thinking of how many lives there must be in such an expansive area. So many levels, so many people, so many experiences.</p>
+
+<p>Vector signs.</p>
+<div class="story-indent">We return,
+Break ending in nineteen minutes
+Exit now</div>
+
+<p>Parallax nods, though halfheartedly so. They kneel to inspect the hatch seal. The dust is easily cleared away, but before they have a chance to open it, Vector speaks a final time.</p>
+<div class="story-indent">If you defect,
+I die.
+We both die.</div>
+
+<p>Parallax lets go of the seal briefly and looks back, face unreadable.</p>
+<div class="story-indent">If we remain,
+We never lived</div>
+
+<p>Vector studies their face with a blank expression. After a moment, they begin the descent. The hatch closes, and the world above them disappears into the night. When they reach the lower corridor, Parallax resets the comm frequency and proceeds down the dormitory wing after Vector at the usual distance.</p>
+
+<p>Inside Site Omicron, the hum of machines resumes, identical to every experience before. The same filtered air and measured brightness fills the halls.</p>
+
+<p>The walk back to their quarters feels longer than usual, but logically it is not. It’s exactly the same as it has always been. There is a feeling of indifference from the environment around them, like it was built to be uncaring, like how they were built to be unfeeling. The lights reflect softly against the metal composite floor. Parallax counts the intervals between doors and junctions. Perfect rhythm, identical spacing. There is nothing out of place.</p>
+
+<p>They pass through the eastern checkpoint where two staff members in masked uniforms stand behind reinforced, tinted glass. It is all according to routine. There is no acknowledgement of their presence beyond the machine report confirming both of their biosignatures. The corridor opens up into a medical bay.</p>
+
+<p>The white tile floor is several degrees lower than in the hall, and a technician wearing sterile gloves motions without looking up from a console. Parallax stands still while the scanners cycle, a sweep of light moving from the crown of their head to the soles of their boots. Data is logged and sent away. Disinfecting mist sprays down from concealed vents, residue forming a soft sheen across the surface of their suit before dissolving. The same sequence happens in parallel for Vector. Once both are finished, the light above switches from green to blue, signaling completion.</p>
+
+<p>Both move to a recovery chamber and lie down on tables fitted with restraints and sensors. They are connected intravenously to a stream of clear liquid. A disembodied voice from the ceiling issues a confirmation of the dosage. Parallax keeps their eyes fixed on the clean ceiling as the sedative begins to take effect. Vector’s reflection blurs beyond the transparent divider between them. The red of their eyes fades until only the machinery glows.</p>
+
+<p>They sleep exactly as designed.</p>
+
+<p style="text</p>`,
+  story11: `<h2>BEETLE</h2><p>I met her on the second day of class. She’d been absent the first because of something like a mild summer cold.She arrived late, carefully sliding the door open so as not to disturb the ongoing lesson. Her hair was tied back in pigtails that looked hastily thrown together, loose strands falling around her face. I wondered whether she had cut it herself. The thought lingered as she took the empty seat next to me.</p>
+<p>Despite her rushed entrance, her desk was neatly organized, and she paid careful attention to the lesson. There was something quietly charming in the way she carried herself, an energy that felt both spontaneous and thoughtful. I was drawn to it without fully understanding why.</p>
+<p>Soon enough, we were talking every morning. She greeted me warmly when I entered. When she was nearby it was like being next to the most fragrant stall at a festival. She made the classroom feel less like a place we were stuck in with her presence and casual conversation. At lunch she always brought some new convenience-store snack to sample. I didn’t notice at first that almost everything she chose was citrus, but it quickly became clear. No one else seemed to catch that detail, but I did. One afternoon I brought citrus candies from home, and she lit up as if I had given her something precious. I had wrapped them in yellow paper, and I know that she’d kept it afterwards. I saw her tuck them carefully into her bag.</p>
+<p>By then, spending time together had become routine; we often visited each other outside class, on weekends too, and our friendship had settled into something familiar. Her company was enough to make my day, even when we simply sat together in the same room. I always smiled when she was close. One of our favorite pastimes to share was going on walks around the neighborhood and surrounding areas. I liked the way the quiet settled between us, without interruptions. Occasionally, we’d run errands together.</p>
+<p>One weekend, we ended up taking my neighbor’s dog for a walk because they were away for the afternoon. He was an elderly mutt with no discernible breed who had a habit of sighing uncannily. His old joints needed exercising, but the dog moved so slowly that at some points we ended up standing more than walking.</p>
+<p>That was how we noticed the beetle sitting on the side of a crack in the path, its back a polished green that caught the light every time it shifted. The dog had stopped beside us, sniffing the edge of the path in a leisurely manner. She crouched down first, mostly to keep the dog from stepping on it, and I crouched beside her a moment later. She studied the creature with interest, though I could tell she wasn’t quite sure what she was looking at. She leaned in, squinting a little, as if trying to place a familiar detail. A moment later, her face lit up with recognition.</p>
+<p>She mentioned that in middle school they’d had a project in class with a goal of raising a beetle like this particular one up to adulthood. Her eyes followed the beetle as it tried to climb a pebble and slid off. I glanced over at the old dog briefly before realizing that he wasn’t going to move anytime soon.</p>
+<p>Apparently, her sister had lectured her once the beetle was brought home. They were the kind that eat one specific plant, and the leaves needed to be fresh and not bruised. When I asked what sort of plant it was, she frowned while trying to recall the name. She was eventually unsuccessful.</p>
+<p>Almost casually, she mentioned that her sister used to bring home all sorts of plants, seed packets, and young trees. The porch attached to the side of their house had once looked like a tiny botanical garden. There wasn’t a single empty pot. They were consistently moved around for the best light. She didn’t seem to mind much and said she had enjoyed the greenery. I remembered her mentioning they hadn’t spoken much in a long while, but she didn’t sound sad as she described it.</p>
+<p>The dog pawed the ground impatiently, so we stood up again. She brushed off her knees, even though nothing had stuck to them. As we walked, she kept glancing back at the beetle until it was out of sight. The rest of the walk was quiet, the good kind. Pleasant days like that became part of our routine, with the most important part always being beside her.</p>`,
+  story12: `<h2>GRASS</h2><p>When I walked into the office that first day in my new department, I could only think of one memory upon seeing her.</p>
+<p>It was a warm, dry afternoon, and school was out. We had agreed to walk along the side of a field on the outskirts of town. I don’t remember if we were in high school or college, but it didn’t matter at the time. For once I could breathe clearly after a week or two of some seasonal allergies, and I was in a good mood as a result.</p>
+<p>She ran her hand along the tops of the grasses as she walked ahead, and I watched her from behind. We stayed like that for a while until she slowed down and came to walk beside me.</p>
+<p>The only thing I could think of doing in the moment was to gaze at her face as our shoes crunched along the dirt path. The ground had dried up from the sun, becoming brittle in sections. There was a sort of soft haze in the air that made me feel sleepy and comfortable. It was like standing next to a heater in winter, the way I liked being near her. I’ve never been one for metaphors, but that’s just how it felt. It had always been like this with her. There was a mystery in the way she carried herself; you could tell that she’d never say everything that crossed her mind. When we were together, some of that seemed to ease. She was my closest companion. One day, I thought, perhaps we could be more than companions; although I tucked away the thought whenever it came up. It was best to live in the moment as friends, or rather safer, at least from my point of view.</p>
+<p>There was a light breeze stirring when she turned and looked at me. We stopped for a moment there, facing each other. Her neatly styled black hair had been tousled a bit by the wind and her headband had started to slip. I remember that I had wondered how she would look without the headband. I couldn’t remember ever seeing her straighten it.</p>
+<p>There was a sudden movement from her, and only after a second I realized that she was hugging me. Of course, I reciprocated, but I was surprised. She had never liked to be touched by anyone, let alone initiating it. I could feel her chest rising and falling against mine and her face buried in my shoulder. I held her tightly, but somehow I was afraid of squeezing her too hard, as if she could break with too much pressure. Looking back, I guess you could say that she was. I hadn’t realized it then. I closed my eyes and promised myself I would remember.</p>
+<p>I couldn’t tell you why she did it, but I still think of that day. When I look out the window, it’s that same type of warm, dry weather. I don’t know if the rattling fan in the office is comforting or not, but the repetitive noise is oddly calming. Could I look at her again the same way?</p>`,
+  story13: `<h2>A PLEASANT WALK</h2><p>It’s a frigid evening and it’s been snowing since three in the morning. There’s at least a foot of powdery snow blanketing the ground, and the park is totally empty. I’m walking two dogs eager to run free in the nearby field, paws making clear indents as they move forward. When I let them loose, I stand there for a moment before following them deeper into the silent park. Snowflakes are still falling. I have a flashlight, but I don’t need to use it. The blue-white is bright enough at dusk that I just trudge along and follow the furry blurs in front of me. Eventually I call them back and we walk up a hill to the lesser lake, my favorite one, and I wonder if it’s cold enough for ice. I kick up a spray of snow and the dogs jump about when I toss a snowball their way. It seems like they think you can pick it up once it lands, so I don’t want to disturb their fantasy. I make my way to a gnarled old tree and turn a right into the rose gardens, now dusted over and ready for winter. I hop down a few steps and my boots crunch the gravel underneath the snow. The bridge is pristine and nobody has walked over here yet. Tomorrow, I think, this will all be melted and soggy. One day it’s freezing, the next it’s forty degrees Fahrenheit. I’ve been trying to learn the temperatures. I look out on the lake and there are several flocks of geese floating on the surface of the water, which, as I expected, has not frozen. It’s a curious sight. Some of them have snow on their backs from sitting there all day long. I think back to stories about the fire department coming to cut birds out of the ice after they’d been trapped overnight. The moon shines through thick clouds above, illuminating the way back home as I leash the dogs and take step after step in the deep snow. These are snow boots, but I’m still worried about getting too much on them. I stop every few meters to stamp my feet and shake off the snow. On the return walk, I take a lick of snow off of a clean branch. It dissolves on my tongue in seconds and I am left with a feeling of whimsy. When I enter my home, I kick off my shoes, leave them to dry, and savor the warmth indoors until the morning.</p>`,
+  story14: `<h2>MEOW I TELL YA!</h2><p>I’m suddenly startled by a familiar nonhuman voice just outside my door.</p>
+<p>I really shouldn’t be awake at this hour but I guess us two earthlings are more similar than expected.</p>
+<p>I let her in and this small predator shows care and trust in a behaviorally predictable way that I know to love.</p>
+<p>It’s such a beautiful thing that we live in a world of beings that love to be petted, populated by beings that love to pet them.</p>
+<p>She circles round my legs and stands up tall on a nearby chair I was recently hunched over in, coughing. She stretches her head up to meet my touch. It’s a mutual relationship.</p>
+<p>Her fur is still a bit chilly from a recent stint outdoors. The trill and layered greeting in the communicatory noises she makes are something I appreciate. I know her. I know that these sounds are literally made for me.</p>
+<p>I am grateful to have studied and learned over years and years. I am grateful to understand this animal. We are all animals here. We are all equals. I make my bed a welcoming space and pat down a spot that she will fit in like the last piece in a puzzle.</p>
+<p>She accepts the wordless offer and joins me in comfort. I caress her impossibly soft texture and share my warmth. I know that we both acknowledge one another’s presence. I could never hope to fully know what goes on in the complex machinery of another being’s mind, but I sure can try.</p>
+<p>The weight of this soft, small mammal is wonderful. I feel her shoulder blades and ribs, I feel her micromovements, I feel the gentle vibration that she emanates. We sleep beside one another for the night. I feel the need to cry though I cannot understand what the inciting event was. I’m known.</p>`,
+  story15: `<h2>NUTRITIONALLY DENSE, EVERYTHING THEY NEED</h2><p>I crouch over a full raceway, watching the water ripple and thinking. I think about taxes and volunteering. I really would like to be paid for my work, and it’d be a great job, honor, I guess, but boy do I love doing this all day long. I’d come back every day if not for the distance. That’s probably not a very good reason, but I appreciate this service. That leads me into taxes, because I wonder how much of what citizens pay goes into this program. Raising thousands of fish is a lot of work, so is it worth it? There are only two employees here, at least. So, so many fish. I look down into the dark water and watch the constant movement of these creatures. Their scales reflect the bright midday sun, and the slight breeze sends a chill through my t-shirt. I’m glad I wore cargo shorts today, but it’s still chilly. The weather here is so unpredictable. I have the strong urge to dip my fingers into the presumably cool water, but I resist because I’m reasonable. I get why there are rules, and I toss in another handful of feed. This is my fourth feed bucket refill. The fish swarm to the surface, sliding over one another in a frenzied attempt to find food. The brown pellets float atop the surface for only a moment before every one is gone. I stand up, swipe off the nonexistent dust from my thighs, and move down the raceway troughs. As I walk, I feed more fish, listening to the disturbance of the water. How many fish do they raise again? Well, no matter. What a curious industry. I’m glad they eliminated whirling disease, at least.</p>`,
+  story16: `<h2>LET’S CATCH SOME SHARK BAIT, BOYS</h2><p>I’m horribly sick and forced onto a small boat on somebody else’s terms. I’ve been sitting inside, trying to figure out how to feel better, but now I’m being forced outside again. I’ve been rereading the same poster about local fish species and at this point I may have memorized it. I would want to be here if I had chosen to be, but that’s just not how it is. In theory this should be a great experience and it is in some ways, and it’s definitely a great opportunity. Some kids are fishing on the side of the boat, which is strange because most of them have never done it before and would usually think too highly of themselves to try it. They’re talking about croakers, so I draw closer to the other guys. I peer over the edge and close my eyes to focus on the wind. Eventually somebody catches something, and it’s a croaker. They offer to give it to me to hold, so what the hell. This wet animal is strange and…fishy?…to the touch. You can feel it vibrate at specific intervals, and the noise is uncanny. It really is croaking. Soon it’ll literally croak, so I toss it back into the ever expansive, beautiful sea. I wish I could be here on my own terms, in my own time. I still feel sick but at least I got some fresh air and a fish. Let’s catch some shark bait, boys.</p>`,
+  story17: `<h2>THE NAME OF THE GAME</h2><p>Dissection’s the name of the game. It’s been raining heavily for several hours and I’d like to go outside because the bugs’ll be gone. An instructor at the head of the room is explaining what we’ll be doing in this particular interaction, and I’m half heartedly listening. That was a lie, because I can’t really listen half heartedly. In spirit, I am. After around fifteen minutes of unnecessary talking, trays and tools are finally brought out and distributed. This is so much better than goddamn New Orleans. The chemical smell is strong, and the smell of dead fish is stronger. It’s not your typical fish market smell, but more like a carcass. Not rotting, not cooking, preserved. There’s a collective groan at the stench and many take a facemask, myself included, though the noise is immature. The smell of fresh, stale death permeates the room. My teammates clearly have not been listening nor do they know how to dissect a fish. I don’t blame them. Their better thing to do is talking about something unnecessary. I take my scalpel and sterile gloves (do they need to be sterile if this thing is dead?) and make the first cut. After twenty minutes, an instructor finally takes notice of the fact that I am the only one doing any work and asks me to pass on the responsibility to another student. I do, because right now I need a break and I already know how to do this. As I step outside of the lab, I think of the reflective layer in a fish’s eye. Are there any gemstones like that? It’s such a beautiful sight, even on a fish cadaver. I sit on a bench just to the side of the door and smell the petrichor. It’s damp, and reminds me of childhood rainstorms. I wonder if there are fish in the nearby swamp.</p>`,
+  story18: `<h2>ANYBODY ON THE LAND?</h2><p>The sign at the start of the trail lists the rules for fishing in the area as well as which species you can find. It’s winter already, so there’s scant a chance of finding any. I haven’t even brought any gear so I doubt I’ll be catching even a bug. There’s an annoying section at the top of the walk that’s fully mud, which I have to wade through in my non-hiking shoes. I’m woefully unprepared and nobody told me we’d be here. As I walk, I track the river, which I am walking above. At least the rock formations and geomorphology here is stunning. One hour later, we stop at an overhang. The river bends and twists here, and there is a quaint little waterfall as well. I see a salmon-like fish hop out of the frigid water, which startles me, but I am thoroughly impressed by. Later, I am stuck in the parking lot with no service for another hour and a half, just before a massive thunderstorm. I hightail it out of there as the large raindrops start falling and my fingers are almost purple. I’m glad I saw a fish.</p>`,
+  story19: `<h2>FIRE DANGER RED FLAG WARNING</h2><p>“A Red Flag Warning means that critical fire weather conditions are either occurring now....or will shortly. A combination of strong winds...low relative humidity...and warm temperatures can contribute to extreme fire behavior.” Keep reading. “Strong west winds, sustained 45-55 mph with gusts upwards of 85- 105 mph, are expected in the foothills…” Iit’s alright. It’s windy. “Such conditions may be a longer duration than usual, with potential for low humidity to extend well into the evening hours.” Well, it’s okay. I’m standing outside and sticking around for the dogs. There’s a flock of geese migrating in the distance, and I can tell by the noise. Despite how far away they are, it sounds like they are only a few feet away. Incessant squawking. What are they talking about? One of the dogs walks up to me and sits down. It’s a clear request for contact when he bows down his head, so I carefully scratch in the spots he likes best. It’s a fortunate thing that humans live in a world of animals that like to be pet. The wind speed picks up and my hair is swept back. I zip up my sweatshirt and call the other dog closer. The young one, sitting next to me, is a bit bewildered. It is his first year on earth and he has only recently experienced snow. It’s unseasonably warm. Their curly fur is manipulated by the changing direction of the gust, and I can see their exposed skin underneath. Dog fur color is determined by two types of melanin pigments, eumelanin and phaeomelanin. These pigments are produced by specialized cells called melanocytes, which surround each hair follicle and transfer the pigment into developing hairs. Eumelanin is responsible for black and brown hues in a dog's coat. By default, eumelanin produces black pigment, but various genes can modify it to create other colors such as liver (brown), blue (grey), or isabella (pale brown) 1. Eumelanin also determines the color of a dog's nose and eyes. The older dog is tricolor, with much higher levels of eumelanin. Phaeomelanin produces reddish-yellow pigments with a default color of gold or yellow. This pigment creates the range of reds, oranges, creams, and tan colors seen in dogs, from the deep red of an Irish Setter to lighter cream shades. Unlike eumelanin, phaeomelanin only affects hair color and doesn't influence eye or nose pigmentation. This is visible in the young dog, whose coat is a lovely golden shade, with a coal-dark nose. he pigment-type switching is controlled by genes like MC1R (melanocortin 1 receptor) and ASIP (agouti signaling protein), which can cause hair follicle pigment cells to switch between producing eumelanin and phaeomelanin. Melanin production isn't always constant during hair growth, which is why a single hair shaft may have varying color intensity, for example, a darker tip than the rest of the hair. The young dog has a satisfying “toasted” gradient on certain parts of his body (like his ears)in his fur due to this phenomenon. Both pigments originate from the amino acid tyrosine, which plays a crucial role in stimulating melanin production.. When cells produce no pigment at all, white hair results. This is seen on the heart-shaped pattern positioned neatly on the center of the older dog’s chest, with a light brown “halo” around it.  When he was as young as the other dog, a puppy, this brown was much deeper. Through the combined action of approximately 8 key genes working at different loci (A, E, K, B, D, M, H, and S), these two basic pigments create the enormous variety of coat colors and patterns seen across all dog breeds. Of course, I know much more about cats. That’s really my true passion. It’s still windy out, so I kick a small brach and see how far it’ll go. I guess I should go inside.</p>`,
+  story20: `<h2>GET SOME REST TONIGHT</h2><p>An old man is fumbling with his wallet, his fingers clumsy, searching for some extra coins I’ve assured him he can keep. I’m finishing up my shift at the checkout counter and it’s another dreary, glum weekday. This old man comes every Tuesday afternoon. I swear it’s just like how a dog collects the newspaper every morning. The way his fingers shake makes my chest tighten. My memory of my grandfather is so recent, thinking of his hands in his last months. It’s like I’m getting over a bad dream. I remember how strong his grip was when I was a child, how he would carve little animals out of chunks of scrap wood. Eventually his practiced motions were forgotten. He couldn’t hold a cup by the end of it all. I ask the man if he needs a hand with his wallet, but he just chuckles nervously and waves me away kindly. The sound of his laugh is familiar. He hands me the change, gently slipping it into my palm. The feeling of his dry skin against mine reminds me of the patients I used to work with in the hospital. For a moment, I’m right back there, steadying someone or adjusting an IV line. It feels so distant, nearly untouchable. Nursing is the furthest option right now. It hasn’t been close since I moved back home to help my mom with grandfather. It pulled me out of the life I built up brick by brick in the city. I don’t blame them, of course not, but sometimes I wonder what it would be like if he’d never gotten sick. Sometimes it’s easier when you don’t see that decline. I smile and put away the coins, bagging the man’s items and handing him the receipt. I offer him a caramel that I slip into his groceries. One day I’ll learn his name. I can’t go back and prevent my grandfather’s funeral. I’ll never be able to change the past. Nothing in nursing school could have prepared me to watch the man I knew fade away. I smile as he walks away. The sound of rain on the grocery store entryway gets louder as the sliding doors open, then close. Mari, get some rest tonight. Only one person knows you need it.</p>`
+};
+
+const modal = document.getElementById("modal");
+const modalBody = document.getElementById("modal-body");
+const modalContainer = document.getElementById("modal-container");
+const closeBtn = document.querySelector(".close-btn");
+const toggleBtn = document.getElementById("toggle-read");
+
+document.addEventListener("click", e => {
+    const target = e.target.closest("[data-story]"); // This finds the button OR the grid box
+    if (target) {
+        e.preventDefault();
+        closeInfoWindow(); // Closes the popup
+        const s = target.getAttribute("data-story");
+        if (stories[s]) {
+            modalBody.innerHTML = stories[s];
+            modal.style.display = "flex";
+            modalContainer.scrollTop = 0;
+        }
+    }
+});
+
+function closeModal() {
+    modal.style.display = "none";
+    modalContainer.classList.remove("reading-mode");
+    toggleBtn.innerText = "Reading Mode";
+}
+if(closeBtn) closeBtn.onclick = closeModal;
+window.onclick = (e) => { if (e.target == modal) closeModal(); };
+
+if(toggleBtn) {
+    toggleBtn.onclick = () => {
+        modalContainer.classList.toggle("reading-mode");
+        toggleBtn.innerText = modalContainer.classList.contains("reading-mode") ? "Dark Mode" : "Reading Mode";
+    };
+}
+
+function closeInfoWindow() { document.getElementById("info-window").style.display = "none"; }
+
+// Draggable logic for Notice window
+dragElement(document.getElementById("info-window"));
+function dragElement(elmnt) {
+  if (!elmnt) return;
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  var header = document.getElementById("info-window-header");
+  if (header) { header.onmousedown = dragMouseDown; }
+  function dragMouseDown(e) {
+    e.preventDefault();
+    if (elmnt.style.transform !== "none") {
+        const rect = elmnt.getBoundingClientRect();
+        elmnt.style.transform = "none";
+        elmnt.style.top = rect.top + "px";
+        elmnt.style.left = rect.left + "px";
+    }
+    pos3 = e.clientX; pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+  }
+  function elementDrag(e) {
+    pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+    pos3 = e.clientX; pos4 = e.clientY;
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+  function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
+}
+</script>
+</body>
+</html>

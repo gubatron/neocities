@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf MS PAINT</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent:#43B3D2;
+  --bg:#000;
+  --text:#fff;
+  --border-light:rgba(255,255,255,0.35);
+  --win-bg: #d4d4d4;
+}
+/* Custom Blue Scrollbars */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; font-family:'VT323',monospace; color:var(--text); font-size:19px; line-height:1.25; }
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+/* --- WHARF STANDARD LAYOUT (From 2D Art) --- */
+.site { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:220px 1fr; align-items: start; }
+.sidebar { margin: 14px 0 14px 14px; padding:12px; background:rgba(0,0,0,0.88); border:1px solid var(--border-light); border-right: none; border-radius: 10px 0 0 10px; position: sticky; top: 14px; z-index: 100; }
+.sidebar h2 { margin:0 0 8px; color:var(--accent); }
+.nav a { display:block; color:var(--text); text-decoration:none; padding:4px 8px; border-radius:4px; transition: 0.2s; }
+.nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+.nav a.current { background: rgba(67, 179, 210, 0.35) !important; color: #43B3D2 !important; border-left: 4px solid #43B3D2 !important; }
+.dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+.show-art .dropdown-content { display: block; }
+.arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+.show-art .arrow { transform: rotate(90deg); }
+/* --- CONTENT AREA --- */
+.content { margin: 14px 14px 14px 0; padding:14px; background:rgba(0,0,0,0.88); border:1px solid var(--border-light); border-radius: 0 10px 10px 10px; display: flex; flex-direction: column; gap: 14px; }
+/* --- WIN98 WINDOWS --- */
+.win98-window { background: var(--win-bg); border: 2px solid #fff; border-right-color: #000; border-bottom-color: #000; box-shadow: 1px 1px 0 #808080; color: #000; display: flex; flex-direction: column; }
+.title-bar { background: linear-gradient(90deg, #000, var(--accent)); padding: 4px 6px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
+.paint-scrollbox { background: #808080; border: 2px inset #fff; height: 300px; overflow-y: scroll; padding: 15px; margin: 10px; }
+.paint-scrollbox.expanded { height: 600px; }
+.art-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+.art-card { background: #fff; border: 1px solid #000; padding: 4px; cursor: pointer; aspect-ratio: 1/1; }
+.art-card img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+/* DOODLE PAD SPECIFICS */
+.app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.toolbar-container { background: #d0d0d0; border: 2px inset #eee; margin: 10px; padding: 5px; display: grid; grid-template-columns: repeat(9, 30px); gap: 4px; width: fit-content; }
+.tool-btn, .color-btn { width: 30px; height: 30px; border: 2px solid #fff; border-right-color: #000; border-bottom-color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--win-bg); }
+.tool-btn.active { border: 2px inset #fff; background: #fff; }
+canvas { background: #fff; border: 2px inset #fff; cursor: crosshair; width: 100%; height: 300px; margin: 0; }
+.history-pane { background: #fff; border: 2px inset #fff; padding: 15px; margin: 10px; flex-grow: 1; overflow-y: scroll; height: 300px; }
+.win-btn-big { width: 100%; padding: 8px; background: var(--win-bg); border: 2px solid #fff; border-right-color: #000; border-bottom-color: #000; cursor: pointer; font-family: 'VT323'; font-size: 20px; }
+.win-btn-big {
+  color: #000 !important; /* Force black text */
+  -webkit-appearance: none; /* Removes iOS default styling */
+  tap-highlight-color: transparent; /* Removes blue flash on tap */
+}
+
+/* Extra safety for mobile */
+@media (max-width: 850px) {
+  .win-btn-big {
+    color: #000 !important;
+  }
+}
+/* --- MODAL --- */
+.modal { 
+  display: none; 
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  background: rgba(0,0,0,0.95); 
+  justify-content: center; 
+  align-items: center; 
+  z-index: 3000; 
+  padding: 20px; 
+}
+
+.image-viewer {
+  background: #000;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: #111;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: 1px solid var(--border-light);
+  min-height: 50px;
+}
+
+.close-btn {
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 2rem;
+  line-height: 0.8;
+}
+
+.modal-image-container {
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #050505;
+  padding: 20px;
+}
+
+.modal-image-container img {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+/* Smooth, heavy outline with NO jagged corners */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 3.2rem;
+  color: var(--accent);
+  cursor: pointer;
+  user-select: none;
+  z-index: 10;
+  padding: 10px;
+  /* Thick 2px solid outline using a high-density shadow stack for smoothness */
+  text-shadow: 
+    0 2px 0 #000, 0 -2px 0 #000, 2px 0 0 #000, -2px 0 0 #000,
+    1.5px 1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000,
+    0.8px 1.8px 0 #000, 0.8px -1.8px 0 #000, -0.8px 1.8px 0 #000, -0.8px -1.8px 0 #000,
+    1.8px 0.8px 0 #000, 1.8px -0.8px 0 #000, -1.8px 0.8px 0 #000, -1.8px -0.8px 0 #000;
+  transition: transform 0.1s, color 0.2s;
+}
+
+.nav-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+  color: #fff;
+}
+
+.prev-btn { left: 8px; } 
+.next-btn { right: 8px; }
+
+/* Fixed Content & Sidebar scaling */
+@media(max-width:850px){ 
+  .site { grid-template-columns: 1fr; } 
+  .sidebar { 
+    margin: 14px auto; 
+    width: 95%; 
+    border-right: 1px solid var(--border-light); 
+    border-radius: 10px; 
+    position: relative; 
+    top: 0; 
+  } 
+  .content { 
+    margin: 14px; 
+    border-radius: 10px; 
+    width: auto; 
+  }
+  .app-grid { grid-template-columns: 1fr; }
+  
+  /* Scale arrows for mobile */
+  .nav-btn {
+    font-size: 2.2rem;
+    text-shadow: 0 1.5px 0 #000, 0 -1.5px 0 #000, 1.5px 0 0 #000, -1.5px 0 0 #000, 1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
+  }
+  .modal-image-container {
+    padding: 10px;
+  }
+}
+/* --- FIXED KID PIX SECTION --- */
+@keyframes moveChecker {
+  0% { background-position: 0 0, 16px 16px; }
+  100% { background-position: 32px 32px, 48px 48px; }
+}
+.kidpix-section {
+  background:
+    linear-gradient(45deg, #333 25%, transparent 25%, transparent 75%, #333 75%),
+    linear-gradient(45deg, #333 25%, transparent 25%, transparent 75%, #333 75%);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+  animation: moveChecker 4s linear infinite;
+  border: 4px solid #fff !important;
+  border-radius: 20px;
+  padding: 15px;
+  margin-top: 20px;
+}
+/* Stripping the MS Paint look from Kid Pix windows */
+.kidpix-section .win98-window {
+  background: #d4d4d4 !important;
+  border: 3px solid #000 !important;
+  box-shadow: none !important;
+}
+.kidpix-section .title-bar {
+  background: #d4d4d4 !important;
+  color: #000 !important;
+  border-bottom: 3px solid #000 !important;
+  padding: 8px;
+  font-weight: bold;
+  justify-content: center;
+  text-transform: uppercase;
+  box-shadow: none !important;
+}
+.kidpix-section .win-btn-big {
+  background: #fff !important;
+  color: #000 !important;
+  border: 2px solid #000 !important;
+  box-shadow: none !important;
+}
+/* --- SOLID BLACK SCROLLBARS --- */
+.kidpix-section .paint-scrollbox::-webkit-scrollbar,
+.kidpix-section .history-pane::-webkit-scrollbar {
+  width: 15px;
+}
+.kidpix-section .paint-scrollbox::-webkit-scrollbar-track,
+.kidpix-section .history-pane::-webkit-scrollbar-track {
+  background: #ccc;
+  border-left: 2px solid #000;
+}
+.kidpix-section .paint-scrollbox::-webkit-scrollbar-thumb,
+.kidpix-section .history-pane::-webkit-scrollbar-thumb {
+  background: #000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+/* --- FLOATING BUTTONS --- */
+.floating-btns { 
+  position: fixed; 
+  bottom: 20px; 
+  right: 20px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+  z-index: 1000; 
+}
+.back-button, .top-button {
+  background: linear-gradient(135deg, var(--accent), #9be5f4);
+  color: #000; 
+  padding: 10px 16px; 
+  text-decoration: none; 
+  border-radius: 8px;
+  border: 1px solid var(--border-light); 
+  font-family: 'VT323', monospace; 
+  text-align: center;
+}
+
+@media (max-width: 850px) {
+  .drawbox-desktop-only {
+    display: none !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="site">
+  <aside class="sidebar">
+    <h2>Navigation</h2>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <div class="nav-group show-art" id="art-group">
+        <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">Art <span class="arrow">▶</span></a>
+        <div class="dropdown-content">
+          <a href="art.html">Overview</a>
+          <a href="digital.html">Digital</a>
+          <a href="mspaint.html" class="current">MS Paint</a>
+          <a href="2dart.html">2D Art</a>
+          <a href="3dart.html">3D Art</a>
+          <a href="studies.html">Skill Lab</a>
+        </div>
+      </div>
+      <a href="commissions.html">Commissions</a>
+      <a href="journal.html">Journal</a>
+      <a href="stories.html">Stories</a>
+      <a href="characters.html">Characters</a>
+      <a href="sharks.html">Sharks</a>
+      <a href="cats.html">Cats</a>
+      <a href="resources.html">Resources</a>
+      <a href="sitemap.html">Sitemap</a>
+    </nav>
+  </aside>
+ 
+<main class="content">
+  <div class="win98-window">
+      <div class="title-bar"><span>MS Paint Archive</span><button onclick="window.location.href='art.html'">X</button></div>
+      <div style="padding: 10px;"><button class="win-btn-big" onclick="toggleExpand()">↑↓ EXPAND GALLERY ↑↓</button></div>
+      <div class="paint-scrollbox" id="paintScroll">
+        <div class="art-grid">
+          <div class="art-card"><img src="images/art/MSpaint/nextflightin6seconds.png" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/spaceboy.png" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/boatonwater.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/sillywolf.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/alienskateboard.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/meandmyfriend.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/pickupthelittleguy.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/simskitchenfire.png" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/woohooskatercat.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/noway.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/agentorangebirthday.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/possumscreech.png" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/aliencat2.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/aliencat1.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/happyday.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/iamawetrock.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/64impala.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/opossum.png" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/wizardcat.png" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/mrcat.png" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/tinycomics.png" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/lovehaterelationship.png" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/oldprofilepic.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/magic.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/isopodgirl.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/waterspray.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/kitten.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/bonfire.jpg" onclick="openModal(this.src)"></div>
+          <div class="art-card"><img src="images/art/MSpaint/sagradafamilia.jpg" onclick="openModal(this.src)"></div>
+        </div>
+      </div>
+    </div>
+<div class="app-grid">
+<div class="win98-window drawbox-desktop-only">
+  <div class="title-bar"><span>Drawbox!</span></div>
+ 
+  <div style="background: #808080; padding: 2px; border: 2px inset #fff; margin: 10px 10px 0 10px;">
+    <canvas id="paintCanvas" style="display: block; width: 100%; height: 250px; background: #fff; cursor: crosshair;"></canvas>
+  </div>
+  <div style="display: flex; gap: 5px; margin: 0 10px 10px 10px; align-items: start;">
+   
+    <div class="toolbar-container" style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; flex-grow: 1;">
+      <div class="tool-btn active" id="penTool" onclick="setTool('pen')" style="font-size: 24px; grid-row: 1 / 2;">✎</div>
+      <div class="tool-btn" id="eraserTool" onclick="setTool('eraser')" style="font-size: 20px; grid-row: 2 / 3;">▩</div>
+     
+      <div class="color-btn" style="background:#000" onclick="setColor('#000')"></div>
+     <div class="color-btn" style="background:#fff" onclick="setColor('#fff')"></div>
+      <div class="color-btn" style="background:#800000" onclick="setColor('#800000')"></div>
+      <div class="color-btn" style="background:#808000" onclick="setColor('#808000')"></div>
+      <div class="color-btn" style="background:#008000" onclick="setColor('#008000')"></div>
+      <div class="color-btn" style="background:#008080" onclick="setColor('#008080')"></div>
+      <div class="color-btn" style="background:#000080" onclick="setColor('#000080')"></div>
+      <div class="color-btn" style="background:#800080" onclick="setColor('#800080')"></div>
+     
+      <div class="color-btn" style="background:#808080" onclick="setColor('#808080')"></div>
+      <div class="color-btn" style="background:#c0c0c0" onclick="setColor('#c0c0c0')"></div>
+      <div class="color-btn" style="background:#FF0000" onclick="setColor('#FF0000')"></div>
+      <div class="color-btn" style="background:#FFFF00" onclick="setColor('#FFFF00')"></div>
+      <div class="color-btn" style="background:#00FF00" onclick="setColor('#00FF00')"></div>
+      <div class="color-btn" style="background:#00FFFF" onclick="setColor('#00FFFF')"></div>
+      <div class="color-btn" style="background:#0000FF" onclick="setColor('#0000FF')"></div>
+      <div class="color-btn" style="background:#FF00FF" onclick="setColor('#FF00FF')"></div>
+    </div>
+  </div>
+ 
+  <div style="padding: 0 10px 10px 10px;"><button class="win-btn-big" onclick="clearCanvas()">CLEAR CANVAS</button></div>
+</div>
+     
+    <div class="win98-window">
+      <div class="title-bar"><span>A Brief History of MS Paint</span></div>
+      <div class="history-pane">
+        <strong>Windows from 1985 to 2021</strong>
+        <p>1985 (Windows 1.0): Microsoft Paint was introduced as Paintbrush, a basic bitmap graphics editor. It supported monochrome images and used the MSP file format. The interface was simple, with basic drawing tools like lines, shapes, and text.</p>
+        <p>Windows 3.0/3.1 (1990-1992): Paintbrush gained color support and the ability to save in standard file formats like BMP. The interface was improved with better organization of tools and menus.</p>
+        <p>Windows 95/98/ME (1995-2000): Renamed Microsoft Paint, it adopted a cleaner design aligned with the new Windows interface. JPEG, GIF, and PNG file support were introduced. The toolbar was updated for easier use, and the Eraser and Fill tools were improved.</p>
+        <p>Windows XP (2001): Paint received a modernized interface with toolbar enhancements, smoother color palette navigation, and minor performance improvements. The app began supporting transparency in GIFs.</p>
+        <p>Windows Vista (2006): Paint's design was updated with Windows Aero-style icons, and features like anti-aliased shapes and gradient fills were added. Its usability improved, but functionality remained basic.</p>
+        <p>Windows 7 (2009): Paint underwent a significant overhaul with a Ribbon interface, improving accessibility to tools and options. Features like artistic brushes, a broader color palette, and support for touch and pen input made it more versatile.</p>
+        <p>Windows 8/8.1 (2012-2013): Minor tweaks aligned Paint with the flat design style of the new OS. Touch capabilities were enhanced, but no major feature upgrades were added.</p>
+        <p>Windows 10 (2015): Paint retained its Ribbon UI but saw the launch of Paint 3D in 2017 as a more advanced counterpart. While traditional Paint remained, it saw minor updates, such as better integration with other Windows features like the Share menu.</p>
+        <p>Windows 11 (2021): Paint received a redesign to match Windows 11's "Fluent Design" system, with rounded corners, updated icons, and a more streamlined interface. It retained its core simplicity while improving usability. A dark mode option was added, catering to modern design standards.</p>
+      </div> <div style="padding:10px;"><button class="win-btn-big" onclick="window.location.href='art.html'">CLOSE ALL PROGRAMS</button></div>
+    </div> </div> 
+<div class="kidpix-section">
+        <h2 style="color: #fff; font-family: 'VT323', monospace; font-size: 3rem; margin: 0 0 15px 0; text-align: center; letter-spacing: 4px;">Kid Pix Archive</h2>
+<div class="app-grid">
+  <!-- Gallery on LEFT -->
+  <div class="win98-window">
+    <div class="title-bar"><span>Kid Pix Gallery</span></div>
+    <div style="padding: 10px;"><button class="win-btn-big" onclick="toggleKidPixExpand()">↑↓ EXPAND GALLERY ↑↓</button></div>
+    <div class="paint-scrollbox" id="kidpixScroll" style="margin: 10px; flex-grow: 1;">
+      <div class="art-grid">
+  <div class="art-card"><img src="images/art/MSpaint/kidpix/snaildoggirl.png" onclick="openModal(this.src)"></div>
+  <div class="art-card"><img src="images/art/MSpaint/kidpix/phonecall.png" onclick="openModal(this.src)"></div>
+  <div class="art-card"><img src="images/art/MSpaint/kidpix/meltyourcatfaceoff.png" onclick="openModal(this.src)"></div>
+  <div class="art-card"><img src="images/art/MSpaint/kidpix/kidviolence.png" onclick="openModal(this.src)"></div>
+  <div class="art-card"><img src="images/art/MSpaint/kidpix/partypicnic.png" onclick="openModal(this.src)"></div>
+  <div class="art-card"><img src="images/art/MSpaint/kidpix/greeneyeorangeeyeguy.png" onclick="openModal(this.src)"></div>
+  <div class="art-card"><img src="images/art/MSpaint/kidpix/sofaguy.png" onclick="openModal(this.src)"></div>
+  <div class="art-card"><img src="images/art/MSpaint/kidpix/swirlguy.png" onclick="openModal(this.src)"></div>
+  <div class="art-card"><img src="images/art/MSpaint/kidpix/partyhatkitty.png" onclick="openModal(this.src)"></div>
+  <div class="art-card"><img src="images/art/MSpaint/kidpix/heartkitty.png" onclick="openModal(this.src)"></div>
+</div>
+      </div>
+    </div>
+<!-- History on RIGHT -->
+  <div class="win98-window">
+    <div class="title-bar"><span>A Brief History of Kid Pix</span></div>
+    <div class="history-pane" style="height: 400px; margin: 10px;">
+        <p>Kid Pix began in the late 1980s when Craig Hickman, observing his young son Ben struggle with the complexities of MacPaint on their Macintosh computer, decided to create a simpler drawing program tailored for children. Hickman developed an initial black-and-white version, releasing it as freeware in November 1989, before enhancing it with color, sound effects, and more features for a commercial edition called Kid Pix Professional, which he sold directly for $25 starting in 1990 and managed to distribute about 100 copies.</p>
+        <p>Encouraged by positive feedback, Hickman submitted the software to Broderbund Software that summer, and the company quickly acquired publishing rights, releasing the polished Kid Pix 1.0 in March 1991 to widespread acclaim for its playful interface, whimsical tools like exploding erasers and wacky brushes, and child-friendly design that emphasized fun and creativity without needing manuals. The program became a massive hit in schools and homes, winning awards and expanding to versions for Windows and other platforms through the 1990s, with updates like Kid Pix Studio and Deluxe editions adding slideshows, animations, and multimedia features under Broderbund and later publishers.</p>
+        <p>Ownership shifted over time as Broderbund was acquired, eventually passing to Houghton Mifflin Harcourt, but in 2011 Software MacKiev fully acquired the brand and has continued developing modern iterations, including 3D capabilities and adaptations for newer systems, keeping the spirit of accessible digital art alive for new generations.</p>
+      </div> </div> </div> </div> </main> </div>
+<div class="floating-btns">
+    <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+    <a href="index.html" class="back-button">← HOME</a>
+</div>
+
+<div id="image-modal" class="modal">
+  <div class="image-viewer">
+    <div class="modal-header">
+      <span class="close-btn">&times;</span>
+    </div>
+    <div class="modal-image-container" style="position: relative;">
+      <span class="nav-btn prev-btn" id="prevBtn">◄</span>
+      <img id="expanded-img" src="">
+      <span class="nav-btn next-btn" id="nextBtn">►</span>
+    </div>
+    <div id="image-caption"></div>
+  </div>
+</div>
+
+<script>
+const imageModal = document.getElementById("image-modal");
+const expandedImg = document.getElementById("expanded-img");
+const captionText = document.getElementById("image-caption");
+const closeBtn = document.querySelector(".close-btn");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+// Collect all clickable gallery images (from both MS Paint and Kid Pix galleries)
+const galleryImages = Array.from(document.querySelectorAll('.art-card img'));
+let currentImageIndex = 0;
+
+function openModal(src) {
+  imageModal.style.display = "flex";
+  expandedImg.src = src;
+  captionText.innerText = "";
+  
+  // Find which image we just opened
+  currentImageIndex = galleryImages.findIndex(img => img.src === src);
+  if (currentImageIndex === -1) currentImageIndex = 0; // fallback
+}
+
+function showImage(index) {
+  if (index < 0) index = galleryImages.length - 1;
+  if (index >= galleryImages.length) index = 0;
+  currentImageIndex = index;
+  expandedImg.src = galleryImages[index].src;
+}
+
+// Button clicks
+prevBtn.onclick = () => showImage(currentImageIndex - 1);
+nextBtn.onclick = () => showImage(currentImageIndex + 1);
+closeBtn.onclick = () => { imageModal.style.display = "none"; };
+
+// Close when clicking outside the image viewer
+window.onclick = (e) => {
+  if (e.target === imageModal) {
+    imageModal.style.display = "none";
+  }
+};
+
+// Attach click handlers to all gallery images
+document.querySelectorAll('.art-card img').forEach(img => {
+  img.addEventListener('click', function() {
+    openModal(this.src);
+  });
+});
+function toggleExpand() {
+  document.getElementById('paintScroll').classList.toggle('expanded');
+}
+function toggleKidPixExpand() {
+  document.getElementById('kidpixScroll').classList.toggle('expanded');
+}
+const canvas = document.getElementById('paintCanvas');
+const ctx = canvas.getContext('2d');
+let drawing = false, currentColor = '#000000', isEraser = false;
+function resizeCanvas() {
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  ctx.putImageData(imageData, 0, 0);
+}
+window.addEventListener('load', resizeCanvas);
+window.addEventListener('resize', resizeCanvas);
+function setTool(tool) {
+  document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(tool + 'Tool').classList.add('active');
+  isEraser = (tool === 'eraser');
+}
+function setColor(color) {
+  currentColor = color;
+  document.querySelectorAll('.color-btn').forEach(btn => {
+    btn.style.border = "2px solid #fff";
+    btn.style.borderRightColor = "#000";
+    btn.style.borderBottomColor = "#000";
+  });
+  if(event) event.target.style.border = "2px inset #fff";
+  setTool('pen');
+}
+canvas.onmousedown = (e) => { drawing = true; draw(e); };
+canvas.onmouseup = () => { drawing = false; ctx.beginPath(); };
+canvas.onmousemove = draw;
+function draw(e) {
+  if (!drawing) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  ctx.lineWidth = isEraser ? 20 : 3;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = isEraser ? '#ffffff' : currentColor;
+  ctx.lineTo(x, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+}
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+</script>
+</body>
+</html>

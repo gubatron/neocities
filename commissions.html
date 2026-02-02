@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf COMMISSIONS</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --accent: #43B3D2;
+  --bg: #000;
+  --text: #fff;
+  --border-light: rgba(255, 255, 255, 0.35);
+  --border-dark: rgba(0, 0, 0, 0.85);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  font-family: 'VT323', monospace;
+  color: var(--text); font-size: 19px; line-height: 1.25;
+}
+
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+/* --- WHARF STANDARD LAYOUT --- */
+.site {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  align-items: start;
+}
+
+.sidebar {
+  margin: 14px 0 14px 14px;
+  padding: 12px;
+  background: rgba(0,0,0,0.88);
+  border: 1px solid var(--border-light);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  position: sticky;
+  top: 14px;
+}
+
+.sidebar h2 { margin: 0 0 8px; color: var(--accent); }
+
+.nav a {
+  display: block; color: var(--text); text-decoration: none;
+  padding: 4px 8px; border-radius: 4px; transition: 0.2s;
+}
+
+.nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+
+.nav a.current { 
+  background: rgba(67, 179, 210, 0.35) !important; 
+  color: #43B3D2 !important; 
+  border-left: 4px solid #43B3D2 !important;
+}
+
+/* Art Dropdown logic */
+.dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+.show-art .dropdown-content { display: block; }
+.arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+.show-art .arrow { transform: rotate(90deg); }
+
+.content {
+  margin: 14px 14px 14px 0;
+  padding: 14px;
+  background: rgba(0,0,0,0.88);
+  border: 1px solid var(--border-light);
+  border-radius: 0 10px 10px 10px;
+  display: grid;
+  gap: 14px;
+}
+
+.page-header {
+  position: relative;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%, #000 80%);
+  min-height: 85px; /* Exact match to the Cats page height */
+  display: flex;
+  align-items: center;
+  overflow: visible;
+  margin-bottom: 12px; /* Fixed: Prevents the gap between title and content */
+}
+
+header {
+  position: relative;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%, #000 80%);
+  min-height: 85px;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.7rem; /* Exact match to Cats page */
+  background: linear-gradient(to bottom, #9be5f4, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  z-index: 1;
+}
+
+.section {
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 15px;
+  background: #000;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1);
+}
+
+.section h2 { margin-top: 0; color: var(--accent); border-bottom: 1px dashed var(--border-light); padding-bottom: 5px; }
+
+/* Commission Status Box */
+.status-box {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  text-align: center;
+}
+.status-title { background: #111; color: #fff; padding: 6px; font-weight: bold; }
+.status-body { 
+  background: linear-gradient(to bottom, #9be5f4, var(--accent)); 
+  color: #000; font-size: 2.2rem; padding: 10px; font-weight: bold;
+}
+
+/* Pricing Table */
+.price-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+.price-table td { padding: 8px; border-bottom: 1px solid #222; }
+.price-table td:last-child { text-align: right; color: var(--accent); font-weight: bold; }
+
+/* Carousel & Scrollbox (Blue Theme) */
+.carousel { display: flex; gap: 12px; overflow-x: auto; padding: 10px; background: #111; border-radius: 8px; border: 1px solid var(--border-light); }
+.carousel-item { min-width: 180px; height: 120px; border: 1px solid var(--border-light); border-radius: 8px; overflow: hidden; cursor: pointer; }
+.carousel-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+.carousel-item:hover img { transform: scale(1.1); }
+
+.scrollbox { max-height: 180px; overflow-y: auto; padding: 10px; border: 1px solid var(--border-light); background: #111; border-radius: 6px; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; height: 8px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+/* Floating Buttons */
+.floating-btns { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+.back-button, .top-button { 
+  background: linear-gradient(135deg, var(--accent), #9be5f4);
+  color: #000; padding: 10px 16px; text-decoration: none; border-radius: 8px; 
+  border: 1px solid var(--border-light); font-family: 'VT323', monospace; text-align: center;
+}
+
+@media(max-width: 850px) {
+  .site { grid-template-columns: 1fr; }
+  .sidebar { margin: 14px auto; width: 95%; border-right: 1px solid var(--border-light); border-radius: 10px; position: relative; top: 0; }
+  .content { margin: 14px; border-radius: 10px; }
+}
+
+/* Modal / Viewer Styles */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); justify-content: center; align-items: center; z-index: 3000; padding: 20px; }
+.image-viewer { background: #000; border: 1px solid var(--border-light); border-radius: 12px; max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+.modal-header { background: #111; padding: 10px 15px; display: flex; justify-content: flex-end; border-bottom: 1px solid var(--border-light); }
+#expanded-img { display: block; max-width: 100%; max-height: 65vh; object-fit: contain; margin: 0 auto; }
+#image-caption { padding: 15px; background: #000; color: var(--accent); font-size: 1.5rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); }
+.close-btn { color: var(--accent); cursor: pointer; font-size: 2rem; line-height: 0.8; }
+</style>
+</head>
+
+<body>
+<div class="site">
+  <aside class="sidebar">
+  <h2>Navigation</h2>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    
+    <div class="nav-group" id="art-group">
+      <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+        Art <span class="arrow">▶</span>
+      </a>
+      <div class="dropdown-content">
+        <a href="art.html">Overview</a>
+        <a href="digital.html">Digital</a>
+        <a href="mspaint.html">MS Paint</a>
+        <a href="2dart.html">2D Art</a>
+        <a href="3dart.html">3D Art</a>
+        <a href="studies.html">Skill Lab</a>
+      </div>
+    </div>
+
+    <a href="commissions.html" class="current">Commissions</a>
+    <a href="journal.html">Journal</a>
+    <a href="stories.html">Stories</a>
+    <a href="characters.html">Characters</a>
+    <a href="sharks.html">Sharks</a>
+    <a href="cats.html">Cats</a>
+    <a href="resources.html">Resources</a>
+    <a href="sitemap.html">Sitemap</a>
+  </nav>
+</aside>
+
+  <main class="content">
+
+<header>
+  <h1>Commissions</h1>
+</header>
+
+<div style="display:flex; gap:12px; flex-wrap:wrap; align-items: stretch;">
+  <div class="section" style="flex:2; min-width:280px;">
+    You're in the right place! Occasionally open commissions depending on time and energy. More information is listed below.
+    Thank you for considering commissioning me!
+  </div>
+
+  <div class="status-box" style="flex:1; min-width:180px; display:flex; flex-direction:column;">
+    <div class="status-title">Commission Status</div>
+    <div class="status-body" style="flex:1; display:flex; align-items:center; justify-content:center;">CLOSED</div>
+  </div>
+</div>
+
+<div class="section carousel"> 
+  <div class="carousel-item" title="Profile Pic - $20"><img src="placeholder.png"></div>
+  <div class="carousel-item" title="Full Body - $50"><img src="images/art/digital/02Bfullbody.png"></div>
+  <div class="carousel-item" title="Landscape - $40"><img src="images/art/example3.jpg"></div>
+</div>
+
+<div class="section">
+<h2>What I Offer</h2>
+<p>
+Digital character art, icons and profile pictures (head/bust) in a cartoon or semi realistic style. I will do full color unless specified otherwise. I also offer landscape art in my style. Turnaround time varies depending on workload and complexity. Rush orders may be available for an additional fee. 
+</p>
+</div>
+
+<div class="section">
+<h2>What I Do Not Offer</h2>
+<div class="scrollbox">
+NSFW art<br><br>
+Overly detailed or hyperrealistic art (extra charge)<br><br>
+Work involving real people without their permission <br><br>
+Offensive, hateful, or discriminatory content<br><br>
+Anything intended for harassment<br><br>
+Excessive gore beyond mild stylization<br><br>
+NFT or blockchain related use<br><br>
+AI training or dataset use<br><br>
+Subjects outside my skill range (I will let you know if something falls here)
+</div>
+</div>
+
+<div class="section">
+<h2>Commission Process</h2>
+<p>
+Send me an email at smallcarnivorousmammal@gmail.com with a clear description of what you want, reference images, any specifics that cannot be forgotten, and a deadline if you have one<br><br>
+Payment is made up front or split (50% deposit, 50% on completion, PayPal only).<br>
+I send a rough sketch for approval. → Revisions are made at the sketch stage. → Once approved, I continue to final rendering. Lastly, the final piece is delivered as a high-resolution file via email or download link.
+</p>
+</div>
+
+<div class="section">
+<p>
+No refunds after the sketch is approved, unless I cannot complete the commission.
+One major revision is allowed at the sketch stage. Minor adjustments are allowed during rendering. Major changes requested after approval may incur an additional fee.
+</p>
+</div>
+
+<div class="section">
+  <h2>Pricing</h2>
+  <p>Introductory prices (subject to change):</p>
+  <table class="price-table">
+    <tr><td>Profile Picture</td><td>$20</td></tr>
+    <tr><td>Bust</td><td>$30</td></tr>
+    <tr><td>Half-body</td><td>$40</td></tr>
+    <tr><td>Full-body</td><td>$50</td></tr>
+    <tr><td>Additional Character</td><td>+$20</td></tr>
+    <tr><td>Complex Background, Design or Rendering</td><td>+$25</td></tr>
+  </table>
+  <p style="font-size: 0.9rem; color: #888;">Landscape art is based on the size, scope, and level of detail.
+Commercial use, merchandise work, or large-scale design projects are priced individually.
+Contact me for a quote with details.</p>
+</div>
+
+
+<div class="section">
+<h2>Terms of Use</h2>
+<p>
+Commissions are for personal use only unless commercial rights are purchased.
+Clients may post the artwork online with proper credit.
+Editing, tracing, or claiming the work as your own is not permitted.
+I maintain the right to display the artwork in my portfolio unless we agree otherwise.
+</p>
+</div>
+
+<div class="status-box">
+<p> Remember: I take payment through PayPal only. I encourage commissioning landscapes :) Remember to send reference images! </p>
+</div>
+  </main>
+</div>
+
+<div id="image-modal" class="modal">
+  <div class="modal-content image-viewer">
+    <div class="modal-header">
+      <span class="close-btn">&times;</span>
+    </div>
+    <div style="padding: 10px; background: #050505;">
+      <img id="expanded-img" src="">
+    </div>
+    <div id="image-caption"></div>
+  </div>
+</div>
+
+<style>
+/* Modal Background */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95);
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  padding: 20px;
+}
+
+/* Updated Image Viewer Box */
+.image-viewer {
+  background: #000;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  width: auto;
+  max-width: 90vw; /* Won't exceed 90% of screen width */
+  max-height: 90vh; /* Won't exceed 90% of screen height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(0,0,0,1);
+}
+
+/* A dedicated header so the X is always visible */
+.modal-header {
+  background: #111;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: 1px solid var(--border-light);
+}
+
+/* The Image itself - The Scaling Magic */
+#expanded-img {
+  display: block;
+  max-width: 100%;
+  max-height: 65vh; /* Limits image height to leave room for text/header */
+  object-fit: contain; /* Prevents stretching */
+  margin: 0 auto;
+}
+
+#image-caption {
+  padding: 15px;
+  background: #000;
+  color: var(--accent);
+  font-size: 1.5rem;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.close-btn {
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 2rem;
+  line-height: 0.8;
+  transition: transform 0.2s;
+}
+.close-btn:hover { transform: scale(1.2); }
+</style>
+<script>
+// Handle Art Dropdown only
+document.querySelectorAll('.nav a').forEach(link => {
+    if (link.classList.contains('current') && link.closest('.dropdown-content')) {
+        document.getElementById('art-group').classList.add('show-art');
+    }
+});
+
+const imageModal = document.getElementById("image-modal");
+const expandedImg = document.getElementById("expanded-img");
+const captionText = document.getElementById("image-caption");
+const closeBtn = document.querySelector(".close-btn");
+
+// Listen for clicks on carousel items
+document.querySelectorAll('.carousel-item').forEach(item => {
+  item.addEventListener('click', function() {
+    const img = this.querySelector('img');
+    const title = this.getAttribute('title');
+    
+    imageModal.style.display = "flex";
+    expandedImg.src = img.src;
+    captionText.innerText = title;
+  });
+});
+
+// Close logic
+closeBtn.onclick = function() {
+  imageModal.style.display = "none";
+};
+
+// Close if clicking outside the image
+window.onclick = function(event) {
+  if (event.target == imageModal) {
+    imageModal.style.display = "none";
+  }
+};
+</script>
+
+<div class="floating-btns">
+    <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+    <a href="index.html" class="back-button">← HOME</a>
+</div>
+</body>
+</html>

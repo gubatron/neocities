@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf CATS</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root { 
+    --accent:#43B3D2; 
+    --bg:#000; 
+    --text:#fff; 
+    --border-light:rgba(255,255,255,0.35); 
+    --border-dark: rgba(0,0,0,0.85);
+  }
+
+  /* Custom Blue Scrollbars */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+  * { box-sizing:border-box; }
+  html, body { 
+    margin:0; padding:0; 
+    font-family:'VT323',monospace; 
+    color:var(--text); font-size:19px; line-height:1.25; 
+  }
+  
+body { 
+  background:url("bialowiezaforest.webp") no-repeat center center fixed; 
+  background-size:cover; 
+  padding: 10px;       /* Ensure this is exactly 10px */
+}
+
+  /* --- WHARF STANDARD LAYOUT --- */
+.site { 
+  max-width: 1100px; 
+  margin: 0 auto;      /* Changed from 10px auto to 0 auto */
+  background: none;      
+  border: none;          
+  display: grid; 
+  grid-template-columns: 220px 1fr;
+  align-items: start; 
+}
+
+  /* Sidebar - Homepage Match */
+  .sidebar { 
+    margin: 14px 0 14px 14px;
+    padding: 12px;
+    background: rgba(0,0,0,0.88);
+    border: 1px solid var(--border-light);
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    position: sticky;
+    top: 14px;
+  }
+
+  .sidebar h2 { margin: 0 0 8px; color: var(--accent); }
+
+  .nav a { 
+    display:block; color:var(--text); text-decoration:none; 
+    padding:4px 8px; border-radius:4px; transition: 0.2s;
+  }
+  .nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+  
+/* Current Page Highlight */
+  .nav a.current { 
+    background: rgba(67, 179, 210, 0.35) !important; 
+    color: #43B3D2 !important; 
+    border-left: 4px solid #43B3D2 !important;
+    display: block !important;
+  }
+
+  /* Art Dropdown */
+  .dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+  .show-art .dropdown-content { display: block; }
+  .arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+  .show-art .arrow { transform: rotate(90deg); }
+
+  /* Content Area - Homepage Match */
+  .content { 
+    margin: 14px 14px 14px 0; 
+    padding: 14px; 
+    background: rgba(0,0,0,0.88); 
+    border: 1px solid var(--border-light);
+    border-radius: 0 10px 10px 10px;
+    display: grid; 
+    gap: 12px; 
+  }
+
+header {
+  position: relative;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%, #000 80%);
+  min-height: 85px; /* Ensures the box is tall enough for the title */
+  display: flex;
+  align-items: center;
+  overflow: visible;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.7rem;
+  background: linear-gradient(to bottom, #9be5f4, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  z-index: 1;
+}
+
+.header-cat-container {
+  position: absolute;
+  right: 20px;
+  bottom: -70px;            /* More overhang so she sits properly on the bottom edge */
+  line-height: 0;
+  z-index: 10;
+}
+
+.header-cat {
+  height: 170px;            /* Perfect medium size — cute but prominent */
+  width: auto;
+  display: block;
+  filter: drop-shadow(4px 8px 8px rgba(0,0,0,0.7));
+  cursor: help;
+}
+
+/* Flip Mila to face left */
+#mila-cat {
+  transform: scaleX(-1);
+}
+
+/* Simple hover label — centered right on top of Mila, near the top of the header */
+.header-cat-container .hover-text {
+  position: absolute;
+  left: 50%;                                /* Center horizontally */
+  transform: translateX(-50%);              /* Perfect centering */
+  top: 30px;                                /* Stuck near the top of the header box */
+  color: #fff;
+  font-size: 15px;
+  font-family: 'VT323', monospace;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 20;
+}
+
+.header-cat-container:hover .hover-text {
+  opacity: 1;
+}
+
+/* Optional: Show on tap for mobile */
+.header-cat-container:focus-within .hover-text {
+  opacity: 1;
+}
+
+  /* --- PAGE SPECIFIC: CAT CARDS --- */
+  .cat-of-day { background: #000; border: 2px dashed var(--accent); border-radius: 8px; padding: 15px; text-align: center; }
+.cat { 
+  display: flex; 
+  gap: 16px; 
+  border: 1px solid var(--border-light); 
+  border-radius: 10px; 
+  padding: 15px; 
+  background: #000;
+  align-items: stretch; /* This makes both sides equal height */
+}
+.cat-text { 
+  flex: 1.5; 
+  display: flex; 
+  flex-direction: column; 
+}
+  .cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .cat-header h2 { margin: 0; color: var(--accent); }
+.cat-scroll { 
+  flex-grow: 1;          /* This tells the scrollbox to fill the vertical space */
+  min-height: 250px;     /* Adjust this number to match your image heights */
+  max-height: 300px;     /* Keeps it from getting TOO long */
+  overflow-y: auto; 
+  padding: 12px; 
+  border: 1px solid var(--border-light); 
+  border-radius: 8px; 
+  background: #111; 
+}
+.cat-img { 
+  flex: 1; 
+  min-width: 250px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+}
+  .cat-img img { max-width: 100%; height: auto; border: 1px solid var(--border-light); border-radius: 10px; }
+
+  .expand-btn {
+    background: linear-gradient(135deg, var(--accent), #9be5f4);
+    color: #000; border: none; padding: 4px 12px; border-radius: 6px;
+    font-family: 'VT323', monospace; cursor: pointer; font-size: 1.1rem;
+  }
+
+  /* --- FOOTER & BUTTONS --- */
+  footer { text-align: center; padding: 10px; font-size: 0.9rem; border-top: 1px solid var(--border-light); margin-top: 10px; }
+  
+  .floating-btns { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+  .back-button, .top-button { 
+    background: linear-gradient(135deg, var(--accent), #9be5f4);
+    color: #000; padding: 10px 16px; text-decoration: none; border-radius: 8px; 
+    border: 1px solid var(--border-light); font-family: 'VT323', monospace; text-align: center;
+  }
+
+  /* --- MODAL --- */
+  .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center; padding:20px; z-index:2000; }
+  .modal-content { background:#000; border:1px solid var(--border-light); border-radius:10px; padding:30px; max-width:800px; max-height:80vh; overflow-y:auto; position:relative; }
+  .close-modal { position:absolute; top:10px; right:15px; color:var(--accent); font-size:2rem; cursor:pointer; }
+  .modal .expand-btn { display: none; }
+
+  /* --- MOBILE LOGIC --- */
+  @media (max-width: 850px) {
+    .site { grid-template-columns: 1fr; }
+    .sidebar { 
+      margin: 14px auto; width: 95%; 
+      border-right: 1px solid var(--border-light); 
+      border-radius: 10px; position: relative; top: 0;
+    }
+    .content { margin: 14px; border-radius: 10px; }
+    .cat { flex-direction: column; }
+    .cat-img { min-width: 100%; }
+  }
+  
+
+/* Floating Mila container */
+#floating-mila-container {
+  position: fixed;
+  left: 30px;
+  bottom: -80px;                  /* Keeps her low — adjust if needed */
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  text-align: center;             /* Centers the text block */
+}
+
+#floating-mila-container.visible {
+  opacity: 1;
+  pointer-events: auto;
+  animation: bounceIn 0.9s ease-out;
+}
+
+#floating-mila {
+  height: 320px;
+  width: auto;
+  filter: drop-shadow(10px 20px 20px rgba(0,0,0,0.9));
+  cursor: pointer;
+  pointer-events: auto;
+  display: block;
+}
+
+/* Hover text — wraps, lower, matches image width */
+#floating-mila-hover-text {
+  position: absolute;
+  left: 40%;
+  transform: translateX(-50%);
+  top: 40px;                     /* A bit higher to fit two lines comfortably */
+  width: 240px;                   /* Narrower = forces wrapping into 2 lines */
+  max-width: 90vw;
+  color: #fff;
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.95);
+  line-height: 1.3;               /* Nice spacing between lines */
+  text-align: center;             /* Centers the text block */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  white-space: normal;            /* This is the key: allows wrapping */
+}
+
+#floating-mila-container.visible:hover #floating-mila-hover-text {
+  opacity: 1;
+}
+
+@keyframes bounceIn {
+  0% { transform: translateY(250px); opacity: 0; }
+  60% { transform: translateY(-50px); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Mobile adjustments */
+@media (max-width: 850px) {
+  /* Hide all hover texts on mobile (no hover capability) */
+  .header-cat-container .hover-text,
+  #floating-mila-hover-text {
+    display: none !important;
+  }
+
+  /* Smaller floating Mila on mobile */
+  #floating-mila-container {
+    left: 15px;
+    bottom: -50px;                  /* Less overhang on small screens */
+  }
+
+  #floating-mila {
+    height: 180px;                  /* Much smaller and cuter on mobile */
+  }
+
+  /* Optional: Slightly smaller header Mila too */
+  .header-cat {
+    height: 130px;
+  }
+  .header-cat-container {
+    bottom: -50px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="site">
+  <aside class="sidebar">
+    <h2>Navigation</h2>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      
+      <div class="nav-group" id="art-group">
+        <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+          Art <span class="arrow">▶</span>
+        </a>
+        <div class="dropdown-content">
+          <a href="art.html">Overview</a>
+          <a href="digital.html">Digital</a>
+          <a href="mspaint.html">MS Paint</a>
+          <a href="2dart.html">2D Art</a>
+          <a href="3dart.html">3D Art</a>
+          <a href="studies.html">Skill Lab</a>
+        </div>
+      </div>
+
+      <a href="commissions.html">Commissions</a>
+      <a href="journal.html">Journal</a>
+      <a href="stories.html">Stories</a>
+      <a href="characters.html">Characters</a>
+      <a href="sharks.html">Sharks</a>
+      <a href="cats.html" class="current">Cats</a>
+      <a href="resources.html">Resources</a>
+      <a href="sitemap.html">Sitemap</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+<header>
+  <h1>CATS</h1>
+  <div class="header-cat-container">
+    <img src="images/cats/mila.png" alt="Mila" class="header-cat" id="mila-cat">
+    <span class="hover-text">Hello! I'm Mila, the webmaster's cat.</span>
+  </div>
+</header>
+
+    <div class="cat-of-day">
+        <h3>Breed of the Day: <span id="cotd-breed">Searching for a cat...</span></h3>
+        <p id="cotd-fact">Initializing...</p>
+    </div>
+
+<div class="cat">
+      <div class="cat-text">
+        <div class="cat-header">
+            <h2>Lykoi</h2>
+            <button class="expand-btn" onclick="openModal(this)">EXPAND</button>
+        </div>
+    <div class="cat-scroll">
+      <p>The Lykoi, also known as the wolf cat or werewolf cat, is a naturally occurring breed of cat resulting from a mutation causing hypotrichia (congenital alopecia) in domestic short-haired cats. This mutation has been identified in domestic cats over the last 20 years, and DNA testing by UC Davis confirmed that Lykoi cats do not carry the Sphynx or Devon Rex genes. The breed was developed by Brittney Gobble in Vonore, Tennessee, and is recognized by both The International Cat Association (TICA) and The Cat Fanciers' Association (CFA).</p>
+      <p>Lykoi cats are characterized by their partially hairless appearance, with a roan coat pattern that can vary from mostly covered to almost completely hairless. They have a wedge-shaped head, large ears, and striking golden eyes, giving them a wolf-like appearance.</p>
+      <p>While generally healthy, Lykoi cats are prone to certain skin conditions, including lymphocytic perifollicular to mural folliculitis and increased sebaceous gland area, which can lead to issues like blackheads and cysts. The breed is considered to have an average lifespan of 12–15 years.</p>
+      <p>The Lykoi breed was first recognized by TICA in 2012 as "Registration Only" and achieved Championship status in 2017. CFA accepted the breed for registration in 2018 and advanced it to championship status in 2023. The breed's development involved extensive outcrossing with domestic shorthair cats to minimize genetic inbreeding and maintain the distinctive phenotype.</p>
+      <p>According to an article on Messybeast, Patti Thomas discovered the first two naturally hairless cats, which became the foundation of the Lykoi breed, and entered a co-ownership agreement with breeders Johnny and Brittney Gobble. The agreement was meant to ensure shared control over breeding and decision-making, but the Gobbles allegedly violated it by blocking Patti from communication, changing the cats’ names, and registering litters without her consent. They also restricted her access to the cats and prevented her from acquiring new ones, effectively sidelining her despite her legal ownership. The dispute escalated when Patti was accused of violating a shelter spay/neuter contract, which she denied, and when the Gobbles used intimidation tactics to control the breed, including threatening breeders who supported her.</p>
+      <p>The core of the conflict centers on the treatment of the original cats, which were moved from Patti’s home, where they were socialized and affectionate, to a cage-based breeding facility at the Gobbles’ veterinary clinic. There, the cats were subjected to stressful conditions, including controlled lighting cycles to manipulate their reproductive cycles and a lack of enrichment. The foundation male, Silver Lining, died of hypothermia after escaping a cage and being left outside in cold weather, while the foundation female, Ray of Hope, became traumatized and fearful of males. The Gobbles are also accused of misrepresenting the genetics of the breed, including claims about blue-eyed cats and potential crossbreeding with Sphynx cats, which contradicts the breed standard. The dispute has led to a broader controversy over breeding ethics, animal welfare, and the control of a breed that has grown beyond the influence of any single individual or group.</p>
+      <p>Generally a very dramatic and shocking story. I do hope that the cats are okay.</p>
+      <p>The mutation is recessive, meaning both parents must carry the gene for it to be expressed in offspring. Despite their hairless appearance, Lykoi cats are not considered a "true" hairless breed, as they retain some hair, particularly on their bodies, which can vary in amount and seasonally.</p>
+      <p>The individual in the photo is named Ray of Hope. That's her two years after leaving the Gobbles’ breeding facility and returning to Patti Thomas.
+    </div>
+  </div>
+  <div class="cat-img"><img src="images/cats/lykoi.png" alt="Lykoi"></div>
+</div>
+
+<div class="cat">
+      <div class="cat-text">
+        <div class="cat-header">
+            <h2>Kurilian Bobtail</h2>
+            <button class="expand-btn" onclick="openModal(this)">EXPAND</button>
+        </div>
+    <div class="cat-scroll">
+      <p>The Kurilian Bobtail is a medium to large, muscular cat with a naturally occurring short tail composed of kinked or fused vertebrae. Coat length can be short or semi-long, often dense to withstand cold climates.</p>
+      <p>Temperament is typically confident, social, and observant. Many individuals show dog-like tendencies such as following owners or showing interest in water, though they remain relatively independent.</p>
+      <p>The breed originates from the Kuril Islands between Russia and Japan, where it developed through natural selection rather than planned breeding. It has existed for centuries in relative isolation.</p>
+      <p>Genetically, the bobtail trait is distinct from the Manx gene and does not cause spinal deformities when responsibly bred. High genetic diversity remains due to its landrace origins.</p>
+    </div>
+  </div>
+  <div class="cat-img"><img src="images/cats/kurilianbobtail.webp" alt="Kurilian Bobtail"></div>
+</div>
+
+<div class="cat">
+      <div class="cat-text">
+        <div class="cat-header">
+            <h2>Sokoke</h2>
+            <button class="expand-btn" onclick="openModal(this)">EXPAND</button>
+        </div>
+    <div class="cat-scroll">
+      <p>The Sokoke is a slender, long-legged cat with a short coat marked by a modified classic tabby pattern known as the “African tabby.” The coat lacks underfur, giving it a close, glossy appearance.</p>
+      <p>Temperament is active, alert, and reserved with strangers. Sokokes tend to form strong bonds with familiar people and prefer structured environments.</p>
+      <p>This breed originates from the Arabuko-Sokoke Forest in Kenya, where it evolved as a naturally occurring domestic cat population before being recognized internationally.</p>
+      <p>Genetically, Sokokes are notable for their minimal contribution from Western cat breeds. Their patterning and lean body type are linked to adaptation to a warm forest environment.</p>
+    </div>
+  </div>
+  <div class="cat-img"><img src="images/cats/sokoke.webp" alt="Sokoke"></div>
+</div>
+
+<div class="cat">
+      <div class="cat-text">
+        <div class="cat-header">
+            <h2>Asian Semi-longhair/Tiffanie</h2>
+            <button class="expand-btn" onclick="openModal(this)">EXPAND</button>
+        </div>
+    <div class="cat-scroll">
+      <p>The Asian Semi-longhair, or Tiffanie is an elegant, medium-sized cat with a silky coat and plumed tail. The body is refined but muscular, with expressive almond-shaped eyes.</p>
+      <p>Temperament is typically gentle, people-oriented, and communicative without being overly vocal. They tend to be sensitive to environmental changes.</p>
+      <p>The breed developed in the United Kingdom from crosses involving Burmese-type cats and longhaired varieties, though it remains uncommon outside Europe.</p>
+      <p>Genetically, it shares much of its foundation with the Burmese lineage, including coat texture and facial structure, while the longhair gene is recessive.</p>
+    </div>
+  </div>
+  <div class="cat-img"><img src="images/cats/asiansemilonghair.webp" alt="Asian Semi-longhair"></div>
+</div>
+
+<div class="cat">
+      <div class="cat-text">
+        <div class="cat-header">
+            <h2>Ojos Azules</h2>
+            <button class="expand-btn" onclick="openModal(this)">EXPAND</button>
+        </div>
+    <div class="cat-scroll">
+      <p>The Ojos Azules is a rare and now officially extinct breed of domestic cat originating in the United States, known for its striking deep blue eyes. The breed was discovered in the 1980s among feral cat populations in New Mexico, with the first documented cat, a tortoiseshell named Cornflower, identified in 1984. Cornflower's offspring consistently exhibited deep blue eyes when bred with non-blue-eyed males, indicating a dominant genetic trait. The breed was named "Ojos Azules," meaning "blue eyes" in Spanish, for its most distinctive feature.</p>
+      <p>The Ojos Azules breed's deep blue eye color was described as richer and darker than that seen in Siamese cats, and was not linked to specific coat colors or patterns, allowing for the possibility of dark-coated cats with blue eyes. The breed had both short-haired and semi-longhaired varieties, with a medium-sized, graceful body, large round eyes, and a slightly triangular head shape. A characteristic feature was a flattened white tail tip, which served as an indicator of the presence of the Ojos Azules gene.</p>
+      <p>Despite its unique traits, the breed faced significant challenges due to a lethal genetic mutation associated with the dominant blue eye (DBE) gene. When a kitten inherited two copies of the gene (homozygous), it resulted in severe cranial deformities, white fur, a curled tail, and often stillbirth.</p>
+      <p>Breeding was therefore restricted to heterozygous matings (between a blue-eyed Ojos Azules cat and a non-blue-eyed cat) to produce approximately 50% blue-eyed kittens without the lethal defects. Due to these health concerns, breeders ceased efforts to maintain the breed, and it became officially extinct.</p>
+      <p>Although the breed no longer exists, the Ojos Azules gene has been studied, and other dominant blue eye (DBE) mutations have since been identified in cats worldwide, leading to new breeds or approved eye color variants in existing breeds. However, only cats descending from the original foundation cat Cornflower are considered true Ojos Azules, and no living Ojos Azules cats exist today. The exact number of Ojos Azules cats ever registered is known, and it is zero, as the breed is no longer maintained.</p>
+    </div>
+  </div>
+  <div class="cat-img"><img src="images/cats/ojosazules.jpg" alt="Ojos Azules"></div>
+</div>
+
+<div class="cat">
+      <div class="cat-text">
+        <div class="cat-header">
+            <h2>German Rex</h2>
+            <button class="expand-btn" onclick="openModal(this)">EXPAND</button>
+        </div>
+    <div class="cat-scroll">
+      <p>The German Rex is a medium-sized cat breed originating in Germany, known for its soft, wavy coat and friendly, intelligent nature. It has a sturdy, muscular build similar to the European Shorthair, with a round head, large expressive eyes, and slightly curled whiskers. Typically weighing between 3 to 5 kg, this breed is more robust than the Cornish or Devon Rex. Its short, curly coat lacks guard hairs, giving it a plush, velvety texture that requires minimal grooming. Weekly brushing is sufficient, though the coat can become greasy and may need occasional bathing.</p>
+      <p>All coat colors and patterns are accepted, and eye color varies widely, ideally complementing the coat. The breed traces back to a black female cat named Lämmchen, found in East Berlin after World War II, whose natural genetic mutation led to the wavy coat. Though once bred more widely, the German Rex is now rare, even in Germany, as it was often interbred with the Cornish Rex due to genetic compatibility.</p>
+      <p>German Rex cats are affectionate, social, and adaptable, forming strong bonds with their families and getting along well with children and other pets. They are playful and intelligent, enjoying interaction and mental stimulation. Despite their rarity, they are generally healthy with a lifespan of 9 to 14 years. Due to limited breeding programs, the German Rex remains a seldom-seen gem among curly-coated cat breeds.</p>
+      <p>Genetically, the German Rex differs from the wild-type cat through a recessive mutation in the LPAR6 gene (lysophosphatidic acid receptor 6), which is responsible for its soft, wavy coat. This mutation affects hair structure by disrupting the normal development of the hair shaft, resulting in a coat that lacks guard hairs and consists only of soft, curly down hairs.</p>
+      <p>Unlike the Devon Rex and Sphynx, which have mutations in the KRT71 gene, the German Rex shares the same LPAR6 mutation as the Cornish Rex, indicating a common genetic origin for their curly coats. This mutation is recessive, meaning a cat must inherit two copies (one from each parent) to express the wavy coat. Cats with only one copy or no copies have the straight, wild-type coat.</p>
+      <p>The German Rex mutation arose spontaneously and is not linked to the KRT71-related rexoid traits, making it genetically distinct from other curly-coated breeds like the Devon Rex, despite similar appearances.</p>
+    </div>
+  </div>
+  <div class="cat-img"><img src="images/cats/germanrex.webp" alt="German Rex"></div>
+</div>
+
+<div class="cat">
+      <div class="cat-text">
+        <div class="cat-header">
+            <h2>Khao Manee</h2>
+            <button class="expand-btn" onclick="openModal(this)">EXPAND</button>
+        </div>
+    <div class="cat-scroll">
+      <p>The Khao Manee, also known as the Diamond Eye cat or White Gem, is a rare and ancient breed of domestic cat originating in Thailand. It is a solid-white cat with a short, smooth coat and is known for its striking, jewel-like eyes which can be blue, gold, copper, amber, green, or even odd-eyed. They are also noted for being relatively low-shedding, though their white coats can show hair on furniture and clothing, and they may benefit from occasional baths to maintain their brilliant white appearance.</p>
+      <p>The Khao Manee cat has a rich history rooted in Thailand, where it is considered a sacred and auspicious breed. It is mentioned in the Tamra Maew, an ancient Thai text on cats, which dates back to the 14th century. The breed is believed to have been favored by Thai royalty, who saw it as a symbol of good luck and prosperity.</p>
+      <p>The Khao Manee cat is genetically distinct from wild-type cats primarily due to its white coat and specific eye coloration, which are the result of selective breeding. Wild-type cats typically have tabby, spotted, or bicolor patterns with a range of colors, and their eye colors are usually yellow, green, or gold. The Khao Manee's solid white coat is caused by a recessive gene that results in the absence of pigment in the fur, a trait not commonly found in wild-type cats. This genetic trait is linked to the cat's eye color, which can vary from blue to gold, copper, or even odd-eyed, due to the lack of melanin in the iris. The breed's unique appearance and health characteristics are maintained through careful breeding practices that preserve these specific genetic traits.</p> 
+      <p>he breed was nearly extinct due to the decline of traditional Thai cat breeding practices and the introduction of other cat breeds into Thailand. However, efforts by dedicated breeders in the late 20th century helped to revive the Khao Manee, and it is now recognized by several cat registries, including the International Cat Association (TICA) and the Cat Fanciers' Association (CFA).</p>
+      <p>The individual in this photo is named Leela.</p>
+    </div>
+  </div>
+  <div class="cat-img"><img src="images/cats/khaomanee.jpg" alt="Khao Manee"></div>
+</div>
+
+  </main>
+</div>
+
+<div class="floating-btns">
+    <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+    <a href="index.html" class="back-button">← HOME</a>
+</div>
+
+<div id="catModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+// 1. MODAL LOGIC
+  const catModal = document.getElementById("catModal");
+  const modalBody = document.getElementById("modalBody");
+
+  function openModal(btn) {
+      // Find the text, clone it, and show the modal
+      const content = btn.closest(".cat-text").cloneNode(true);
+      modalBody.innerHTML = "";
+      modalBody.appendChild(content);
+      catModal.style.display = "flex";
+  }
+
+  function closeModal() { 
+      catModal.style.display = "none"; 
+  }
+
+  // Close modal if user clicks the dark background
+  window.onclick = function(event) {
+      if (event.target == catModal) {
+          closeModal();
+      }
+  }
+
+  // 2. BREED OF THE DAY LOGIC
+const catBreeds = [
+    { breed: "Abyssinian", fact: "The ticked tabby coat pattern is caused by the dominant Ta gene, which creates banded hairs giving the appearance of a shimmering, wild look without bold stripes." },
+    { breed: "American Curl", fact: "The curled ears result from a dominant spontaneous mutation in the cartilage gene, affecting ear shape without impacting hearing." },
+    { breed: "American Shorthair", fact: "Often carriers of the classic tabby pattern gene (mc/mc recessive), producing the distinctive swirled 'bullseye' markings on the sides." },
+    { breed: "Bengal", fact: "A hybrid breed with Asian leopard cat ancestry; some retain pseudo-melanistic 'charcoal' patterns due to incompatible agouti alleles from the wild parent." },
+    { breed: "Birman", fact: "The pointed color pattern combined with white 'gloves' on paws is polygenic, involving the Himalayan allele and a separate glove modifier gene." },
+    { breed: "Bombay", fact: "Created by selective breeding for the recessive black (a/a non-agouti) and Burmese color restriction genes, producing a panther-like solid black coat." },
+    { breed: "British Shorthair", fact: "High prevalence of the dilute modifier gene in blue varieties, turning black pigment to gray through clumped melanin granules." },
+    { breed: "Burmese", fact: "The 'sepia' (cb/cb) color restriction allele reduces pigment in the coat but allows darker points, a temperature-sensitive mutation." },
+    { breed: "Cornish Rex", fact: "The curly coat is due to a recessive mutation in the keratin gene (KRT71), altering hair shaft structure to create soft waves." },
+    { breed: "Devon Rex", fact: "Curly fur from a different recessive rex mutation than Cornish, affecting hair growth cycles and resulting in sparse, wavy coats." },
+    { breed: "Egyptian Mau", fact: "Naturally spotted breed with the spotted tabby gene (Sp), one of the few breeds where spotting occurs without extensive selective breeding." },
+    { breed: "Exotic Shorthair", fact: "Shares the dominant brachycephaly (short nose) gene with Persians, leading to the flattened face but in a shorthair coat." },
+    { breed: "Japanese Bobtail", fact: "Short, pom-pom tail from a recessive mutation in the HES7 gene, distinct from the Manx tailless gene." },
+    { breed: "Korat", fact: "Fixed for the dilute gene (d/d), turning black to blue-gray, with a single ancestral bottleneck preserving low genetic diversity." },
+    { breed: "LaPerm", fact: "Curly coat from a dominant rex mutation, unique in that it can appear in both short and longhair varieties spontaneously." },
+    { breed: "Maine Coon", fact: "Commonly exhibits polydactyly (extra toes) due to a dominant mutation in the ZRS regulatory sequence, historically adaptive for snow." },
+    { breed: "Manx", fact: "Taillessness caused by a dominant mutation in the T-box gene, often leading to potential spinal defects in homozygotes." },
+    { breed: "Munchkin", fact: "Short legs from a dominant achondroplasia-like mutation affecting cartilage growth, controversial due to health concerns." },
+    { breed: "Norwegian Forest Cat", fact: "Long, water-resistant coat influenced by polygenic traits adapted for cold climates, with high heterozygosity." },
+    { breed: "Ocicat", fact: "Spotted pattern mimics wild cats but is fully domestic, created using the spotted tabby gene combined with Abyssinian ticking." },
+    { breed: "Oriental Shorthair", fact: "Closely related to Siamese genetically, sharing the cs/cs colorpoint allele but bred for full-body color." },
+    { breed: "Persian", fact: "Extreme flat face from selective breeding amplifying the brachycephalic gene, plus recessive longhair (l/l) mutation." },
+    { breed: "Peterbald", fact: "Hairlessness from a dominant mutation in the KRT71 gene, distinct from Sphynx, leading to variable baldness levels." },
+    { breed: "Ragdoll", fact: "The 'pointed' varieties carry the colorpoint gene, while the relaxed temperament may link to polygenic selection." },
+    { breed: "Russian Blue", fact: "The blue coat is dilute black (d/d) with a unique silvery sheen from hollow hair shafts, a polygenic trait." },
+    { breed: "Savannah", fact: "Hybrid with serval ancestry; taller stature from retained wild genes, but fertility issues in early generations." },
+    { breed: "Scottish Fold", fact: "Folded ears from a dominant cartilage mutation (Fd), causing ear folding but often linked to joint issues." },
+    { breed: "Siamese", fact: "The pointed pattern is due to a temperature-sensitive tyrosinase mutation, restricting pigment to cooler body areas." },
+    { breed: "Sphynx", fact: "Hairlessness caused by a recessive mutation in the KRT71 gene, leading to a lack of guard hairs and a suede-like skin feel." },
+    { breed: "Tonkinese", fact: " 'Mink' pattern from being heterozygous (cs/cb) for colorpoint alleles from Siamese and Burmese parents." }
+];
+
+function getDailyBreed() {
+      const day = new Date().getDate();
+      // Use the day of the month to pick a breed
+      const todayCat = catBreeds[(day - 1) % catBreeds.length];
+      const breedEl = document.getElementById("cotd-breed");
+      const factEl = document.getElementById("cotd-fact");
+      
+      if(breedEl) breedEl.innerText = todayCat.breed;
+      if(factEl) factEl.innerText = todayCat.fact;
+  }
+
+  // Initialize
+  getDailyBreed();
+  
+// --- MILA CLICK FUNCTIONALITY (mobile-friendly) ---
+const headerMila = document.getElementById('mila-cat');
+let floatingMilaContainer = null;
+
+function createFloatingMila() {
+  if (floatingMilaContainer) return floatingMilaContainer;
+
+  floatingMilaContainer = document.createElement('div');
+  floatingMilaContainer.id = 'floating-mila-container';
+
+  const img = document.createElement('img');
+  img.src = 'images/cats/mila2.png';
+  img.alt = 'Mila following you';
+  img.id = 'floating-mila';
+  img.title = '';
+
+  const text = document.createElement('span');
+  text.id = 'floating-mila-hover-text';
+  text.textContent = "It's me again. I broke my right front leg recently.";
+
+  floatingMilaContainer.appendChild(img);
+  floatingMilaContainer.appendChild(text);
+  document.body.appendChild(floatingMilaContainer);
+
+  // Tap to remove on mobile (and click on desktop)
+  floatingMilaContainer.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent triggering header click again
+    floatingMilaContainer.classList.remove('visible');
+    setTimeout(() => {
+      if (floatingMilaContainer && !floatingMilaContainer.classList.contains('visible')) {
+        floatingMilaContainer.remove();
+        floatingMilaContainer = null;
+      }
+    }, 400);
+  });
+
+  return floatingMilaContainer;
+}
+
+// Toggle on header tap/click
+headerMila.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const container = createFloatingMila();
+
+  if (container.classList.contains('visible')) {
+    container.classList.remove('visible');
+    setTimeout(() => {
+      if (container && !container.classList.contains('visible')) {
+        container.remove();
+        floatingMilaContainer = null;
+      }
+    }, 400);
+  } else {
+    container.classList.add('visible');
+  }
+});
+
+headerMila.style.pointerEvents = 'auto';
+headerMila.style.cursor = 'pointer';
+</script>
+
+</body>
+</html>

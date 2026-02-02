@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mariner's Wharf DIGITAL ART</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent:#43B3D2;
+  --bg:#000;
+  --text:#fff;
+  --border-light:rgba(255,255,255,0.35);
+}
+
+/* Custom Blue Scrollbars */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: var(--accent); border: 2px solid #111; border-radius: 6px; }
+
+* { box-sizing:border-box; }
+html, body { 
+  margin:0; padding:0; 
+  font-family:'VT323',monospace; 
+  color:var(--text); font-size:19px; line-height:1.25; 
+}
+body {
+      background: url("indexbackground.png") no-repeat center center fixed;
+      background-size: cover;
+      padding: 10px;
+    }
+
+/* --- WHARF STANDARD LAYOUT --- */
+.site { 
+  max-width:1100px; 
+  margin:0 auto; 
+  display:grid; 
+  grid-template-columns:220px 1fr; 
+  align-items: start;
+}
+
+.sidebar { 
+  margin: 14px 0 14px 14px;
+  padding:12px; 
+  background:rgba(0,0,0,0.88);
+  border:1px solid var(--border-light); 
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  position: sticky;
+  top: 14px;
+}
+
+.sidebar h2 { margin:0 0 8px; color:var(--accent); }
+
+.nav a { 
+  display:block; color:var(--text); text-decoration:none; 
+  padding:4px 8px; border-radius:4px; transition: 0.2s;
+}
+.nav a:hover { background: rgba(67,179,210,0.2); color: var(--accent); }
+
+/* Unified Highlight Style */
+.nav a.current { 
+  background: rgba(67, 179, 210, 0.35) !important; 
+  color: #43B3D2 !important; 
+  border-left: 4px solid #43B3D2 !important;
+}
+
+/* Sidebar Dropdown logic */
+.dropdown-btn { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.dropdown-content { display: none; padding-left: 10px; margin: 5px 0 5px 5px; border-left: 2px solid var(--accent); }
+.show-art .dropdown-content { display: block; }
+.arrow { font-size: 0.7rem; display: inline-block; transition: 0.2s; }
+.show-art .arrow { transform: rotate(90deg); }
+
+/* --- CONTENT AREA --- */
+.content { 
+  margin: 14px 14px 14px 0;
+  padding:14px; 
+  background:rgba(0,0,0,0.88); 
+  border:1px solid var(--border-light);
+  border-radius: 0 10px 10px 10px;
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+}
+
+header { 
+  padding:10px 12px; border-radius:8px; border:1px solid var(--border-light);
+  background:linear-gradient(to bottom,rgba(255,255,255,0.12), rgba(255,255,255,0.03) 30%,#000 80%); 
+}
+header h1 { 
+  margin:0; font-size:2.7rem; 
+  background:linear-gradient(to bottom, #9be5f4, var(--accent)); 
+  -webkit-background-clip:text; color:transparent; 
+}
+
+/* --- THE MARCHING ANTS SECTION --- */
+.gallery-section {
+  background: #000;
+  border-radius: 8px;
+  padding: 20px;
+  
+  /* 1. REMOVE the "border:" line that was here */
+
+  /* 2. KEEP the background-image logic (This IS the moving border) */
+  background-image: linear-gradient(var(--accent) 50%, transparent 50%), 
+                    linear-gradient(var(--accent) 50%, transparent 50%), 
+                    linear-gradient(90deg, var(--accent) 50%, transparent 50%), 
+                    linear-gradient(90deg, var(--accent) 50%, transparent 50%);
+  background-repeat: repeat-y, repeat-y, repeat-x, repeat-x;
+  background-size: 2px 20px, 2px 20px, 20px 2px, 20px 2px;
+  background-position: 0 0, 100% 0, 0 0, 0 100%;
+  animation: marchingAnts 0.6s linear infinite;
+}
+
+@keyframes marchingAnts {
+  from { background-position: 0 0, 100% 0, 0 0, 0 100%; }
+  to { background-position: 0 -20px, 100% 20px, 20px 0, -20px 100%; }
+}
+
+.art-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.art-card {
+  aspect-ratio: 1 / 1;          /* Forces a perfect square */
+  overflow: hidden;            /* Crucially: hides anything spilling out */
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  background: #111;
+}
+.art-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;           /* Crops to fill the square nicely */
+}
+.art-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+
+/* --- FLOATING BUTTONS --- */
+.floating-btns { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+.back-button, .top-button { 
+  background: linear-gradient(135deg, var(--accent), #9be5f4);
+  color: #000; padding: 10px 16px; text-decoration: none; border-radius: 8px; 
+  border: 1px solid var(--border-light); font-family: 'VT323', monospace; text-align: center;
+}
+
+/* --- MODAL --- */
+.modal {
+  display: none; position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95);
+  justify-content: center; align-items: center;
+  z-index: 3000; padding: 20px;
+}
+.image-viewer {
+  background: #000; border: 1px solid var(--border-light);
+  border-radius: 12px; max-width: 90vw; max-height: 90vh;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.modal-header { 
+  background: #111; padding: 10px 15px; 
+  display: flex; justify-content: flex-end; 
+  border-bottom: 1px solid var(--border-light); 
+}
+.modal-image-container {
+  position: relative; flex-grow: 1;
+  display: flex; align-items: center; justify-content: center;
+  background: #050505; padding: 20px;
+}
+#expanded-img { max-width: 100%; max-height: 70vh; object-fit: contain; }
+#image-caption {
+  padding: 12px 16px;
+  background: #000;
+  color: var(--accent);
+  font-size: 1.15rem;
+  line-height: 1.3;
+
+  max-height: 30vh;
+  overflow-y: auto;
+
+  border-top: 1px solid var(--border-light);
+}
+@media (min-width: 900px) {
+  #image-caption {
+    max-height: 32vh;
+  }
+}
+.close-btn { color: var(--accent); cursor: pointer; font-size: 2rem; line-height: 0.8; }
+
+/* The smooth navigation arrows */
+.nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  font-size: 3.2rem; color: var(--accent); cursor: pointer;
+  user-select: none; z-index: 10; padding: 10px;
+  text-shadow: 
+    0 2px 0 #000, 0 -2px 0 #000, 2px 0 0 #000, -2px 0 0 #000,
+    1.5px 1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000,
+    0.8px 1.8px 0 #000, 0.8px -1.8px 0 #000, -0.8px 1.8px 0 #000, -0.8px -1.8px 0 #000,
+    1.8px 0.8px 0 #000, 1.8px -0.8px 0 #000, -1.8px 0.8px 0 #000, -1.8px -0.8px 0 #000;
+  transition: transform 0.1s;
+}
+.nav-btn:hover { transform: translateY(-50%) scale(1.1); color: #fff; }
+.prev-btn { left: 8px; }
+.next-btn { right: 8px; }
+
+@media(max-width:850px){ 
+  .site{ grid-template-columns:1fr; } 
+  .sidebar{ margin: 14px auto; width: 95%; border-right: 1px solid var(--border-light); border-radius: 10px; position: relative; top: 0; } 
+  .content { margin: 14px; border-radius: 10px; }
+  .nav-btn { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="site">
+  <aside class="sidebar">
+    <h2>Navigation</h2>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <div class="nav-group show-art" id="art-group">
+        <a class="dropdown-btn" onclick="document.getElementById('art-group').classList.toggle('show-art')">
+          Art <span class="arrow">▶</span>
+        </a>
+        <div class="dropdown-content">
+          <a href="art.html">Overview</a>
+          <a href="digital.html" class="current">Digital</a>
+          <a href="mspaint.html">MS Paint</a>
+          <a href="2dart.html">2D Art</a>
+          <a href="3dart.html">3D Art</a>
+          <a href="studies.html">Skill Lab</a>
+        </div>
+      </div>
+      <a href="commissions.html">Commissions</a>
+      <a href="journal.html">Journal</a>
+      <a href="stories.html">Stories</a>
+      <a href="characters.html">Characters</a>
+      <a href="sharks.html">Sharks</a>
+      <a href="cats.html">Cats</a>
+      <a href="resources.html">Resources</a>
+      <a href="sitemap.html">Sitemap</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <header><h1>DIGITAL ART</h1></header>
+
+    <section style="background:#000; border: 1px solid var(--border-light); border-radius: 8px; padding: 10px;">
+      <p style="margin:0;">Pretty much all works of art made digitally. Newest art is at the top, oldest at the bottom. Click a thumbnail to expand the image!</p>
+    </section>
+    <div class="gallery-section">
+      <div class="art-grid">
+      <div class="art-card" title="Cute girl I guess? I don't know her name."><img src="images/art/digital/cutesweetsgirl.png" loading="lazy"></div>
+        <div class="art-card" title="It's me!"><img src="images/art/digital/me-icon.png" loading="lazy"></div>
+        <div class="art-card" title="It's me!"><img src="images/art/digital/me-standing.png" loading="lazy"></div>
+        <div class="art-card" title="It's me!"><img src="images/art/digital/me-contact.png" loading="lazy"></div>
+        <div class="art-card" title="Young Nao."><img src="images/art/digital/youngnaopencils.jpg" loading="lazy"></div>
+        <div class="art-card" title="Shaolin master Miao."><img src="images/art/digital/shaolinmastermiau.jpg" loading="lazy"></div>
+        <div class="art-card" title="A gift digital painting for my friend."><img src="images/art/digital/nighttimepark.jpg" loading="lazy"></div>
+        <div class="art-card" title="A character from my short story NO CLOVERS UNDERGROUND, 0-2B."><img src="images/art/digital/02Bfullbody.png" loading="lazy"></div>
+        <div class="art-card" title="A guy from a dream I had."><img src="images/art/digital/spaceydude.png" loading="lazy"></div>
+        <div class="art-card" title="A pilot dog that I don't really like."><img src="images/art/digital/pilotdog.png" loading="lazy"></div>
+        <div class="art-card" title="Characters from my short story NO CLOVERS UNDERGROUND, 0-2B and 0-2A."><img src="images/art/digital/02B02A2.png" loading="lazy"></div>
+        <div class="art-card" title="Characters from my short story NO CLOVERS UNDERGROUND, 0-2B and 0-2A."><img src="images/art/digital/02B02A.png" loading="lazy"></div>
+        <div class="art-card" title="Boneless skater dog!! He's so cool."><img src="images/art/digital/bonelessdog.png" loading="lazy"></div>
+        <div class="art-card" title="A fun character I drew traditionally first."><img src="images/art/digital/bandagedplague.png" loading="lazy"></div>
+        <div class="art-card" title="This was fun to draw."><img src="images/art/digital/meandtoasty22.jpg" loading="lazy"></div>
+        <div class="art-card" title="Young Haru."><img src="images/art/digital/doyoulikecrayons.png" loading="lazy"></div>
+        <div class="art-card" title="The title is it's nearly winter already."><img src="images/art/digital/itsnearlywinter.jpg" loading="lazy"></div>
+        <div class="art-card" title="A fun character I drew traditionally first."><img src="images/art/digital/redplague.png" loading="lazy"></div>
+        <div class="art-card" title="Character designs for Nineteen Eighty-Four."><img src="images/art/digital/1984fanart.jpg" loading="lazy"></div>
+        <div class="art-card" title="The wires on this were very fun to draw."><img src="images/art/digital/funexperimentwires.png" loading="lazy"></div>
+        <div class="art-card" title="Me holding a fish."><img src="images/art/digital/outfishing.png" loading="lazy"></div>
+        <div class="art-card" title="Very fun to render."><img src="images/art/digital/wowletsgo.png" loading="lazy"></div>
+        <div class="art-card" title="Made in Kid Pix."><img src="images/art/digital/lungattenuation.png" loading="lazy"></div>
+        <div class="art-card" title="Nao petting a cat."><img src="images/art/digital/catonthesteps.png" loading="lazy"></div>
+        <div class="art-card" title="Young Nao and Suzu."><img src="images/art/digital/smalltalk.jpg" loading="lazy"></div>
+        <div class="art-card" title="A portrait of Nao."><img src="images/art/digital/brightgreenlightportrait.png" loading="lazy"></div>
+        <div class="art-card" title="Mrs. Mori younger."><img src="images/art/digital/momsoldphoto.jpg" loading="lazy"></div>
+        <div class="art-card" title="Nao and her mother. I don't really like her face."><img src="images/art/digital/motherdaughtermoment.png" loading="lazy"></div>
+        <div class="art-card" title="Fun angle and colors."><img src="images/art/digital/paranoia.jpg" loading="lazy"></div>
+        <div class="art-card" title="The digital sketch for AK Soldier in a Trench | Zolnierz AK w Okopie."><img src="images/art/digital/soldiersketch.jpg" loading="lazy"></div>
+        <div class="art-card" title="Character expressions for my game."><img src="images/art/digital/expressions.jpg" loading="lazy"></div>
+        <div class="art-card" title="Crayon type sketch."><img src="images/art/digital/crayonsketch.jpg" loading="lazy"></div>
+        <div class="art-card" title="Undersea landscape for my friend's birthday."><img src="images/art/digital/underseaice.jpg" loading="lazy"></div>
+        <div class="art-card" title="Digital greyscale painting (originally traditional) of a bird on a tree."><img src="images/art/digital/birdontree.png" loading="lazy"></div>
+        <div class="art-card" title="Digital greyscale painting of a cat on a wall."><img src="images/art/digital/catonwall.png" loading="lazy"></div>
+        <div class="art-card" title="Me and my friends as Sylvanian Families figures."><img src="images/art/digital/sylvalianfamilieslineup.png" loading="lazy"></div>
+        <div class="art-card" title="An old researcher."><img src="images/art/digital/oldresearcher.jpg" loading="lazy"></div>
+        <div class="art-card" title="A paper postal worker."><img src="images/art/digital/paperpostalworker.png" loading="lazy"></div>
+        <div class="art-card" title="Three cats."><img src="images/art/digital/threecats.jpg" loading="lazy"></div>
+        <div class="art-card" title="A fake KFC receipt made for a project. I'm very proud of it."><img src="images/art/digital/fakeKFCreceipt.png" loading="lazy"></div>
+        <div class="art-card" title="Little me with a fish."><img src="images/art/digital/catchfish.png" loading="lazy"></div>
+        <div class="art-card" title="Wolf linocut version B."><img src="images/art/digital/wolflinocutB.png" loading="lazy"></div>
+        <div class="art-card" title="Wolf linocut version A."><img src="images/art/digital/wolflinocutA.png" loading="lazy"></div>
+        <div class="art-card" title="Polish Miku V2."><img src="images/art/digital/mikupolskav2.png" loading="lazy"></div>
+        <div class="art-card" title="Cat with a plastic bag on its head."><img src="images/art/digital/plasticbagcat.jpg" loading="lazy"></div>
+        <div class="art-card" title="A mysterious staircase."><img src="images/art/digital/mysterystaircase.png" loading="lazy"></div>
+        <div class="art-card" title="Haru eating ramen."><img src="images/art/digital/ramenupgraded.png" loading="lazy"></div>
+        <div class="art-card" title="Haru running."><img src="images/art/digital/runningharu.gif" loading="lazy"></div>
+        <div class="art-card" title="My shoes. I don't have them anymore because they disintegrated."><img src="images/art/digital/shoes.png" loading="lazy"></div>
+        <div class="art-card" title="It's insane how close the meteor was to hitting the visitor center."><img src="images/art/digital/insanehowclosethemeteorwas.jpg" loading="lazy"></div>
+        <div class="art-card" title="Very shiny fabric."><img src="images/art/digital/veryshinyfabric.png" loading="lazy"></div>
+        <div class="art-card" title="My character Nao. I love this animation."><img src="images/art/digital/officeworking.gif" loading="lazy"></div>
+        <div class="art-card" title="My character Nao."><img src="images/art/digital/corporatelimbo.jpg" loading="lazy"></div>
+        <div class="art-card" title="Lain can skate! Inspired by mods that put Lain into skating games."><img src="images/art/digital/laincanskate.jpg" loading="lazy"></div>
+        <div class="art-card" title="Polish Miku."><img src="images/art/digital/mikupolska.jpg" loading="lazy"></div>
+        <div class="art-card" title="Damir walking."><img src="images/art/digital/damirwalking.jpg" loading="lazy"></div>
+        <div class="art-card" title="Giant beast that carries people to the bottom of the ocean."><img src="images/art/digital/giantbeasttravel.png" loading="lazy"></div>
+        <div class="art-card" title="Nao and Haru as little kids. They're sisters."><img src="images/art/digital/sisters.jpg" loading="lazy"></div>
+        <div class="art-card" title="Weird old lady and my character Haru."><img src="images/art/digital/killedamanin94.jpg" loading="lazy"></div>
+        <div class="art-card" title="Honk shoo...honk shoo..."><img src="images/art/digital/honkshoohonkshoo.gif" loading="lazy"></div>
+        <div class="art-card" title="My Diablo III character."><img src="images/art/digital/diablocharacter.png" loading="lazy"></div>
+        <div class="art-card" title="Made in Roblox."><img src="images/art/digital/omgthanksrobloxfreedraw.jpg" loading="lazy"></div>
+        <div class="art-card" title="Irasutoya stock image girls redrawn."><img src="images/art/digital/stockimagegirls.jpg" loading="lazy"></div>
+        <div class="art-card" title="Me as a pudding cat."><img src="images/art/digital/puddingcat.jpg" loading="lazy"></div>
+        <div class="art-card" title="Made in Roblox."><img src="images/art/digital/robloxfreedraw.jpg" loading="lazy"></div>
+        <div class="art-card" title="Cat girl in the mall. I wonder who she's talking to."><img src="images/art/digital/mallcatgirl.gif" loading="lazy"></div>
+        <div class="art-card" title="Me laughing with my friend."><img src="images/art/digital/meandmyfriendlaughing.gif" loading="lazy"></div>
+        <div class="art-card" title="Oh...oh, my god...what happened..?"><img src="images/art/digital/terrifiedcat.gif" loading="lazy"></div>
+        <div class="art-card" title="Cat with party hat."><img src="images/art/digital/partyhatcat.gif" loading="lazy"></div>
+        <div class="art-card" title="Cat in a 64' Impala."><img src="images/art/digital/64impala.jpg" loading="lazy"></div>
+        <div class="art-card" title="All variations on the Minecraft dogs."><img src="images/art/digital/minecraftdogs.gif" loading="lazy"></div>
+        <div class="art-card" title="Bright happy nap day."><img src="images/art/digital/brighthappynapday.jpg" loading="lazy"></div>
+        <div class="art-card" title="Me and my friend."><img src="images/art/digital/meandmyfriend.jpg" loading="lazy"></div>
+        <div class="art-card" title="An isopod fun fact comic."><img src="images/art/digital/isopodfunfactcomic.jpg" loading="lazy"></div>
+        <div class="art-card" title="Parody of YouTube."><img src="images/art/digital/potionchallenge.jpg" loading="lazy"></div>
+        <div class="art-card" title="What a mood. This is Nao."><img src="images/art/digital/officemood.jpg" loading="lazy"></div>
+        <div class="art-card" title="Practicing isopod anatomy."><img src="images/art/digital/rolypolynotes.jpg" loading="lazy"></div>
+        <div class="art-card" title="View over the side of a ship."><img src="images/art/digital/overthesideoftheship.jpg" loading="lazy"></div>
+        <div class="art-card" title="The lighting here is pretty nice."><img src="images/art/digital/snowexperiment.jpg" loading="lazy"></div>
+        <div class="art-card" title="Experimental illustration."><img src="images/art/digital/experimentalcanineteeth.jpg" loading="lazy"></div>
+        <div class="art-card" title="Apparently this is Mahler's 4th symphony."><img src="images/art/digital/mahlers4thsymphony.jpg" loading="lazy"></div>
+        <div class="art-card" title="Titled beach nap."><img src="images/art/digital/beachnap.jpg" loading="lazy"></div>
+        <div class="art-card" title="Mail cat."><img src="images/art/digital/mailcat2.jpg" loading="lazy"></div>
+        <div class="art-card" title="Mail cat."><img src="images/art/digital/mailcat1.jpg" loading="lazy"></div>
+        <div class="art-card" title="Can you guess which ones are dogs and which are cats?"><img src="images/art/digital/creatureshapes.jpg" loading="lazy"></div>
+        <div class="art-card" title="A blue marlin. It creeps me out."><img src="images/art/digital/bluemarlin.png" loading="lazy"></div>
+        <div class="art-card" title="Fire wolf, my man!"><img src="images/art/digital/firewolfmyman.jpg" loading="lazy"></div>
+        <div class="art-card" title="A character redraw."><img src="images/art/digital/bowsandmechanicalparts.jpg" loading="lazy"></div>
+        <div class="art-card" title="Titled look out the window. Inspired by a dream."><img src="images/art/digital/lookoutthewindow.jpg" loading="lazy"></div>
+        <div class="art-card" title="Really great atmosphere on this."><img src="images/art/digital/spilledmurkydistance.jpg" loading="lazy"></div>
+        <div class="art-card" title="Painted and animated a photo."><img src="images/art/digital/breezyday.gif" loading="lazy"></div>
+        <div class="art-card" title="A silly character I made up."><img src="images/art/digital/saycheese.jpg" loading="lazy"></div>
+        <div class="art-card" title="I don't like this at all."><img src="images/art/digital/angrybirds.jpg" loading="lazy"></div>
+        <div class="art-card" title="Practice painting of a forest."><img src="images/art/digital/forestafternewrain.jpg" loading="lazy"></div>
+        <div class="art-card" title="A gorgeous digital painting a coastline made for my friend's birthday."><img src="images/art/digital/coldcoastline.jpg" loading="lazy"></div>
+        <div class="art-card" title="This is supposed to be my character Kahna but it doesn't look like her."><img src="images/art/digital/summerfun.jpg" loading="lazy"></div>
+        <div class="art-card" title="How far away is it?"><img src="images/art/digital/howfarawayisit.jpg" loading="lazy"></div>
+        <div class="art-card" title="Silly dude and doodles."><img src="images/art/digital/doodledumpsillydude.jpg" loading="lazy"></div>
+        <div class="art-card" title="Automobile (car) crash."><img src="images/art/digital/automobilecrash.jpg" loading="lazy"></div>
+        <div class="art-card" title="A powerpoint I guess. My characters Damir and Marek."><img src="images/art/digital/powerpoint.jpg" loading="lazy"></div>
+        <div class="art-card" title="Inspired by my calculator."><img src="images/art/digital/haveyoueverlovedamachine.jpg" loading="lazy"></div>
+        <div class="art-card" title="This is supposed to be Damir but it doesn't look much like him."><img src="images/art/digital/ilooovedrinkingcorrosiveliquids.jpg" loading="lazy"></div>
+        <div class="art-card" title="The character here is a version of a plushie I made."><img src="images/art/digital/starlightwalk.jpg" loading="lazy"></div>
+        <div class="art-card" title="Ghost forest procession."><img src="images/art/digital/ghostforestprocession.jpg" loading="lazy"></div>
+        <div class="art-card" title="2430000 millisecond freedraw."><img src="images/art/digital/2430000millisecondfreedraw.jpg" loading="lazy"></div>
+        <div class="art-card" title="Made for my birthday in 2024."><img src="images/art/digital/happybirthdaytome.jpg" loading="lazy"></div>
+        <div class="art-card" title="It's crunchy cat's day off."><img src="images/art/digital/crunchycatsdayoff.gif" loading="lazy"></div>
+        <div class="art-card" title="Pretty well animated. This is an older design of my character Haru."><img src="images/art/digital/chattingonlineisprettychill.gif" loading="lazy"></div>
+        <div class="art-card" title="Ehh, it's mediocre."><img src="images/art/digital/brokeoutofspacejail.jpg" loading="lazy"></div>
+        <div class="art-card" title="Great landscape. I don't know if it qualifies as one though."><img src="images/art/digital/coldoutside.jpg" loading="lazy"></div>
+        <div class="art-card" title="It's a selkie! I really like this one."><img src="images/art/digital/secondpoolselkie.jpg" loading="lazy"></div>
+        <div class="art-card" title="Mini comic panel with Damir and Marek."><img src="images/art/digital/minicomicpanelscifi.jpg" loading="lazy"></div>
+        <div class="art-card" title="This guy is supposed to be my D&D character."><img src="images/art/digital/safetykittyfirst.jpg" loading="lazy"></div>
+        <div class="art-card" title="This one is called garden fairy tales."><img src="images/art/digital/gardenfairytales.jpg" loading="lazy"></div>
+        <div class="art-card" title="Really great landscape."><img src="images/art/digital/whentidesaregonewhereareyou.jpg" loading="lazy"></div>
+        <div class="art-card" title="I really like the highlights in the water here."><img src="images/art/digital/quietgrass.jpg" loading="lazy"></div>
+        <div class="art-card" title="This one did numbers on Deviantart."><img src="images/art/digital/taxfraud.jpg" loading="lazy"></div>
+        <div class="art-card" title="This one is called vacation fail. Interesting colors."><img src="images/art/digital/vacationfail.jpg" loading="lazy"></div>
+        <div class="art-card" title="A cute isopod girl. I redrew this later."><img src="images/art/digital/rolypolygirl.jpg" loading="lazy"></div>
+        <div class="art-card" title="Gorgeous colors."><img src="images/art/digital/crystalpedestal.jpg" loading="lazy"></div>
+        <div class="art-card" title="One of the first full illustrations of my character Haru, who at this time was called Salt."><img src="images/art/digital/ramenat3am.jpg" loading="lazy"></div>
+        <div class="art-card" title="Very long drawing."><img src="images/art/digital/coastlinemidnightfishingtrip.jpg" loading="lazy"></div>
+        <div class="art-card" title="My minecraft skin."><img src="images/art/digital/minecraft.jpg" loading="lazy"></div>
+        <div class="art-card" title="This is called power nap in the holding room."><img src="images/art/digital/powernapintheholdingroom.jpg" loading="lazy"></div>
+        <div class="art-card" title="I love the atmosphere here."><img src="images/art/digital/istheshipsinking.jpg" loading="lazy"></div>
+        <div class="art-card" title="This was a fun one to make."><img src="images/art/digital/bubblepop.jpg" loading="lazy"></div>
+        <div class="art-card" title="I don't really like this but a lot of people did."><img src="images/art/digital/boxesdoodle.jpg" loading="lazy"></div>
+        <div class="art-card" title="I really like the color palette on this one."><img src="images/art/digital/spaceboy.jpg" loading="lazy"></div>
+        <div class="art-card" title="Made a 3D special for getting 200 watchers on Deviantart in 2023."><img src="images/art/digital/3dspecial.jpg" loading="lazy"></div>
+        <div class="art-card" title="I was really pround of this when I made it."><img src="images/art/digital/mybestfriendsweetie.jpg" loading="lazy"></div>
+        <div class="art-card" title="Apparently a paper creature and alien witnessing the end of all life."><img src="images/art/digital/papercreatureandalienwitnesstheendofalllife.jpg" loading="lazy"></div>
+        <div class="art-card" title="A sticker for a friends."><img src="images/art/digital/aliensticker.jpg" loading="lazy"></div>
+        <div class="art-card" title="Concept art for a 3D model."><img src="images/art/digital/finmodelsheet.jpg" loading="lazy"></div>
+        <div class="art-card" title="Concept art for a 3D model."><img src="images/art/digital/finreef.png" loading="lazy"></div>
+        <div class="art-card" title="A Halloween special illustration."><img src="images/art/digital/zombieharu.jpg" loading="lazy"></div>
+        <div class="art-card" title="It's a kitty circus!"><img src="images/art/digital/kittycircus.jpg" loading="lazy"></div>
+        <div class="art-card" title="Experimenting with a lineless artstyle."><img src="images/art/digital/kittysittingoutside.jpg" loading="lazy"></div>
+        <div class="art-card" title="Experimenting with a lineless artstyle. I really like this one."><img src="images/art/digital/kittywalkingoutside.jpg" loading="lazy"></div>
+        <div class="art-card" title="Had a weird dream that apparently inspired this."><img src="images/art/digital/dreamcomicpanel.jpg" loading="lazy"></div>
+        <div class="art-card" title="I drew this in Roblox."><img src="images/art/digital/robloxsalt.jpg" loading="lazy"></div>
+        <div class="art-card" title="I-I-I be poppin bottles...sparkles and champange"><img src="images/art/digital/ibepoppingbottles.jpg" loading="lazy"></div>
+        <div class="art-card" title="Nobody I showed this to at the time liked it."><img src="images/art/digital/BAM.jpg" loading="lazy"></div>
+        <div class="art-card" title="I really liked watching jellyfish when I made this."><img src="images/art/digital/jellyfishrising.jpg" loading="lazy"></div>
+        <div class="art-card" title="Drew this when I was sick."><img src="images/art/digital/musicplayerinbed.jpg" loading="lazy"></div>
+        <div class="art-card" title="A drawing for drawtober 2023. I could never stick to it."><img src="images/art/digital/tangledrawtober.jpg" loading="lazy"></div>
+        <div class="art-card" title="Carcinisation is a form of convergent evolution in which non-crab crustaceans evolve a crab-like body plan. The term was introduced into evolutionary biology by Lancelot Alexander Borradaile, who described it in 1916 as the many attempts of nature to evolve a crab. Carcinisation has been observed most often in species of infraorder Anomura, and is characterized by a flattened and widened carapace, fused sternites, and a bent and flattened pleon."><img src="images/art/digital/carcinization.jpg" loading="lazy"></div>
+        <div class="art-card" title="I really liked watching jellyfish when I made this."><img src="images/art/digital/voidjellies.jpg" loading="lazy"></div>
+        <div class="art-card" title="Looks like a good cake."><img src="images/art/digital/cakeyumyum.jpg" loading="lazy"></div>
+        <div class="art-card" title="I guess he hit his head pretty hard."><img src="images/art/digital/bonk.jpg" loading="lazy"></div>
+        <div class="art-card" title="Practice drawing isopods. They're adorable."><img src="images/art/digital/nyamnyamisopod.jpg" loading="lazy"></div>
+        <div class="art-card" title="Hey, it's a tour guide. I wonder what he'll talk about."><img src="images/art/digital/tourguide.jpg" loading="lazy"></div>
+        <div class="art-card" title="A mini character sheet for a presentation."><img src="images/art/digital/minicharactersheet.jpg" loading="lazy"></div>
+        <div class="art-card" title="I don't know what I was thinking of here."><img src="images/art/digital/login.jpg" loading="lazy"></div>
+        <div class="art-card" title="Great atmosphere here at least."><img src="images/art/digital/orangedistracted.jpg" loading="lazy"></div>
+        <div class="art-card" title="I don't like the colors here."><img src="images/art/digital/aquarium.jpg" loading="lazy"></div>
+        <div class="art-card" title="Interesting."><img src="images/art/digital/inthebath.jpg" loading="lazy"></div>
+        <div class="art-card" title="This one is a bit disturbing."><img src="images/art/digital/filmme.jpg" loading="lazy"></div>
+        <div class="art-card" title="I don't like this at all."><img src="images/art/digital/roblox.jpg" loading="lazy"></div>
+        <div class="art-card" title="I thought this was silly when I made it."><img src="images/art/digital/busydiner.jpg" loading="lazy"></div>
+        <div class="art-card" title="One of my favorite early landscapes, of a train crossing."><img src="images/art/digital/crossroads.jpg" loading="lazy"></div>
+        <div class="art-card" title="A desert cottontail rabbit. I'm still impressed by the color variation."><img src="images/art/digital/desertcottontail.jpg" loading="lazy"></div>
+        <div class="art-card" title="A tiny starscape."><img src="images/art/digital/tinystarscape.jpg" loading="lazy"></div>
+        <div class="art-card" title="Apparently inspired by a dream."><img src="images/art/digital/wolfwaitingatbusstop.jpg" loading="lazy"></div>
+        <div class="art-card" title="I think this one was after seeing a tutorial."><img src="images/art/digital/crunchydude.jpg" loading="lazy"></div>
+        <div class="art-card" title="I want to drive but I am a cat...I should steal a car...and crash it"><img src="images/art/digital/iwanttodrivebutiamacat.jpg" loading="lazy"></div>
+        <div class="art-card" title="Originally on paper. Those stickers are real."><img src="images/art/digital/pinkvespacat.jpg" loading="lazy"></div>
+        <div class="art-card" title="A super tiny drawing."><img src="images/art/digital/tinymisty.jpg" loading="lazy"></div>
+        <div class="art-card" title="This one was originally drawn on paper and I have no idea what it meant."><img src="images/art/digital/underratedplushie.jpg" loading="lazy"></div>
+        <div class="art-card" title="A very very pink drawing."><img src="images/art/digital/pink3.jpg" loading="lazy"></div>
+        <div class="art-card" title="A very very pink drawing."><img src="images/art/digital/pink2.jpg" loading="lazy"></div>
+        <div class="art-card" title="A very very pink drawing."><img src="images/art/digital/pink1.jpg" loading="lazy"></div>
+        <div class="art-card" title="A blue girl holding a purple cat."><img src="images/art/digital/purplecatbluegirl.jpg" loading="lazy"></div>
+        <div class="art-card" title="One of my first digital art pieces, inspired by a dream."><img src="images/art/digital/grocerystore.jpg" loading="lazy"></div>
+        <div class="art-card" title="An isopod's daily affirmations."><img src="images/art/digital/isopodaffirmations.png" loading="lazy"></div>
+        <div class="art-card" title="A small, simple coastline."><img src="images/art/digital/coastline1.jpg" loading="lazy"></div>
+        <div class="art-card" title="Autism be damned, my boy can grill."><img src="images/art/digital/myboycangrill.jpg" loading="lazy"></div></div>
+        </div>
+    </div> </main>
+
+<div id="image-modal" class="modal">
+  <div class="image-viewer">
+    <div class="modal-header">
+      <span class="close-btn">&times;</span>
+    </div>
+    <div class="modal-image-container">
+      <span class="nav-btn prev-btn" id="prevBtn">◄</span>
+      <img id="expanded-img" src="">
+      <span class="nav-btn next-btn" id="nextBtn">►</span>
+    </div>
+    <div id="image-caption"></div>
+  </div>
+</div>
+
+<div class="floating-btns">
+    <a href="#" class="top-button" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">↑ TOP</a>
+    <a href="index.html" class="back-button">← HOME</a>
+</div>
+
+<script>
+const imageModal = document.getElementById("image-modal");
+const expandedImg = document.getElementById("expanded-img");
+const captionText = document.getElementById("image-caption");
+const closeBtn = document.querySelector(".close-btn");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+const cards = Array.from(document.querySelectorAll('.art-card'));
+let currentIndex = 0;
+
+function openModal(index) {
+  currentIndex = index;
+  const img = cards[currentIndex].querySelector('img');
+  const info = cards[currentIndex].getAttribute('title');
+  imageModal.style.display = "flex";
+  expandedImg.src = img.src;
+  captionText.innerText = info || "";
+}
+
+function showImage(index) {
+  if (index < 0) index = cards.length - 1;
+  if (index >= cards.length) index = 0;
+  openModal(index);
+}
+
+cards.forEach((card, index) => {
+  card.onclick = () => openModal(index);
+});
+
+prevBtn.onclick = (e) => { e.stopPropagation(); showImage(currentIndex - 1); };
+nextBtn.onclick = (e) => { e.stopPropagation(); showImage(currentIndex + 1); };
+closeBtn.onclick = () => { imageModal.style.display = "none"; };
+window.onclick = (e) => { if (e.target === imageModal) imageModal.style.display = "none"; };
+
+document.addEventListener('keydown', (e) => {
+  if (imageModal.style.display === "flex") {
+    if (e.key === "ArrowLeft") showImage(currentIndex - 1);
+    if (e.key === "ArrowRight") showImage(currentIndex + 1);
+    if (e.key === "Escape") imageModal.style.display = "none";
+  }
+});
+</script>
+</body>
+</html>

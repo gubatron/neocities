@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Novel Tester</title>
+    <link rel="icon" type="image/gif" href="https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/secondwinterfavicon.gif">
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark: #1b1e22;
+            --blue: #687c5d;
+            --you-accent: #608679;
+            --light: #f3f6f8;
+        }
+
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            font-family: 'DotGothic16', monospace;
+            background: var(--dark); color: var(--light);
+            overflow: hidden;
+        }
+
+        /* LAYERS */
+        .bg-layer {
+  position: fixed;
+  inset: 0;
+  background: url("https://i.pinimg.com/1200x/d1/48/17/d148172814c5a6e13468cbf7aac5b0ca.jpg") center/cover no-repeat;
+  z-index: 1;
+  filter: blur(8px) brightness(0.8) saturate(0.5);
+  /* Optional: Add a semi-transparent overlay for tinting */
+  /* background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://i.pinimg.com/1200x/d1/48/17/d148172814c5a6e13468cbf7aac5b0ca.jpg") center/cover no-repeat; */
+}
+        
+        .sprite-layer { 
+            position: fixed; inset: 0; display: flex; justify-content: flex-start; align-items: flex-end; 
+            z-index: 2; pointer-events: none; padding-left: 25%; 
+        }
+        .sprite-container { 
+            height: 90vh; max-height: 900px; width: auto; display: flex; align-items: flex-end; 
+            margin-bottom: -20px; transition: transform 0.3s ease;
+        }
+        .sprite-container img { height: 100%; width: auto; object-fit: contain; filter: drop-shadow(0 0 15px rgba(0,0,0,0.4)); }
+
+        #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+
+        /* TOP MENU & OVERLAYS */
+        .top-menu { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; }
+        .menu-btn { background: rgba(24, 27, 31, 0.8); border: 1px solid var(--blue); color: white; padding: 8px 15px; cursor: pointer; font-family: 'DotGothic16'; font-size: 0.9rem; }
+        
+        #log-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; display: none; flex-direction: column; padding: 40px; }
+        .log-content { overflow-y: auto; flex-grow: 1; margin-bottom: 20px; border: 1px solid var(--blue); padding: 20px; background: rgba(255,255,255,0.05); }
+        
+        .log-entry { 
+            position: relative;
+            margin-bottom: 15px; 
+            border-bottom: 1px solid #333; 
+            padding: 10px; 
+            transition: background 0.2s;
+        }
+        .log-entry:hover { background: rgba(255,255,255,0.05); }
+        
+        .return-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            background: var(--blue);
+            color: var(--dark);
+            border: none;
+            padding: 5px 12px;
+            font-family: 'DotGothic16';
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .log-entry:hover .return-btn { display: block; }
+
+        #flag-notify { 
+            position: fixed; top: 20px; left: 20px; 
+            background: rgba(0, 0, 0, 0.8); border-left: 4px solid var(--blue); 
+            z-index: 100; opacity: 0; transition: opacity 0.3s, transform 0.2s; 
+            pointer-events: none; font-size: 1.4rem; padding: 15px 25px;
+        }
+
+        /* UI SCREEN */
+        .ui-screen { position: relative; width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; z-index: 10; }
+        .ui-container { width: 95%; max-width: 1200px; padding-bottom: 40px; position: relative; display: flex; flex-direction: column; }
+
+        .choices-overlay { position: absolute; bottom: 100%; right: 0; margin-bottom: 25px; display: flex; flex-direction: column; gap: 12px; align-items: flex-end; width: auto; }
+        .choice-btn {
+            background: rgba(24, 27, 31, 0.95); border: 2px solid var(--blue); color: white; padding: 15px 25px; cursor: pointer; font-family: 'DotGothic16', monospace; transition: 0.2s;
+            width: 100%; min-width: 300px; max-width: 500px; white-space: normal; overflow-wrap: break-word; text-align: center; line-height: 1.3;
+        }
+        .choice-btn span { display: block; font-size: 1.3rem; }
+        .choice-btn:hover { background: var(--blue); color: #fff; }
+
+        .name-wrapper { position: relative; height: 45px; width: 100%; margin-bottom: -5px; z-index: 11; }
+        .name-box { background: var(--blue); color: var(--dark); padding: 8px 30px; border: 2px solid var(--dark); font-size: 1.4rem; font-weight: bold; position: absolute; bottom: 0; }
+        .name-box.vera-pos { left: 0; }
+        .name-box.you-pos { right: 0; background: var(--you-accent); }
+
+        .text-box { background: rgba(24, 27, 31, 0.98); border: 2px solid var(--blue); padding: 35px; min-height: 200px; cursor: pointer; width: 100%; z-index: 12; position: relative; }
+        .text-box.is-you { border-color: var(--you-accent); }
+        .dialogue-text { font-size: 1.5rem; display: block; line-height: 1.4; }
+
+        .next-arrow { position: absolute; bottom: 20px; right: 20px; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 15px solid var(--blue); animation: bounce 1s infinite; display: none; }
+
+        @keyframes subtleHop { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .hop { animation: subtleHop 0.35s ease-out; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+        .hidden { display: none !important; }
+        
+        #loading-screen { position: fixed; inset: 0; background: rgba(27, 30, 34, 0.9); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; transition: opacity 0.8s ease, visibility 0.8s; }
+        #loading-screen.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loading-popup { background: rgba(24, 27, 31, 0.98); border: 2px solid var(--blue); padding: 40px; max-width: 650px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div id="loading-screen">
+    <div class="loading-popup">
+        <p>This is a test build. Graphics and story are not final.</p>
+        <p>Это тестовая сборка. Графика и сюжет не финальные.</p>
+        <p>To jest wersja testowa. Grafika i fabuła nie są ostateczne.</p>
+        <p>Esta es una versión de prueba. Los gráficos y la historia no son la versión final.</p>
+        <button class="choice-btn" onclick="startVN()" style="margin-top: 20px; width: auto;">
+            <span>START / НАЧАТЬ / COMENZAR</span>
+        </button>
+    </div>
+</div>
+
+<div class="top-menu">
+    <button id="btn-log" class="menu-btn" onclick="VN.toggleLog()">LOG</button>
+    <select id="speed-set" class="menu-btn" onchange="VN.setSpeed(this.value)">
+        <option value="40" data-key="slow">Text: Slow</option>
+        <option value="25" data-key="norm" selected>Text: Normal</option>
+        <option value="10" data-key="fast">Text: Fast</option>
+        <option value="0" data-key="inst">Text: Instant</option>
+    </select>
+    <select id="lang-set" class="menu-btn" onchange="VN.setLang(this.value)">
+        <option value="en" selected>English</option>
+        <option value="ru">Русский</option>
+        <option value="pl">Polski</option>
+        <option value="es">Español</option>
+    </select>
+</div>
+
+<div id="log-overlay">
+    <div class="log-content" id="log-list"></div>
+    <button id="btn-close-log" class="menu-btn" onclick="VN.toggleLog()">CLOSE LOG</button>
+</div>
+
+<div id="flag-notify"></div>
+<div class="bg-layer"></div>
+<div class="sprite-layer"><div id="character-sprite" class="sprite-container"><img id="active-img" src="https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/verasprite.png"></div></div>
+<canvas id="snow-canvas"></canvas>
+
+<div class="ui-screen">
+    <div class="ui-container" id="ui-wrapper">
+        <div id="choices" class="choices-overlay hidden"></div>
+        <div class="name-wrapper"><div id="name-tag" class="name-box"></div></div>
+        <div id="main-text-box" class="text-box" onclick="VN.next()">
+            <span id="text-main" class="dialogue-text"></span>
+            <div id="click-indicator" class="next-arrow"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const uiTrans = {
+    en: { log: "LOG", close: "CLOSE LOG", slow: "Text: Slow", norm: "Text: Normal", fast: "Text: Fast", inst: "Text: Instant", vera: "VERA", you: "YOU", system: "SYSTEM", return: "RETURN" },
+    ru: { log: "ЖУРНАЛ", close: "ЗАКРЫТЬ", slow: "Текст: Медленно", norm: "Текст: Нормально", fast: "Текст: Быстро", inst: "Текст: Мгновенно", vera: "ВЕРА", you: "ТЫ", system: "СИСТЕМА", return: "ВЕРНУТЬСЯ" },
+    pl: { log: "LOG", close: "ZAMKNIJ", slow: "Tekst: Wolno", norm: "Tekst: Normalnie", fast: "Tekst: Szybko", inst: "Tekst: Natychmiast", vera: "WERA", you: "TY", system: "SYSTEM", return: "WRÓĆ" },
+    es: { log: "LOG", close: "CERRAR", slow: "Texto: Lento", norm: "Texto: Normal", fast: "Texto: Rápido", inst: "Texto: Instantáneo", vera: "VERA", you: "TÚ", system: "SISTEMA", return: "VOLVER" }
+};
+
+const story = {
+    start: { 
+        name: "VERA", 
+        en: "Oh, hello again. I thought that was you by the bread shelf.", 
+        ru: "О, привет опять. Подумала, что это ты у полки с хлебом.", 
+        pl: "O, cześć znowu. Pomyślałam, że to ty przy półce z chlebem.", 
+        es: "Hola otra vez. Me pareció que eras tú por la estantería del pan.",
+        image: "https://smallcarnivore.neocities.org/secondwinter/secondwinterassets/verasprite.png",
+        animate: "hop", 
+        next: "you_intro" 
+    },
+
+    you_intro: { 
+        name: "YOU", 
+        en: "Hi, Vera. Seems we have the same idea about shopping late.", 
+        ru: "Привет, Вера. Похоже, у нас одинаковая привычка — покупать вечером.", 
+        pl: "Cześć, Wero. Wygląda na to, że oboje wolimy zakupy późno.", 
+        es: "Hola, Vera. Parece que tenemos la misma idea de comprar tarde.",
+        next: "vera_reply1" 
+    },
+
+    vera_reply1: { 
+        name: "VERA", 
+        en: "Fewer lines, quieter aisles. Ideal conditions.", 
+        ru: "Меньше очередей, тише полки. Идеальные условия.", 
+        pl: "Mniej kolejek, spokojniejsze alejki. Idealne warunki.", 
+        es: "Menos filas, pasillos más tranquilos. Condiciones ideales.",
+        animate: "hop", 
+        next: "decision_open" 
+    },
+
+    decision_open: { 
+        name: "VERA", 
+        en: "Did you find what you needed?", 
+        ru: "Нашел, что нужно?", 
+        pl: "Znalazłeś to, czego potrzebowałeś?", 
+        es: "¿Encontraste lo que necesitabas?",
+        choices: [
+            { 
+                en: "Just groceries. Long day, easy dinner.", 
+                ru: "Продукты, да и всё. День длинный, ужин простой.", 
+                pl: "Tylko podstawy. Długi dzień, prosta kolacja.", 
+                es: "Solo lo básico. Día largo, cena sencilla.", 
+                next: "basic_path" 
+            },
+            { 
+                en: "Picked up some fruit. The strawberries looked too good.", 
+                ru: "Взял фрукты. Клубника выглядела слишком вкусной.", 
+                pl: "Kupiłem owoce. Truskawki wyglądały zbyt dobrze.", 
+                es: "Compré algo de fruta. Las fresas se veían demasiado bien.", 
+                next: "fruit_path" 
+            },
+            { 
+                en: "Impulse purchase… cookies I don’t need.", 
+                ru: "Импульсная покупка... печенье, которое мне не нужно.", 
+                pl: "Zakup odruchowy… ciastka, których nie potrzebuję.", 
+                es: "Compra impulsiva… galletas que no necesitaba.", 
+                next: "cookies_path0" 
+            }
+        ] 
+    },
+
+    basic_path: { 
+        name: "VERA", 
+        en: "Sensible. I bought about the same... bread, milk, and strawberries for jam.", 
+        ru: "Разумно. Я купила то же... хлеб, молоко и клубнику для варенья.", 
+        pl: "Rozsądnie. Kupiłam prawie to samo... chleb, mleko i truskawki na dżem.", 
+        es: "Tiene sentido. Yo compré casi lo mismo… pan, leche y fresas para mermelada.",
+        animate: "hop", 
+        flagEn: "She seems shy about the jam.",
+        flagRu: "Она кажется застенчивой, говоря о варенье.",
+        flagPl: "Wydaje się nieco nieśmiała, gdy mówi o dżemie.",
+        flagEs: "Parece un poco tímida al mencionar la mermelada.",
+        next: "decision_jam" 
+    },
+
+    fruit_path: { 
+        name: "VERA", 
+        en: "So we think alike. I bought some as well, planning to make jam before they spoil.", 
+        ru: "Значит, мыслим одинаково. Я тоже купила, хочу сварить варенье, пока не испортились.", 
+        pl: "Więc myślimy podobnie. Też kupiłam, chcę zrobić dżem, zanim się zepsują.", 
+        es: "Entonces pensamos igual. Yo también compré; quiero hacer mermelada antes de que se dañen.",
+        animate: "hop", 
+        flagEn: "Vera shares your good taste.",
+        flagRu: "У Веры такой же хороший вкус.",
+        flagPl: "Vera ma podobny dobry gust.",
+        flagEs: "Vera comparte tu buen gusto.",
+        next: "decision_jam" 
+    },
+
+    cookies_path0: { 
+        name: "SYSTEM", 
+        en: "Vera smiles faintly.", 
+        ru: "Вера слегка улыбается.", 
+        pl: "Vera uśmiecha się lekko.", 
+        es: "Vera sonríe apenas.",
+        flagEn: "Vera is slightly amused.",
+        flagRu: "Вера слегка позабавлена.",
+        flagPl: "Vera jest lekko rozbawiona.",
+        flagEs: "Vera está un poco divertida.",
+        next: "cookies_path" 
+    },
+
+    cookies_path: { 
+        name: "VERA", 
+        en: "Everyone deserves one small mistake at the store.", 
+        ru: "Каждый заслуживает маленькую ошибку в магазине.", 
+        pl: "Każdemu należy się mały błąd przy zakupach.", 
+        es: "Todo el mundo merece un pequeño error en el supermercado.",
+        animate: "hop", 
+        next: "cookies_path2" 
+    },
+
+    cookies_path2: { 
+        name: "YOU", 
+        en: "What did you get?", 
+        ru: "Что ты купила?", 
+        pl: "Co kupiłaś?", 
+        es: "¿Y tú qué compraste?",
+        next: "cookies_path3" 
+    },
+
+    cookies_path3: { 
+        name: "VERA", 
+        en: "Well, I just got the basics. I have to make dinner today.", 
+        ru: "Что ж, я купила только самое необходимое. Сегодня нужно готовить ужин.", 
+        pl: "Cóż, kupiłam tylko podstawy. Muszę dziś zrobić kolację.", 
+        es: "Pues, solo compré lo básico. Hoy me toca hacer la cena.",
+        animate: "hop", 
+        next: "decision_cook" 
+    },
+
+    decision_jam: { 
+        name: "YOU", 
+        en: "Jam? That sounds nice. Do you cook often?", 
+        ru: "Варенье? Звучит хорошо. Ты часто готовишь?", 
+        pl: "Dżem? Brzmi dobrze. Często gotujesz?", 
+        es: "¿Mermelada? Suena bien. ¿Cocinas seguido?",
+        next: "vera_cooking" 
+    },
+
+    vera_cooking: { 
+        name: "VERA", 
+        en: "Sometimes. I enjoy it when it feels like chemistry, when it's simple. But I avoid complicated meals.", 
+        ru: "Иногда. Мне нравится, когда это похоже на химию, когда всё просто. Но сложные блюда я избегаю.", 
+        pl: "Czasami. Lubię, gdy to przypomina chemię, gdy jest prosto. Ale unikam skomplikowanych dań.", 
+        es: "A veces. Me gusta cuando se siente como química, cuando es simple. Pero evito platos complicados.",
+        animate: "hop", 
+        next: "vera_cooking2" 
+    },
+
+    vera_cooking2: { 
+        name: "VERA", 
+        en: "I make the jam for my, erm, roommate. My friend.", 
+        ru: "Я делаю варенье для своей, э-э, соседки по комнате. Подруги.", 
+        pl: "Robię dżem dla mojej, eee, współlokatorki. Przyjaciółki.", 
+        es: "Hago la mermelada para mi… eh… compañera de cuarto. Mi amiga.",
+        animate: "hop", 
+        next: "decision_cook" 
+    },
+
+    decision_cook: { 
+        name: "VERA", 
+        en: "Do you ever cook for yourself?", 
+        ru: "Ты сам готовишь?", 
+        pl: "Gotujesz czasem dla siebie?", 
+        es: "“¿A veces cocinas para ti?",
+        choices: [
+            {
+                en: "Only quick things. Eggs, soup, nothing fancy.",
+                ru: "Только простое. Яйца, суп, ничего особенного.",
+                pl: "Tylko szybkie rzeczy. Jajka, zupa, nic wyszukanego.",
+                es: "Solo cosas rápidas. Huevos, sopa, nada especial.",
+                next: "simple_cook",
+                flagEn: "Vera seems to agree.",
+                flagRu: "Вера, похоже, согласна.",
+                flagPl: "Vera wydaje się zgadzać.",
+                flagEs: "Vera parece estar de acuerdo."
+            },
+            {
+                en: "Whenever I find a new recipe, I have to try it.",
+                ru: "Если нахожу новый рецепт, обязательно пробую.",
+                pl: "Gdy znajdę nowy przepis, muszę go wypróbować.",
+                es: "Cada vez que encuentro una receta nueva, tengo que probarla.",
+                next: "experiment_cook",
+                flagEn: "Vera finds that ambitious.",
+                flagRu: "Вера считает это смелым.",
+                flagPl: "Vera uważa to za ambitne.",
+                flagEs: "A Vera le parece algo ambicioso."
+            },
+            {
+                en: "Not really. My food science begins and ends with boiling water.",
+                ru: "Не особо. Моя кулинарная наука начинается и заканчивается кипячением воды.",
+                pl: "Nieszczególnie. Moja nauka gotowania zaczyna się i kończy na gotowaniu wody.",
+                es: "No mucho. Mi ciencia culinaria empieza y termina hirviendo agua.",
+                next: "boil_cook0",
+                flagEn: "Vera is amused by your honesty.",
+                flagRu: "Веру забавляет твоя откровенность.",
+                flagPl: "Vera jest rozbawiona twoją szczerością.",
+                flagEs: "A Vera le divierte tu sinceridad."
+            }
+        ]
+    },
+
+    simple_cook: { 
+        name: "VERA", 
+        en: "Sensible. Better to eat something honest than burn something complicated.", 
+        ru: "Разумно. Лучше съесть простое, чем сжечь сложное.", 
+        pl: "Rozsądnie. Lepiej zjeść coś prostego niż spalić coś skomplikowanego.", 
+        es: "Tiene sentido. Mejor comer algo sencillo que quemar algo complicado.",
+        animate: "hop", 
+        next: "vera_closing" 
+    },
+
+    experiment_cook: { 
+        name: "VERA", 
+        en: "You are braver than I am. I prefer recipes that can be measured in teaspoons, not paragraphs.", 
+        ru: "Ты смелее меня. Я предпочитаю рецепты, измеряемые ложками, а не абзацами.", 
+        pl: "Jesteś odważniejszy ode mnie. Wolę przepisy mierzone łyżeczkami, a nie akapitami.", 
+        es: "Eres más valiente que yo. Yo prefiero recetas que se midan en cucharaditas, no en párrafos.",
+        animate: "hop", 
+        next: "vera_closing" 
+    },
+
+    boil_cook0: { 
+        name: "SYSTEM", 
+        en: "She laughs quietly.", 
+        ru: "Она тихо смеется.", 
+        pl: "Cicho się śmieje.", 
+        es: "Se ríe en voz baja.",
+        next: "boil_cook" 
+    },
+
+    boil_cook: { 
+        name: "VERA", 
+        en: "Then tea would suit you. It's exactly that.", 
+        ru: "Тогда тебе подойдет чай. Именно так.", 
+        pl: "W takim razie herbata będzie dla ciebie idealna. Dokładnie tak.", 
+        es: "Entonces el té te quedaría perfecto. Es exactamente eso.",
+        animate: "hop", 
+        next: "vera_closing" 
+    },
+
+    vera_closing: { 
+        name: "VERA", 
+        en: "Well, I should head home. Strawberries don’t wait... they wilt faster than I remember.", 
+        ru: "Пора идти домой. Клубника не ждет... портится быстрее, чем я помню.", 
+        pl: "Pora wracać. Truskawki nie czekają... psują się szybciej, niż pamiętam.", 
+        es: "Bueno, ya debería irme a casa. Las fresas no esperan… se dañan más rápido de lo que recordaba.",
+        animate: "hop", 
+        next: "you_farewell" 
+    },
+
+    you_farewell: { 
+        name: "YOU", 
+        en: "Then I hope the jam turns out well.", 
+        ru: "Тогда надеюсь, варенье получится.", 
+        pl: "Mam nadzieję, że dżem się uda.", 
+        es: "Entonces ojalá te quede bien la mermelada.",
+        next: "vera_farewell" 
+    },
+
+    vera_farewell: { 
+        name: "VERA", 
+        en: "Thank you. It usually does. Have a good evening.", 
+        ru: "Спасибо. Обычно получается. Хорошего вечера.", 
+        pl: "Dziękuję. Zazwyczaj się udaje. Miłego wieczoru.", 
+        es: "Gracias. Normalmente sale bien. Que tengas una buena noche.",
+        animate: "hop", 
+        next: "game_over" 
+    },
+
+    game_over: { 
+        name: "SYSTEM", 
+        en: "You part ways outside the store.", 
+        ru: "Вы расходитесь у магазина.", 
+        pl: "Rozchodzicie się przed sklepem.", 
+        es: "Se despiden afuera de la tienda.",
+        choices: [
+            { en: "Play Again", ru: "Сыграть снова", pl: "Zagraj ponownie", es: "Jugar otra vez", next: "start" }, 
+            { en: "Go Back", ru: "Назад", pl: "Wróć", es: "Volver", next: "EXTERNAL_LINK" } 
+        ] 
+    }
+};
+
+const VN = {
+    currentKey: 'start',
+    isTyping: false,
+    textSpeed: 25,
+    lang: 'en',
+    history: [],
+
+    renderFirstFrame() {
+        this.updateUIStrings();
+        const node = story[this.currentKey];
+        const nameTag = document.getElementById('name-tag');
+        const textBox = document.getElementById('main-text-box');
+        const nameWrapper = document.querySelector('.name-wrapper');
+        
+        const displayName = this.getTranslatedName(node.name);
+        nameTag.innerText = displayName;
+        nameTag.className = (node.name === "YOU") ? "name-box you-pos" : "name-box vera-pos";
+        nameWrapper.style.visibility = (node.name === "SYSTEM") ? 'hidden' : 'visible';
+        
+        if (node.name === "YOU") textBox.classList.add('is-you'); else textBox.classList.remove('is-you');
+    },
+
+    getTranslatedName(name) {
+        if (name === "VERA") return uiTrans[this.lang].vera;
+        if (name === "YOU") return uiTrans[this.lang].you;
+        if (name === "SYSTEM") return uiTrans[this.lang].system;
+        return name;
+    },
+
+    updateUIStrings() {
+        const t = uiTrans[this.lang];
+        document.getElementById('btn-log').innerText = t.log;
+        document.getElementById('btn-close-log').innerText = t.close;
+        const speedOptions = document.getElementById('speed-set').options;
+        for(let opt of speedOptions) {
+            const key = opt.getAttribute('data-key');
+            if(key) opt.text = t[key];
+        }
+    },
+
+    setSpeed(val) { this.textSpeed = parseInt(val); },
+    
+    setLang(val) { 
+        this.lang = val; 
+        this.updateUIStrings();
+        this.render(); 
+    },
+
+    toggleLog() {
+        const log = document.getElementById('log-overlay');
+        const isOpening = log.style.display !== 'flex';
+        log.style.display = isOpening ? 'flex' : 'none';
+        if(isOpening) this.updateLog();
+    },
+
+    updateLog() {
+        const list = document.getElementById('log-list');
+        list.innerHTML = this.history.map((h) => `
+            <div class="log-entry">
+                <div style="color:var(--blue); font-weight:bold; font-size:1.1rem;">${this.getTranslatedName(h.name)}</div>
+                <div style="font-size:1rem;">${h[this.lang]}</div>
+                <button class="return-btn" onclick="VN.jumpTo('${h.key}')">${uiTrans[this.lang].return}</button>
+            </div>
+        `).join('');
+        list.scrollTop = list.scrollHeight;
+    },
+
+    jumpTo(key) {
+        this.currentKey = key;
+        this.toggleLog();
+        this.render();
+    },
+
+    render() {
+        const node = story[this.currentKey];
+        const nameTag = document.getElementById('name-tag');
+        const textBox = document.getElementById('main-text-box');
+        const sprite = document.getElementById('character-sprite');
+        const indicator = document.getElementById('click-indicator');
+        const nameWrapper = document.querySelector('.name-wrapper');
+        
+        indicator.style.display = 'none';
+        nameTag.innerText = this.getTranslatedName(node.name);
+        nameTag.className = (node.name === "YOU") ? "name-box you-pos" : "name-box vera-pos";
+        nameWrapper.style.visibility = (node.name === "SYSTEM") ? 'hidden' : 'visible';
+        
+        if (node.name === "YOU") textBox.classList.add('is-you'); else textBox.classList.remove('is-you');
+
+        if(node.animate === "hop") {
+            sprite.classList.remove('hop');
+            void sprite.offsetWidth;
+            sprite.classList.add('hop');
+        }
+
+        // Flag Translations
+        const flagKey = 'flag' + this.lang.charAt(0).toUpperCase() + this.lang.slice(1);
+        if (node[flagKey]) {
+            this.showFlag(node[flagKey]);
+        }
+
+        const currentText = node[this.lang];
+        if (!this.history.length || this.history[this.history.length-1].key !== this.currentKey) {
+            this.history.push({ ...node, key: this.currentKey });
+        }
+
+        this.typeSync(document.getElementById('text-main'), currentText, () => { 
+            if(!node.choices) indicator.style.display = 'block'; 
+        });
+
+        const choiceContainer = document.getElementById('choices');
+        choiceContainer.innerHTML = '';
+        if(node.choices) {
+            choiceContainer.classList.remove('hidden');
+            node.choices.forEach(c => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerHTML = `<span>${c[this.lang]}</span>`;
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    if(c.next === "EXTERNAL_LINK") { window.location.href = "https://smallcarnivore.neocities.org/secondwinter/secondwinter"; return; }
+                    choiceContainer.classList.add('hidden');
+                    this.currentKey = c.next;
+                    this.render();
+                };
+                choiceContainer.appendChild(btn);
+            });
+        }
+    },
+
+    typeSync(el, text, callback) {
+        el.innerHTML = '';
+        if (this.textSpeed === 0) {
+            el.innerHTML = text;
+            this.isTyping = false; if(callback) callback(); return;
+        }
+        let i = 0; this.isTyping = true;
+        const interval = setInterval(() => {
+            el.innerHTML += text.charAt(i);
+            i++;
+            if (i >= text.length) {
+                clearInterval(interval); this.isTyping = false; if(callback) callback();
+            }
+        }, this.textSpeed);
+    },
+
+    showFlag(text) {
+        const flagBox = document.getElementById('flag-notify');
+        flagBox.innerText = text;
+        flagBox.style.opacity = '1';
+        flagBox.style.transform = "translateX(5px)";
+        setTimeout(() => { flagBox.style.transform = "translateX(0)"; }, 100);
+        setTimeout(() => { flagBox.style.opacity = '0'; }, 3000);
+    },
+
+    next() {
+        if(this.isTyping) return;
+        const node = story[this.currentKey];
+        if(node.next && !node.choices) {
+            this.currentKey = node.next;
+            this.render();
+        }
+    }
+};
+
+// Start
+VN.renderFirstFrame();
+
+function startVN() {
+    const loader = document.getElementById('loading-screen');
+    loader.classList.add('fade-out');
+    initSnow();
+    VN.render(); 
+    setTimeout(() => { loader.style.display = 'none'; }, 800);
+}
+
+window.addEventListener('keydown', (e) => {
+    if (e.code === "Space" || e.code === "Enter") {
+        e.preventDefault(); VN.next();
+    }
+});
+
+function initSnow() {
+    const canvas = document.getElementById('snow-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let w, h;
+    function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize);
+    resize();
+    for(let i = 0; i < 150; i++) {
+        particles.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 3 + 1, v: Math.random() * 1 + 0.5, s: Math.random() * 1 - 0.5 });
+    }
+    function animate() {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+        ctx.beginPath();
+        for(let p of particles) {
+            ctx.moveTo(p.x, p.y); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+            p.y += p.v; p.x += p.s;
+            if(p.y > h) p.y = -10, p.x = Math.random() * w;
+        }
+        ctx.fill();
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+</script>
+</body>
+</html>
