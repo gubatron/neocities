@@ -119,6 +119,40 @@ text-shadow:
 
     section h2 { margin: 0 0 6px; color: var(--accent); }
 
+    .marquee-wrap {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      background: var(--bg);
+      padding: 10px 12px;
+    }
+
+    .marquee-track {
+      display: flex;
+      /* width: max-content allows the track to expand to fit both the original and cloned span */
+      width: max-content;
+      /* 12.5s = 2x speed (was 25s); duration must match time for text to scroll 50% since we animate to -50% */
+      animation: marquee 12.5s linear infinite;
+    }
+
+    .marquee-track span {
+      white-space: nowrap;
+      /* padding-right creates visual gap between repeated text loops */
+      padding-right: 3rem;
+    }
+
+    /* Pause animation on hover, resume when mouse leaves */
+    .marquee-wrap:hover .marquee-track {
+      animation-play-state: paused;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      /* Animate to -50% (not -100%) because span is duplicated via JS; seamless looping */
+      to { transform: translateX(-50%); }
+    }
+
     .updates { height: 180px; overflow-y: auto; padding: 0; }
     .updates-header { position: sticky; top: 0; background: #000; padding: 6px 10px; border-bottom: 1px solid var(--border-light); }
     .updates-body { padding: 8px 10px; }
@@ -258,6 +292,13 @@ All original artwork and writing on this site are ©2026 by smallcarnivorousmamm
   </main>
 </div>
 <script>
+  // Duplicate marquee span for seamless looping
+  const marqueeSpan = document.querySelector('.marquee-track span');
+  if (marqueeSpan) {
+    const clone = marqueeSpan.cloneNode(true);
+    marqueeSpan.parentElement.appendChild(clone);
+  }
+
   // Detects the current page file name
   const currentPath = window.location.pathname.split("/").pop() || "index.html";
   
